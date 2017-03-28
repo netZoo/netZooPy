@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+'''
+Run PyPanda algorithm from the command line.
+'''
+import sys
+import getopt
+import pandas as pd
+from pypanda import Panda
+#from pypanda import Lioness
+import numpy as np
+import time
+
+def main(argv):
+    '''
+    Run pypanda.
+    -h help
+    -e (required) expression values
+    -m (optional) pair file of motif edges, when not provided analysis continues with pearson correlation matrix
+    -p (optional) pair file of PPI edges
+    -f (optional) remove missing values (default is Fales)
+    -o (required) output file
+    -q (optional) output lioness single sample network
+    '''
+    #create variables
+    expression_data = None
+    motif = None
+    ppi = None
+    remove_missing = False
+    output_file = None
+    lioness_output_file = None
+    help_text = 'pypanda options:\n\
+                \t-e (required)<expression_data.txt>\n\
+                \t-m (optional, when not provided Pearson correlation network is used)<motif_data.txt>\n\
+                \t-p (optional)<ppi_data.txt>\n\
+                \t-f (optional)<remove missing (True/False)>\n\
+                \t-o (required)<output_file_name>\n\
+                \t-q (optional)<lioness_output_file_name>'
+    #get input options
+    try:
+        opts, args = getopt.getopt(argv, 'he:m:p:f:o:q:', ['help', 'expression=', 'motif=', 'ppi=', 'remove=', 'out='])
+    except getopt.GetoptError:
+        print help_text
+        sys.exit()
+    for opt, arg in opts:
+        if opt == '-h':
+            print help_text
+            sys.exit()
+        if opt == '-e':
+            expression_data = arg
+        if opt == '-m':
+            motif = arg
+        if opt == '-p':
+            ppi = arg
+        if opt == '-f':
+            if arg == 'True':
+                remove_missing = True
+            elif arg == 'False':
+                remove_missing = False
+        if opt == '-o':
+            output_file = arg
+        if opt == '-q':
+            lioness_output_file = arg
+    #check if required options are given
+    if expression_data == None:
+        print 'Missing input'
+        print help_text
+        sys.exit()
+    else:
+        print 'Input data:'
+        print expression_data
+        print motif
+        print ppi
+
+    #run panda
+    print 'Start Panda run ...'
+    #p = Panda(expression_data, motif, ppi, remove_missing=remove_missing)
+    GENE_NAMES = '/ifs/labs/cccb/projects/share/GTEx/LIONESS/meta/expression.gene_names.npy'
+    p = Panda(expression_data, motif, ppi, gene_names=GENE_NAMES)
+    print 'Finished Panda run...'
+    #save results
+    print 'Save Panda network to', output_file
+    t1 = time.time()
+    if output_file.endswith('.npy'):
+        np.save(output_file, p.panda_network)
+    else:
+        p.save_panda_results(file=output_file)
+    print "Elapsed time:", time.time() - t1
+
+    #run lioness
+    if lioness_output_file!=None:
+        print 'Start Lioness run ...'
+        l = Lioness(p)
+        print 'Finished Lioness run...'
+        l.save_lioness_results(file=lioness_output_file)
+        print 'Save Lionee network ...'
+
+    return None
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
