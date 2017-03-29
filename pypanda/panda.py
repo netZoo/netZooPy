@@ -74,9 +74,9 @@ class Panda(object):
         # Network normalization
         # =====================================================================
         with Timer('Normalizing networks ...'):
-            self.correlation_matrix = self.__normalize_network(self.correlation_matrix)
-            self.motif_matrix = self.__normalize_network(self.motif_matrix, square=False)
-            self.ppi_matrix = self.__normalize_network(self.ppi_matrix)
+            self.correlation_matrix = self._normalize_network(self.correlation_matrix)
+            self.motif_matrix = self._normalize_network(self.motif_matrix, square=False)
+            self.ppi_matrix = self._normalize_network(self.ppi_matrix)
 
         # =====================================================================
         # Saving middle data to tmp
@@ -97,7 +97,7 @@ class Panda(object):
         self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
 
 
-    def __normalize_network(self, x, square=True):
+    def _normalize_network(self, x, square=True):
         if square:
             norm_col = zscore(x, axis=0)
             return (norm_col + norm_col.T) / math.sqrt(2)
@@ -128,6 +128,7 @@ class Panda(object):
             np.fill_diagonal(diagonal_matrix, diagonal_fill)
 
         panda_loop_time = time.time()
+        num_tfs, num_genes = motif_matrix.shape
         step = 0
         hamming = 1
         alpha = 0.1
@@ -141,13 +142,13 @@ class Panda(object):
             if hamming > 0.001:
                 # Update ppi_matrix
                 ppi = t_function(motif_matrix)  # t_func(X, X.T)
-                update_diagonal(ppi, self.num_tfs, alpha, step)
+                update_diagonal(ppi, num_tfs, alpha, step)
                 ppi_matrix *= (1 - alpha)
                 ppi_matrix += (alpha * ppi)
 
                 # Update correlation_matrix
                 motif = t_function(motif_matrix.T)  # t_func(X.T, X)
-                update_diagonal(motif, self.num_genes, alpha, step)
+                update_diagonal(motif, num_genes, alpha, step)
                 correlation_matrix *= (1 - alpha)
                 correlation_matrix += (alpha * motif)
 

@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-"""Run PyPanda algorithm from the command line.
+"""Run PANDA algorithm from the command line.
 """
 import sys
 import getopt
-import pandas as pd
 import pypanda
 
 def main(argv):
