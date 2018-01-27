@@ -13,4 +13,4 @@ class Timer(object):
         self.tic = time.time()
 
     def __exit__(self, type, value, traceback):
-        print 'Elapsed time: %.2f sec.' % (time.time() - self.tic)
+        print '  Elapsed time: %.2f sec.' % (time.time() - self.tic)

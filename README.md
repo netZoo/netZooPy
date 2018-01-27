@@ -1,5 +1,5 @@
 ## Description
-Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda).
+Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda) and 
 I work on run_puma and pypanda/puma.py. Those methods can still have pandas instead of puma, same for this README.  
 
 ## TODO
@@ -104,9 +104,10 @@ PyPandas can be run directly from the terminal with the following options:
 -o, --output (required) output file
 -i, --mir (required) mir data
 ```
-To run PyPuma on the example data:
+To run PyPuma on toy data:
 ```
-pypanda -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ./ToyData/ALEToyMiRList.txt -o test_puma.txt
+python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt -i ./ToyData/ALEToyMiRList.txt
+python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt
 ```
 To reconstruct a single sample Lioness Pearson correlation network:
 ```
