@@ -1,5 +1,5 @@
 ## Description
-Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda) and 
+Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda) and [https://github.com/mararie/PUMA](https://github.com/mararie/PUMA)
 I work on run_puma and pypanda/puma.py. Those methods can still have pandas instead of puma, same for this README.  
 
 ## TODO
@@ -24,15 +24,15 @@ _Glass K, Huttenhower C, Quackenbush J, Yuan GC. Passing Messages Between Biolog
 ### Panda algorithm
 To find agreement between the three input networks first the responsibility (R) is calculated.  
 
-<img src="https://github.com/aless80/pypanda/blob/master/img/responsibility.png" height="30">  
+<img src="/img/responsibility.png" height="30">  
 
 Thereafter availability (A) is calculated.  
 
-<img src="https://github.com/aless80/pypanda/blob/master/img/availability.png" height="30">  
+<img src="/img/availability.png" height="30">  
 
 Availability and responsibility are combined with the following formula.  
 
-<img src="https://github.com/aless80/pypanda/blob/master/img/combine.png" height="30">  
+<img src="/img/combine.png" height="30">  
 
 Protein cooperativity and gene co-regulatory networks are updated.  
 
