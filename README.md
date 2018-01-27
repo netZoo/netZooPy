@@ -1,5 +1,5 @@
 ## Description
-Forked from QuackenbushLab/pypanda.
+Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda).
 I work on run_puma and pypanda/puma.py. Those methods can still have pandas instead of puma, same for this README.  
 
 ## TODO
@@ -99,19 +99,14 @@ PyPandas can be run directly from the terminal with the following options:
 ```
 -h help
 -e, --expression (required) expression values
--m, --motif (optional) pair file of motif edges, when not provided analysis continues with Pearson correlation matrix
--p, --ppi (optional) pair file of PPI edges
--f, --remove (optional) remove missing values (default is Fales)
+-m, --motif (required) pair file of motif edges, when not provided analysis continues with Pearson correlation matrix
+-p, --ppi (required) pair file of PPI edges
 -o, --output (required) output file
--q, --outputlioness (optional) output lioness single sample network
--s, --s1 (required) s1
--x, --s2 (required) s2
--t, --t1 (required) t1
--z, --t2 (required) t2
+-i, --mir (required) mir data
 ```
 To run PyPuma on the example data:
 ```
-pypanda -e ToyData/ToyExpressionData.txt -m ToyData/ToyMotifData.txt -p ToyData/ToyPPIData.txt -f True -o test_puma.txt -q test_lioness.txt -s 0 -x 1 -t 1 -z 2
+pypanda -e ../ToyData/ToyExpressionData.txt -m ../ToyData/ToyMotifData.txt -p ../ToyData/ToyPPIData.txt -f True -o test_puma.txt -i ../ALEToyMiRList.txt
 ```
 To reconstruct a single sample Lioness Pearson correlation network:
 ```

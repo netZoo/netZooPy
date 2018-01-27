@@ -25,8 +25,9 @@ def main(argv):
                 \t-e, --expression (required) <expression_data.txt>\n\
                 \t-m, --motif (required) <motif_data.txt>\n\
                 \t-p (required) <ppi_data.txt>\n\
-                \t-o, --output (required) <output_file_name>'
-                \t-i, --mir (optional)<ALEToyMiRList.txt>\n\
+                \t-o, --output (required) <output_file_name>\n\
+                \t-i, --mir (optional)<ALEToyMiRList.txt>'
+
     # Get input options
     try:
         opts, args = getopt.getopt(argv, 'he:m:p:o:i:', ['help', 'expression=', 'motif=', 'ppi=', 'out=', 'mir='])
@@ -45,14 +46,15 @@ def main(argv):
             ppi = arg
         elif opt in ('-o', '--out'):
             output_file = arg
-	elif opt in ('-i', '--mir'):
+        elif opt in ('-i', '--mir'):
             mir = arg
     #check if required options are given
-    if expression_data and motif and ppi:
+    if expression_data and motif and ppi and mir:
         print 'Input data:'
         print 'Expression:', expression_data
         print 'Motif data:', motif
         print 'PPI data:', ppi
+        print 'mir data:', mir
     else:
         print 'Missing input file!'
         print help_text
