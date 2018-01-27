@@ -36,22 +36,22 @@ Availability and responsibility are combined with the following formula.
 
 Protein cooperativity and gene co-regulatory networks are updated.  
 
-<img src="https://github.com/aless80/pypanda/blob/master/img/cooperativity.png" height="30">  
-<img src="https://github.com/aless80/pypanda/blob/master/img/co-regulatory.png" height="30">  
+<img src="/img/cooperativity.png" height="30">  
+<img src="/img/co-regulatory.png" height="30">  
 
 P and C are updated to satisfy convergence.  
 
-<img src="https://github.com/aless80/pypanda/blob/master/img/p.png" height="30">  
-<img src="https://github.com/aless80/pypanda/blob/master/img/c.png" height="30">  
+<img src="/img/p.png" height="30">  
+<img src="/img/c.png" height="30">  
 
 Hamming distance is calculated every iteration.  
 
-<img src="https://github.com/aless80/pypanda/blob/master/img/hamming.png" height="40">  
+<img src="/img/hamming.png" height="40">  
 
 
 ### Installation
 PyPuma requires Python 2.7. We recommand the following commands to install PyPuma (on Ubuntu and Debian derived systems, also works on OSX):
-#### Using a virtual environment
+#### Usingj  a virtual environment
 Using [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
 Cloning git and setting up the [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
@@ -106,8 +106,8 @@ PyPandas can be run directly from the terminal with the following options:
 ```
 To run PyPuma on toy data:
 ```
-python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt -i ./ToyData/ALEToyMiRList.txt
-python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt
+python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt
+python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt -i ./ToyData/ALEToyMiRList.txt
 ```
 To reconstruct a single sample Lioness Pearson correlation network:
 ```

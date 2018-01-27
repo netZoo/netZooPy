@@ -20,6 +20,7 @@ def main(argv):
     expression_data = None
     motif = None
     ppi = None
+    mir = None
     output_file = None
     help_text = 'pypanda options:\n\
                 \t-e, --expression (required) <expression_data.txt>\n\
