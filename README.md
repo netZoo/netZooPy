@@ -1,18 +1,18 @@
+## TODO
+Anaconda nice to mention. Update the example from pandas to puma. update citations and descriptions. check all links. figures!  
+
 ## Description
 Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), 
 which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda).  
 Compared to QuackenbushLab/pypanda this repository adds the Python implementation of PUMA ([run_puma.py](run_puma.py) and [pypanda/puma.py](pypanda/puma.py)).  
   
 
-## TODO
-Rewrite this README. Anaconda nice to mention. Update the example from pandas to puma. update citations and descriptions. check all links. figures!  
-
 Check David's python commands in this README  
 
 ## Links to the literature 
 
 * **[PUMA](https://static-content.springer.com/esm/art%3A10.1186%2Fs13045-017-0465-4/MediaObjects/13045_2017_465_MOESM3_ESM.pdf)** (PANDA Using MicroRNA Associations)  
-_Manuscript in preparation, used in [PUMA](https://static-content.springer.com/esm/art%3A10.1186%2Fs13045-017-0465-4/MediaObjects/13045_2017_465_MOESM3_ESM.pdf)._
+_Manuscript in preparation, used in [PUMA](https://static-content.springer.com/esm/art%3A10.1186%2Fs13045-017-0465-4/MediaObjects/13045_2017_465_MOESM3_ESM.pdf)._  
 C and MATLAB code: [https://github.com/mararie/PUMA](https://github.com/mararie/PUMA)
 
 * **[PANDA](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0064832)** Passing Attributes between Networks for Data Assimilation  
@@ -24,7 +24,7 @@ _Marieke Lydia Kuijjer, Matthew Tung,GuoCheng Yuan,John Quackenbush, Kimberly Gl
 
 LIONESS can be used to estimate single-sample networks using aggregate networks made with any network reconstruction algorithm (http://arxiv.org/pdf/1505.06440.pdf).
 
-### Table of Contents
+## Table of Contents
 * [Panda implementation](#panda-algorithm)  
 * [Installation](#installation)  
 * [Usage](#usage)  
@@ -32,7 +32,7 @@ LIONESS can be used to estimate single-sample networks using aggregate networks 
 * [Terminal](#run-from-the-terminal)
 * [Results](#results)
 
-### Panda algorithm
+## Panda algorithm
 To find agreement between the three input networks first the responsibility (R) is calculated.  
 
 <img src="img/responsibility.png" height="30">  
@@ -60,9 +60,9 @@ Hamming distance is calculated every iteration.
 <img src="img/hamming.png" height="40">  
 
 
-### Installation
-PyPuma requires Python 2.7. We recommand the following commands to install PyPuma (on Ubuntu and Debian derived systems, also works on OSX):
-#### Usingj  a virtual environment
+## Installation
+PyPandas runs on both Python 2.7 and Python 3.4. We recommand the following commands to install PyPuma (on Ubuntu and Debian derived systems, also works on OSX):
+#### Using  a virtual environment
 Using [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
 Cloning git and setting up the [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
@@ -104,8 +104,8 @@ git clone https://github.com/aless80/pypanda.git
 cd pypuma
 python setup.py install
 ```
-### Usage
-#### Run from the terminal
+## Usage
+#### Run from terminal
 PyPandas can be run directly from the terminal with the following options:
 ```
 -h help
