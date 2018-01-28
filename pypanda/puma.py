@@ -8,13 +8,13 @@ from scipy.stats import zscore
 from .timer import Timer
 
 class Puma(object):
-    """ Using PANDA to infer gene regulatory network.
+    """ Using PUMA to infer gene regulatory network.
 
     1. Reading in input data (expression data, motif prior, TF PPI data, miR)
     2. Computing coexpression network
     3. Normalizing networks
-    4. Running PANDA algorithm
-    5. Writing out PANDA network
+    4. Running PUMA algorithm
+    5. Writing out PUMA network
 
     Authors: cychen, davidvi, alessandromarin
     """
@@ -99,10 +99,10 @@ class Puma(object):
         del self.expression_data
 
         # =====================================================================
-        # Running PANDA algorithm
+        # Running PUMA algorithm
         # =====================================================================
-        print('Running PANDA algorithm ...')
-        self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
+        print('Running PUMA algorithm ...')
+        self.puma_network = self.puma_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
 
 
     def _normalize_network(self, x):
@@ -121,8 +121,8 @@ class Puma(object):
         normalized_matrix[nan_col & nan_row] = 2*norm_col[nan_col & nan_row] / math.sqrt(2)
         return normalized_matrix
 
-    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix):
-        """Panda algorithm.
+    def puma_loop(self, correlation_matrix, motif_matrix, ppi_matrix):
+        """Puma algorithm.
         """
         def t_function(x, y=None):
             '''T function.'''
@@ -142,7 +142,7 @@ class Puma(object):
             diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
             np.fill_diagonal(diagonal_matrix, diagonal_fill)
 
-        panda_loop_time = time.time()
+        puma_loop_time = time.time()
         num_tfs, num_genes = motif_matrix.shape
         
         # Ale
@@ -182,16 +182,16 @@ class Puma(object):
             print('step: {}, hamming: {}'.format(step, hamming))
             step = step + 1
 
-        print('Running panda took: %.2f seconds!' % (time.time() - panda_loop_time))
+        print('Running puma took: %.2f seconds!' % (time.time() - puma_loop_time))
         return motif_matrix
 
-    def save_panda_results(self, path='panda.npy'):
-        with Timer('Saving PANDA network to %s ...' % path):
+    def save_puma_results(self, path='puma.npy'):
+        with Timer('Saving PUMA network to %s ...' % path):
             if path.endswith('.txt'):
-                np.savetxt(path, self.panda_network)
+                np.savetxt(path, self.puma_network)
             elif path.endswith('.csv'):
-                np.savetxt(path, self.panda_network, delimiter=',')
+                np.savetxt(path, self.puma_network, delimiter=',')
             elif path.endswith('.tsv'):
-                np.savetxt(path, self.panda_network, delimiter='/t')
+                np.savetxt(path, self.puma_network, delimiter='/t')
             else:
-                np.save(path, self.panda_network)
+                np.save(path, self.puma_network)

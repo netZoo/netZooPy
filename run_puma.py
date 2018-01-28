@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-"""Run PANDA algorithm from the command line.
+"""Run PUMA algorithm from the command line.
 """
 import sys
 import getopt
 import pypanda
 
 def main(argv):
-    """ Run pypanda
+    """ run_puma
     -h help
     -e (required) expression values
     -m (required) pair file of motif edges
@@ -21,7 +21,7 @@ def main(argv):
     ppi = None
     mir = None
     output_file = None
-    help_text = 'pypanda options:\n\
+    help_text = 'run_puma options:\n\
                 \t-e, --expression (required) <expression_data.txt>\n\
                 \t-m, --motif (required) <motif_data.txt>\n\
                 \t-p (required) <ppi_data.txt>\n\
@@ -63,7 +63,7 @@ def main(argv):
     # Run puma
     print('Start Puma run ...')
     p = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True)
-    p.save_panda_results(output_file)
+    p.save_puma_results(output_file)
     print('All done!')
 
 if __name__ == '__main__':
