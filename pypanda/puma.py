@@ -61,17 +61,16 @@ class Puma(object):
             TFNames = self.unique_tfs
             sort_idx = np.argsort(TFNames)
             #index 87 is out of bounds for axis 1 with size 87 because it is not present! Catch that
-            k = sort_idx[np.searchsorted(TFNames, miR, sorter=sort_idx)]
+            self.s1 = sort_idx[np.searchsorted(TFNames, miR, sorter=sort_idx)]
+
+            '''k = sort_idx[np.searchsorted(TFNames, miR, sorter=sort_idx)]
             #[~, k] = ismember(miR, TFNames);  # k contains the lowest index in TFNames for each value in miR that is a member of TFNames.
             m = range(self.num_tfs) #this starts from 0, matlab from 1
             self.s1, self.s2 = np.meshgrid(k, m)
             self.s1, self.s2 = self.s1.T, self.s2.T
             self.t1, self.t2 = np.meshgrid(m, k)
             self.t1, self.t2 = self.t1.T, self.t2.T
-            self.runPuma = True
-
-
-
+            '''
 
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
@@ -199,15 +198,21 @@ class Puma(object):
                 # TFCoop(sub2ind([NumTFs, NumTFs], s1, s2)) = TFCoopInit(sub2ind([NumTFs, NumTFs], s1, s2)); % PUMA
                 # sub2ind takes square matrix with NumTFs size, then gets the linear index for element (s1,s2). use np.ravel_multi_index
                 # np.ravel_multi_index((s1, s2), (self.num_tfs, self.num_tfs))
-                ppi_matrix[self.s1][self.s2] = TFCoopInit[self.s1][self.s2]
-                ppi_matrix[self.t1][self.t2] = TFCoopInit[self.t1][self.t2]
+                #ppi_matrix[self.s1][self.s2] = TFCoopInit[self.s1][self.s2]
+                #ppi_matrix[self.t1][self.t2] = TFCoopInit[self.t1][self.t2]
+                #ppi_matrix[self.s1, range(self.num_tfs)] = TFCoopInit[self.s1, range(self.num_tfs)]
+                ppi_matrix[self.s1] = TFCoopInit[self.s1]
+                ppi_matrix[:, self.s1] = TFCoopInit[:, self.s1]
                 np.fill_diagonal(ppi_matrix, TFCoopDiag)
+
                 ''' Corresponding code in Matlab: 
                 #TFCoop -> ppi_matrix in python
                 TFCoopDiag=diag(TFCoop);  #ppi_matrix.diagonal()
                 % PUMA
-                TFCoop(sub2ind([NumTFs, NumTFs],s1,s2))=TFCoopInit(sub2ind([NumTFs, NumTFs],s1,s2)); % PUMA
-                TFCoop(sub2ind([NumTFs, NumTFs],t1,t2))=TFCoopInit(sub2ind([NumTFs, NumTFs],t1,t2)); % PUMA
+                %TFCoop(sub2ind([NumTFs, NumTFs],s1,s2))=TFCoopInit(sub2ind([NumTFs, NumTFs],s1,s2)); % PUMA
+                %TFCoop(sub2ind([NumTFs, NumTFs],t1,t2))=TFCoopInit(sub2ind([NumTFs, NumTFs],t1,t2)); % PUMA
+                TFCoop(s1,[1:NumTFs]) = TFCoopInit(s1,[1:NumTFs])
+                TFCoop([1:NumTFs],s1) = TFCoopInit([1:NumTFs],s1)
                 TFCoop(1:(size(TFCoop,1)+1):end) =TFCoopDiag; % PUMA
                 '''
 

@@ -51,14 +51,14 @@ def main(argv):
             mir = arg
     #check if required options are given
     if expression_data and motif and ppi and mir:
-        print 'Input data:'
-        print 'Expression:', expression_data
-        print 'Motif data:', motif
-        print 'PPI data:', ppi
-        print 'mir data:', mir
+        print('Input data:')
+        print('Expression:', expression_data)
+        print('Motif data:', motif)
+        print('PPI data:', ppi)
+        print('miR data:', mir)
     else:
-        print 'Missing input file!'
-        print help_text
+        print('Missing input file!')
+        print(help_text)
         sys.exit()
 
     # Run puma
