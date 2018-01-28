@@ -70,7 +70,7 @@ Cloning git and setting up the [python virtual environment](http://docs.python-g
 pip install --user pipenv   #Make sure you have Pipenv
 git clone https://github.com/aless80/pypanda.git
 cd pypuma
-virtualenv pypumaenv #Create a folder for the virtual environment inside the cloned git folder 
+virtualenv pypumaenv #virtual environment created in a folder inside the git folder 
 source pypumaenv/bin/activate
 ```
 Installing pypuma:
