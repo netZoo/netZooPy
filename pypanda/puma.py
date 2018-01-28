@@ -10,13 +10,13 @@ from .timer import Timer
 class Puma(object):
     """ Using PANDA to infer gene regulatory network.
 
-    1. Reading in input data (expression data, motif prior, TF PPI data, mir)
+    1. Reading in input data (expression data, motif prior, TF PPI data, miR)
     2. Computing coexpression network
     3. Normalizing networks
     4. Running PANDA algorithm
     5. Writing out PANDA network
 
-    Authors: cychen, davidvi
+    Authors: cychen, davidvi, alessandromarin
     """
     def __init__(self, expression_file, motif_file, ppi_file, mir_file, save_tmp=True):
         # =====================================================================
@@ -38,39 +38,13 @@ class Puma(object):
             self.ppi_data = pd.read_table(ppi_file, sep='\t', header=None)
             print('Number of PPIs:', self.ppi_data.shape[0])
 
-
-
-
-
-        with Timer('Loading mir data ...'):
-            # Ale: get s1, s2, t1, t2 from mir_file
-            '''
-            % if mir_file exists (PUMA), check indices of miRs in the PPI data
-            #[TF, gene, weight]=textread(motif_file, '%s%s%f');
-            #TFNames=unique(TF); 
-            #NumTFs=length(TFNames);          
-            [~, k] = ismember(miR, TFNames); #k contains the lowest index in TFNames for each value in miR that is a member of TFNames.
-            m = (1:NumTFs)'; #prime hoeft niet
-            [s1, s2] = ndgrid(k, m);  #check np.meshgrid
-            #s1= [k1 k1 k1 .. len(m) times; k2 k2 k2 ..; up to len(k)]
-            #s2= [m1 m2 m3 .. len(m) times; m1 m2 m3 ..; up to len(k)]
-            [t1, t2] = ndgrid(m, k);
-            '''
+        # ALE
+        with Timer('Loading miR data ...'):
             with open(mir_file, "r") as f:
                 miR = f.read().splitlines()
             TFNames = self.unique_tfs
             sort_idx = np.argsort(TFNames)
-            #index 87 is out of bounds for axis 1 with size 87 because it is not present! Catch that
             self.s1 = sort_idx[np.searchsorted(TFNames, miR, sorter=sort_idx)]
-
-            '''k = sort_idx[np.searchsorted(TFNames, miR, sorter=sort_idx)]
-            #[~, k] = ismember(miR, TFNames);  # k contains the lowest index in TFNames for each value in miR that is a member of TFNames.
-            m = range(self.num_tfs) #this starts from 0, matlab from 1
-            self.s1, self.s2 = np.meshgrid(k, m)
-            self.s1, self.s2 = self.s1.T, self.s2.T
-            self.t1, self.t2 = np.meshgrid(m, k)
-            self.t1, self.t2 = self.t1.T, self.t2.T
-            '''
 
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
@@ -138,8 +112,8 @@ class Puma(object):
         else:
             norm_row = zscore(x, axis=1)
         normalized_matrix = (norm_col + norm_row) / math.sqrt(2)
-        #normalize missing values
-        norm_total = zscore(x,axis=None)
+        #Normalize missing values
+        norm_total = zscore(x, axis=None)
         nan_col = np.isnan(norm_col)
         nan_row = np.isnan(norm_row)
         normalized_matrix[nan_col] = (norm_row[nan_col] + norm_total[nan_col]) / math.sqrt(2)
@@ -191,31 +165,11 @@ class Puma(object):
                 ppi_matrix *= (1 - alpha)
                 ppi_matrix += (alpha * ppi)
 
-
-                #Ale            
+                # ALE
                 TFCoopDiag = ppi_matrix.diagonal()
-                # Ale I think this hassle with sub2ind is not needed at all. can the ppi_matrix/TFCoop change shape? Here they are square..
-                # TFCoop(sub2ind([NumTFs, NumTFs], s1, s2)) = TFCoopInit(sub2ind([NumTFs, NumTFs], s1, s2)); % PUMA
-                # sub2ind takes square matrix with NumTFs size, then gets the linear index for element (s1,s2). use np.ravel_multi_index
-                # np.ravel_multi_index((s1, s2), (self.num_tfs, self.num_tfs))
-                #ppi_matrix[self.s1][self.s2] = TFCoopInit[self.s1][self.s2]
-                #ppi_matrix[self.t1][self.t2] = TFCoopInit[self.t1][self.t2]
-                #ppi_matrix[self.s1, range(self.num_tfs)] = TFCoopInit[self.s1, range(self.num_tfs)]
                 ppi_matrix[self.s1] = TFCoopInit[self.s1]
                 ppi_matrix[:, self.s1] = TFCoopInit[:, self.s1]
                 np.fill_diagonal(ppi_matrix, TFCoopDiag)
-
-                ''' Corresponding code in Matlab: 
-                #TFCoop -> ppi_matrix in python
-                TFCoopDiag=diag(TFCoop);  #ppi_matrix.diagonal()
-                % PUMA
-                %TFCoop(sub2ind([NumTFs, NumTFs],s1,s2))=TFCoopInit(sub2ind([NumTFs, NumTFs],s1,s2)); % PUMA
-                %TFCoop(sub2ind([NumTFs, NumTFs],t1,t2))=TFCoopInit(sub2ind([NumTFs, NumTFs],t1,t2)); % PUMA
-                TFCoop(s1,[1:NumTFs]) = TFCoopInit(s1,[1:NumTFs])
-                TFCoop([1:NumTFs],s1) = TFCoopInit([1:NumTFs],s1)
-                TFCoop(1:(size(TFCoop,1)+1):end) =TFCoopDiag; % PUMA
-                '''
-
 
                 # Update correlation_matrix
                 motif = t_function(motif_matrix.T)  # t_func(X.T, X)

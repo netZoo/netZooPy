@@ -6,15 +6,14 @@ import getopt
 import pypanda
 
 def main(argv):
-    """ Run pypanda.
-
-    -e ../ToyData/ToyExpressionData.txt -m ../ToyData/ToyMotifData.txt -p ../ToyData/ToyPPIData.txt -f True -o test_puma.txt -q test_lioness.txt -i ../ToyData/ALEToyMiRList.txt
-
+    """ Run pypanda
     -h help
     -e (required) expression values
     -m (required) pair file of motif edges
     -p (required) pair file of PPI edges
     -o (required) output file
+    Example:
+    python run_puma -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt
     """
     #create variables
     expression_data = None
@@ -26,12 +25,12 @@ def main(argv):
                 \t-e, --expression (required) <expression_data.txt>\n\
                 \t-m, --motif (required) <motif_data.txt>\n\
                 \t-p (required) <ppi_data.txt>\n\
-                \t-o, --output (required) <output_file_name>\n\
-                \t-i, --mir (optional)<ALEToyMiRList.txt>'
+                \t-i, --mir (optional)<MiRList>\n\
+                \t-o, --output (required) <output_file_name>'
 
     # Get input options
     try:
-        opts, args = getopt.getopt(argv, 'he:m:p:o:i:', ['help', 'expression=', 'motif=', 'ppi=', 'out=', 'mir='])
+        opts, args = getopt.getopt(argv, 'he:m:p:i:o:', ['help', 'expression=', 'motif=', 'ppi=', 'mir=', 'out='])
     except getopt.GetoptError:
         print(help_text)
         sys.exit()
@@ -48,14 +47,14 @@ def main(argv):
         elif opt in ('-o', '--out'):
             output_file = arg
         elif opt in ('-i', '--mir'):
-            mir = arg
+            miR = arg
     #check if required options are given
-    if expression_data and motif and ppi and mir:
+    if expression_data and motif and ppi and miR:
         print('Input data:')
         print('Expression:', expression_data)
         print('Motif data:', motif)
         print('PPI data:', ppi)
-        print('miR data:', mir)
+        print('miR data:', miR)
     else:
         print('Missing input file!')
         print(help_text)
@@ -63,7 +62,7 @@ def main(argv):
 
     # Run puma
     print('Start Puma run ...')
-    p = pypanda.Puma(expression_data, motif, ppi, mir, save_tmp=True)
+    p = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True)
     p.save_panda_results(output_file)
     print('All done!')
 

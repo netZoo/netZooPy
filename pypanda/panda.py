@@ -75,7 +75,7 @@ class Panda(object):
         # =====================================================================
         with Timer('Normalizing networks ...'):
             self.correlation_matrix = self._normalize_network(self.correlation_matrix)
-            self.motif_matrix = self._normalize_network(self.motif_matrix, square=False)
+            self.motif_matrix = self._normalize_network(self.motif_matrix)
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
 
         # =====================================================================
@@ -97,12 +97,11 @@ class Panda(object):
         self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
 
 
-    def _normalize_network(self, x, square=True):
-        if square:
-            norm_col = zscore(x, axis=0)
-            return (norm_col + norm_col.T) / math.sqrt(2)
+    def _normalize_network(self, x):
+        norm_col = zscore(x, axis=0)
+        if x.shape[0] == x.shape[1]:
+            norm_row = norm_col.T
         else:
-            norm_col = zscore(x, axis=0)
             norm_row = zscore(x, axis=1)
             return (norm_col + norm_row) / math.sqrt(2)
 
