@@ -11,7 +11,6 @@ Check David's python commands in this README
 
 ## Table of Contents
 * [Links to literature](#links-to-literature)
-* [test](#panda-algorithm2)
 * [Panda algorithm](#panda-algorithm)  
 * [Installation](#installation)  
 * [Usage](#usage)  
@@ -19,7 +18,6 @@ Check David's python commands in this README
 * [Terminal](#run-from-the-terminal)
 * [Results](#results)
 
-## Panda algorithm2
 
 ## Links to literature 
 
