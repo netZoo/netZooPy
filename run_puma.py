@@ -13,15 +13,16 @@ def main(argv):
     -p (required) pair file of PPI edges
     -o (required) output file
     Example:
-    python run_puma -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt
+    python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt
     """
-    #create variables
+    #Create variables
     expression_data = None
     motif = None
     ppi = None
     mir = None
     output_file = None
     help_text = 'run_puma options:\n\
+                \t-h, --help Print the help text\n\
                 \t-e, --expression (required) <expression_data.txt>\n\
                 \t-m, --motif (required) <motif_data.txt>\n\
                 \t-p (required) <ppi_data.txt>\n\
@@ -35,7 +36,7 @@ def main(argv):
         print(help_text)
         sys.exit()
     for opt, arg in opts:
-        if opt == '-h':
+        if opt in ('-h', '--help'):
             print(help_text)
             sys.exit()
         elif opt in ('-e', '--expression'):

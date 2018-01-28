@@ -5,16 +5,16 @@ Usage:
 
 ./run_lioness.py -e <expression_matrix> -m <normalized_motif_matrix> -p <normalized_ppi_matrix> -n <panda_network> -o <output_dir> -f <output_fmt> [start end]
 
-  -e: expression matrix (.npy)
-  -m: motif matrix, normalized (.npy)
-  -p: ppi matrix, normalized (.npy)
-  -n: PANDA network (.npy)
-  -o: output folder
-  -f: output format (txt, npy, or mat)
+  -e, --expression: expression matrix (.npy)
+  -m, --motif: motif matrix, normalized (.npy)
+  -p, --ppi: ppi matrix, normalized (.npy)
+  -n, --npy: PANDA network (.npy)
+  -o, --out: output folder
+  -f, --format: output format (txt, npy, or mat)
   start: to start from nth sample (optional)
   end: to end at nth sample (optional, must with start)
-
-E.g., ./run_lioness.py -e expression.npy -m motif.npy -p ppi.npy -n panda.npy -o /tmp -f npy 1 100
+  Example:
+  python run_lioness.py -e expression.npy -m motif.npy -p ppi.npy -n panda.npy -o /tmp -f npy 1 100
 """
 import sys
 import getopt
@@ -22,30 +22,30 @@ import pypanda
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, "he:m:p:n:o:f:")
+        opts, args = getopt.getopt(argv, 'he:m:p:n:o:f:', ['help', 'expression=', 'motif=', 'ppi=', 'npy=', 'out=', 'format='])
     except getopt.GetoptError as err:
         print(str(err))  # will print something like "option -a not recognized"
         print(__doc__)
         return 2
 
-    for x,y in opts:
-        if x == '-h':
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
             print(__doc__)
             return 0
-        elif x == '-e':
-            expression = y
-        elif x == '-m':
-            motif = y
-        elif x == '-p':
-            ppi = y
-        elif x == '-n':
-            panda_net = y
-        elif x == '-o':
-            save_dir = y
-        elif x == '-f':
-            save_fmt = y
+        elif opt in ('-e', '--expression'):
+            expression = arg
+        elif opt in ('-m', '--motif'):
+            motif = arg
+        elif opt in ('-p', '--ppi'):
+            ppi = arg
+        elif opt in ('-n'):
+            panda_net = arg
+        elif opt in ('-o', '--out'):
+            save_dir = arg
+        elif opt in ('-f', '--format'):
+            save_fmt = arg
         else:
-            print('Unknown option', x)
+            print('Unknown option', opt)
             return 1
 
     if len(args) == 2:
