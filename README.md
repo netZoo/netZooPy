@@ -89,7 +89,7 @@ write about uninstalling the setup using --record
 ```
 
 #### Using pip 
-Never use sudo pip. Instead you can use pip on the user's install directory
+Never use sudo pip. Instead you can use pip on the user's install directory:
 ```no-highlight
 git clone https://github.com/aless80/pypanda.git
 cd pypuma
@@ -100,7 +100,7 @@ chmod +x pypuma
 echo "$(pwd):PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
-To run PyPuma from Windows (tested on Windows 10) install Git (https://git-scm.com/downloads) and Anaconda Python2.7 (https://www.continuum.io/downloads) and from the Anaconda Prompt run:
+To run PyPuma from Windows (tested on Windows 10) install Git (https://git-scm.com/downloads) and Anaconda Python2.7 (https://www.continuum.io/downloads) and from the Anaconda prompt run:
 ```no-highlight
 git clone https://github.com/aless80/pypanda.git
 cd pypuma
