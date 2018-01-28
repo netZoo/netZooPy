@@ -28,11 +28,11 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, 'he:m:p:o:', ['help', 'expression=', 'motif=', 'ppi=', 'out='])
     except getopt.GetoptError:
-        print help_text
+        print(help_text)
         sys.exit()
     for opt, arg in opts:
         if opt == '-h':
-            print help_text
+            print(help_text)
             sys.exit()
         if opt == '-e':
             expression_data = arg
@@ -45,20 +45,20 @@ def main(argv):
 
     #check if required options are given
     if expression_data and motif and ppi:
-        print 'Input data:'
-        print 'Expression:', expression_data
-        print 'Motif data:', motif
-        print 'PPI data:', ppi
+        print('Input data:')
+        print('Expression:', expression_data)
+        print('Motif data:', motif)
+        print('PPI data:', ppi)
     else:
-        print 'Missing input file!'
-        print help_text
+        print('Missing input file!')
+        print(help_text)
         sys.exit()
 
     # Run panda
-    print 'Start Panda run ...'
+    print('Start Panda run ...')
     p = pypanda.Panda(expression_data, motif, ppi, save_tmp=True)
     p.save_panda_results(output_file)
-    print 'All done!'
+    print('All done!')
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))

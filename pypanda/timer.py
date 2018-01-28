@@ -7,10 +7,10 @@ import time
 class Timer(object):
     def __init__(self, name=None):
         if name:
-            print name
+            print(name)
 
     def __enter__(self):
         self.tic = time.time()
 
     def __exit__(self, type, value, traceback):
-        print '  Elapsed time: %.2f sec.' % (time.time() - self.tic)
+        print('  Elapsed time: %.2f sec.' % (time.time() - self.tic))
