@@ -7,11 +7,12 @@ import pypanda
 
 def main(argv):
     """ run_puma
-    -h help
-    -e (required) expression values
-    -m (required) pair file of motif edges
-    -p (required) pair file of PPI edges
-    -o (required) output file
+    -h, --help: help
+    -e, --expression (required): expression values
+    -m, --motif (required): pair file of motif edges
+    -p, --ppi (required): pair file of PPI edges
+    -i, --mir (required): miR file
+    -o, --out (required): output file
     Example:
     python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt
     """
@@ -25,9 +26,9 @@ def main(argv):
                 \t-h, --help Print the help text\n\
                 \t-e, --expression (required) <expression_data.txt>\n\
                 \t-m, --motif (required) <motif_data.txt>\n\
-                \t-p (required) <ppi_data.txt>\n\
+                \t-p, --ppi (required) <ppi_data.txt>\n\
                 \t-i, --mir (optional)<MiRList>\n\
-                \t-o, --output (required) <output_file_name>'
+                \t-o, --out (required) <output_file_name>'
 
     # Get input options
     try:
@@ -49,7 +50,7 @@ def main(argv):
             output_file = arg
         elif opt in ('-i', '--mir'):
             miR = arg
-    #check if required options are given
+    #Check if required options are given
     if expression_data and motif and ppi and miR:
         print('Input data:')
         print('Expression:', expression_data)
@@ -57,7 +58,7 @@ def main(argv):
         print('PPI data:', ppi)
         print('miR data:', miR)
     else:
-        print('Missing input file!')
+        print('Missing inputs!')
         print(help_text)
         sys.exit()
 

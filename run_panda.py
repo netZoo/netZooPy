@@ -7,13 +7,13 @@ import pypanda
 
 def main(argv):
     """ Run pypanda.
-    -h help
-    -e (required) expression values
-    -m (required) pair file of motif edges
-    -p (required) pair file of PPI edges
-    -o (required) output file
+    -h, --help: help
+    -e, --expression (required): expression values
+    -m, --motif (required): pair file of motif edges
+    -p, --ppi (required): pair file of PPI edges
+    -o, --out (required): output file
     """
-    #create variables
+    #Create variables
     expression_data = None
     motif = None
     ppi = None
@@ -31,19 +31,19 @@ def main(argv):
         print(help_text)
         sys.exit()
     for opt, arg in opts:
-        if opt == '-h':
+        if opt in ('-h', '--help'):
             print(help_text)
             sys.exit()
-        if opt == '-e':
+        elif opt in ('-e', '--expression'):
             expression_data = arg
-        if opt == '-m':
+        elif opt in ('-m', '--motif'):
             motif = arg
-        if opt == '-p':
+        elif opt in ('-p', '--ppi'):
             ppi = arg
-        if opt == '-o':
+        elif opt in ('-o', '--out'):
             output_file = arg
 
-    #check if required options are given
+    #Check if required options are given
     if expression_data and motif and ppi:
         print('Input data:')
         print('Expression:', expression_data)
