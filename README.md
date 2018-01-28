@@ -1,17 +1,28 @@
 ## Description
-Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda) and [https://github.com/mararie/PUMA](https://github.com/mararie/PUMA)
-I work on run_puma and pypanda/puma.py. Those methods can still have pandas instead of puma, same for this README.  
+Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), 
+which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda).  
+Compared to QuackenbushLab/pypanda this repository adds the Python implementation of PUMA ([run_puma.py](run_puma.py) and [pypanda/puma.py](pypanda/puma.py)).  
+  
 
 ## TODO
 Rewrite this README. Anaconda nice to mention. Update the example from pandas to puma. update citations and descriptions. check all links. figures!  
 
 Check David's python commands in this README  
 
-## PyPuma (Python Puma)
-Python implementation of PUMA (PANDA Using MicroRNA Associations)  
+## Links to the literature 
 
-PANDA: 
-_Glass K, Huttenhower C, Quackenbush J, Yuan GC. Passing Messages Between Biological Networks to Refine Predicted Interactions, PLoS One, 2013 May 31;8(5):e64832_
+* **PUMA** (PANDA Using MicroRNA Associations)  
+_article TODO_
+C and MATLAB code: [https://github.com/mararie/PUMA](https://github.com/mararie/PUMA)
+
+* **[PANDA](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0064832)** Passing Attributes between Networks for Data Assimilation  
+_Glass K, Huttenhower C, Quackenbush J, Yuan GC. Passing Messages Between Biological Networks to Refine Predicted Interactions, PLoS One, 2013 May 31;8(5):e64832_  
+Original PANDA C++ code: [http://sourceforge.net/projects/panda-net/](http://sourceforge.net/projects/panda-net/).  
+
+* **[LIONESS](https://arxiv.org/abs/1505.06440)** (Linear Interpolation to Obtain Network Estimates for Single Samples)   
+_Marieke Lydia Kuijjer, Matthew Tung,GuoCheng Yuan,John Quackenbush, Kimberly Glass. Estimating sample-specific regulatory networks_  
+
+LIONESS can be used to estimate single-sample networks using aggregate networks made with any network reconstruction algorithm (http://arxiv.org/pdf/1505.06440.pdf).
 
 ### Table of Contents
 * [Panda implementation](#panda-algorithm)  
@@ -24,29 +35,29 @@ _Glass K, Huttenhower C, Quackenbush J, Yuan GC. Passing Messages Between Biolog
 ### Panda algorithm
 To find agreement between the three input networks first the responsibility (R) is calculated.  
 
-<img src="/img/responsibility.png" height="30">  
+<img src="img/responsibility.png" height="30">  
 
 Thereafter availability (A) is calculated.  
 
-<img src="/img/availability.png" height="30">  
+<img src="img/availability.png" height="30">  
 
 Availability and responsibility are combined with the following formula.  
 
-<img src="/img/combine.png" height="30">  
+<img src="img/combine.png" height="30">  
 
 Protein cooperativity and gene co-regulatory networks are updated.  
 
-<img src="/img/cooperativity.png" height="30">  
+<img src="img/cooperativity.png" height="30">  
 <img src="/img/co-regulatory.png" height="30">  
 
 P and C are updated to satisfy convergence.  
 
-<img src="/img/p.png" height="30">  
+<img src="img/p.png" height="30">  
 <img src="/img/c.png" height="30">  
 
 Hamming distance is calculated every iteration.  
 
-<img src="/img/hamming.png" height="40">  
+<img src="img/hamming.png" height="40">  
 
 
 ### Installation
