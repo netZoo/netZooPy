@@ -11,8 +11,6 @@ test/
 build/
 dist/
 .pypirc
-test_puma.txt
-test_panda.txt
-test_lioness.txt
+test_*.txt
 pypumaenv/
 .idea/
