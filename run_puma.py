@@ -19,7 +19,7 @@ def main(argv):
     expression_data = None
     motif = None
     ppi = None
-    mir = None
+    miR = None
     output_file = None
     help_text = 'run_puma options:\n\
                 \t-h, --help Print the help text\n\
