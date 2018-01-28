@@ -81,13 +81,13 @@ Installing pypuma:
 
 Complete uninstall of pypuma:
 ```no-highlight
-(pypuma)$ deactivate	#Exit
+(pypuma)$ deactivate	#Quit virtual environment
 rm -rf pypumaenv
 write about uninstalling the setup using --record
 ```
 
 #### Using pip 
-Using pip on the user's install directory
+Never use sudo pip. Instead you can use pip on the user's install directory
 ```no-highlight
 git clone https://github.com/aless80/pypanda.git
 cd pypuma
