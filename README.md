@@ -10,8 +10,8 @@ Compared to QuackenbushLab/pypanda this repository adds the Python implementatio
 Check David's python commands in this README  
 
 ## Table of Contents
-* [Links to literature](#links-to-literature)
-* [Panda implementation](#panda-algorithm)  
+* [Links to literature](#Links-to-literature)
+* [Panda algorithm](#panda-algorithm)  
 * [Installation](#installation)  
 * [Usage](#usage)  
 * [python](#run-from-python)
