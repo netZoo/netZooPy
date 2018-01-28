@@ -10,7 +10,7 @@ Compared to QuackenbushLab/pypanda this repository adds the Python implementatio
 Check David's python commands in this README  
 
 ## Table of Contents
-* [Links to the literature](#Links-to-the-literature)
+* [Links to literature](#Links-to-literature)
 * [Panda implementation](#panda-algorithm)  
 * [Installation](#installation)  
 * [Usage](#usage)  
@@ -18,7 +18,7 @@ Check David's python commands in this README
 * [Terminal](#run-from-the-terminal)
 * [Results](#results)
 
-## Links to the literature 
+## Links to literature 
 
 * **[PUMA](https://static-content.springer.com/esm/art%3A10.1186%2Fs13045-017-0465-4/MediaObjects/13045_2017_465_MOESM3_ESM.pdf)** (PANDA Using MicroRNA Associations)  
 _Manuscript in preparation, used in [PUMA](https://static-content.springer.com/esm/art%3A10.1186%2Fs13045-017-0465-4/MediaObjects/13045_2017_465_MOESM3_ESM.pdf)._  
