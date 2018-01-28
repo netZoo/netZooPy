@@ -9,6 +9,15 @@ Compared to QuackenbushLab/pypanda this repository adds the Python implementatio
 
 Check David's python commands in this README  
 
+## Table of Contents
+* [Links to the literature](#Links-to-the-literature)
+* [Panda implementation](#panda-algorithm)  
+* [Installation](#installation)  
+* [Usage](#usage)  
+* [python](#run-from-python)
+* [Terminal](#run-from-the-terminal)
+* [Results](#results)
+
 ## Links to the literature 
 
 * **[PUMA](https://static-content.springer.com/esm/art%3A10.1186%2Fs13045-017-0465-4/MediaObjects/13045_2017_465_MOESM3_ESM.pdf)** (PANDA Using MicroRNA Associations)  
@@ -23,14 +32,6 @@ Original PANDA C++ code: [http://sourceforge.net/projects/panda-net/](http://sou
 _Marieke Lydia Kuijjer, Matthew Tung,GuoCheng Yuan,John Quackenbush, Kimberly Glass. Estimating sample-specific regulatory networks_  
 
 LIONESS can be used to estimate single-sample networks using aggregate networks made with any network reconstruction algorithm (http://arxiv.org/pdf/1505.06440.pdf).
-
-## Table of Contents
-* [Panda implementation](#panda-algorithm)  
-* [Installation](#installation)  
-* [Usage](#usage)  
-* [python](#run-from-python)
-* [Terminal](#run-from-the-terminal)
-* [Results](#results)
 
 ## Panda algorithm
 To find agreement between the three input networks first the responsibility (R) is calculated.  
