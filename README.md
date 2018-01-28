@@ -76,7 +76,7 @@ source pypumaenv/bin/activate
 Installing pypuma:
 ```no-highlight
 (pypumaenv)$ pip install -r requirements.txt
-(pypumaenv)$ python setup.py install #--user
+(pypumaenv)$ python setup.py install
 ```
 
 Complete uninstall of pypuma:
