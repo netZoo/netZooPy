@@ -63,7 +63,7 @@ Hamming distance is calculated every iteration.
 
 
 ## Installation
-PyPandas runs on both Python 2.7 and Python 3.4. We recommand the following commands to install PyPuma on UNIX systems:
+PyPanda runs on both Python 2.7 and Python 3.4. We recommend the following commands to install PyPandas on UNIX systems:
 #### Using  a virtual environment
 Using [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
