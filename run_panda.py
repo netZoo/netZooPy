@@ -1,38 +1,32 @@
 #!/usr/bin/env python
 """Run PANDA algorithm from the command line.
+
+Usage:
+  -h, --help: help
+  -e, --expression (required): expression values
+  -m, --motif (required): pair file of motif edges
+  -p, --ppi (required): pair file of PPI edges
+  -o, --out (required): output file
 """
 import sys
 import getopt
 import pypanda
 
 def main(argv):
-    """ Run pypanda.
-    -h, --help: help
-    -e, --expression (required): expression values
-    -m, --motif (required): pair file of motif edges
-    -p, --ppi (required): pair file of PPI edges
-    -o, --out (required): output file
-    """
     #Create variables
     expression_data = None
     motif = None
     ppi = None
     output_file = None
-    help_text = 'pypanda options:\n\
-                \t-e (required) <expression_data.txt>\n\
-                \t-m (required) <motif_data.txt>\n\
-                \t-p (required) <ppi_data.txt>\n\
-                \t-o (required) <output_file_name>'
-
     # Get input options
     try:
         opts, args = getopt.getopt(argv, 'he:m:p:o:', ['help', 'expression=', 'motif=', 'ppi=', 'out='])
     except getopt.GetoptError:
-        print(help_text)
+        print(__doc__)
         sys.exit()
     for opt, arg in opts:
         if opt in ('-h', '--help'):
-            print(help_text)
+            print(__doc__)
             sys.exit()
         elif opt in ('-e', '--expression'):
             expression_data = arg
@@ -51,7 +45,7 @@ def main(argv):
         print('PPI data:', ppi)
     else:
         print('Missing input file!')
-        print(help_text)
+        print(__doc__)
         sys.exit()
 
     # Run panda

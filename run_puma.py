@@ -1,44 +1,37 @@
 #!/usr/bin/env python
 """Run PUMA algorithm from the command line.
+
+Usage:
+run_puma
+  -h, --help: help
+  -e, --expression (required): expression values
+  -m, --motif (required): pair file of motif edges
+  -p, --ppi (required): pair file of PPI edges
+  -i, --mir (required): miR file
+  -o, --out (required): output file
+  Example:
+  python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt
 """
 import sys
 import getopt
 import pypanda
 
 def main(argv):
-    """ run_puma
-    -h, --help: help
-    -e, --expression (required): expression values
-    -m, --motif (required): pair file of motif edges
-    -p, --ppi (required): pair file of PPI edges
-    -i, --mir (required): miR file
-    -o, --out (required): output file
-    Example:
-    python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt
-    """
     #Create variables
     expression_data = None
     motif = None
     ppi = None
     miR = None
     output_file = None
-    help_text = 'run_puma options:\n\
-                \t-h, --help Print the help text\n\
-                \t-e, --expression (required) <expression_data.txt>\n\
-                \t-m, --motif (required) <motif_data.txt>\n\
-                \t-p, --ppi (required) <ppi_data.txt>\n\
-                \t-i, --mir (optional)<MiRList>\n\
-                \t-o, --out (required) <output_file_name>'
-
     # Get input options
     try:
         opts, args = getopt.getopt(argv, 'he:m:p:i:o:', ['help', 'expression=', 'motif=', 'ppi=', 'mir=', 'out='])
     except getopt.GetoptError:
-        print(help_text)
+        print(__doc__)
         sys.exit()
     for opt, arg in opts:
         if opt in ('-h', '--help'):
-            print(help_text)
+            print(__doc__)
             sys.exit()
         elif opt in ('-e', '--expression'):
             expression_data = arg
@@ -59,7 +52,7 @@ def main(argv):
         print('miR data:', miR)
     else:
         print('Missing inputs!')
-        print(help_text)
+        print(__doc__)
         sys.exit()
 
     # Run puma
