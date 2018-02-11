@@ -103,7 +103,7 @@ class Panda(object):
             norm_row = norm_col.T
         else:
             norm_row = zscore(x, axis=1)
-            return (norm_col + norm_row) / math.sqrt(2)
+        return (norm_col + norm_row) / math.sqrt(2)
 
     def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix):
         """Panda algorithm.
