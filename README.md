@@ -1,6 +1,3 @@
-## TODO
-Anaconda nice to mention. Update the example from pandas to puma. update citations and descriptions. check all links. figures!  
-
 ## Description
 Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), 
 which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda).  
