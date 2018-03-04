@@ -138,32 +138,34 @@ puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'To
 ```
 Save the results:
 ```python
-p.save_puma_results(file = 'Toy_Puma.pairs')
+panda_obj.save_puma_results('Toy_Puma.pairs')
+TODO for pandas!
 ```
 Return a network plot:
 ```python
-plot = AnalyzePuma(p)
+from pypanda import analyze_panda
+plot = AnalyzePuma(panda_obj)
 plot.top_network_plot(top=100, file='top_100_genes.png')
 ```
 Calculate indegrees for further analysis:
 ```python
-indegree = p.return_puma_indegree()
+indegree = panda_obj.return_puma_indegree()
 ```
 Calculate outdegrees for further analysis:
 ```python
-outdegree = p.return_puma_outdegree()
+outdegree = panda_obj.return_puma_outdegree()
 ```
 Run the Lioness algorithm for single sample networks:
 ```python
-l = Lioness(p)
+lioness_obj = Lioness(panda_obj)
 ```
 Save Lioness results:
 ```python
-l.save_lioness_results(file = 'Toy_Lioness.txt')
+lioness_obj.save_lioness_results('Toy_Lioness.txt')
 ```
 Return a network plot for one of the Lioness single sample networks:
 ```python
-plot = AnalyzeLioness(l)
+plot = AnalyzeLioness(lioness_obj)
 plot.top_network_plot(column= 0, top=100, file='top_100_genes.png')
 ```
 
