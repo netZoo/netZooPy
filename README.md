@@ -126,13 +126,15 @@ $ pypanda -e ToyData/ToyExpressionData.txt -o test_puma_pearson.txt -q test_lion
 Fire up your python shell or ipython notebook. 
 Import PyPuma library:
 ```python
-from pypuma import Puma
-from pypuma import Lioness
+from pypanda import Panda
+from pypanda import Puma
+from pypanda import Lioness
 import pandas as pd
 ```
-Run Puma algorithm, leave out motif and PPI data to use Pearson correlation network:
+Run the Panda or Puma algorithms, leave out motif and PPI data to use Pearson correlation network:
 ```python
-p = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt', remove_missing=False)
+p = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt')
+p = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt',..................)
 ```
 Save the results:
 ```python
