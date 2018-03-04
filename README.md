@@ -138,13 +138,13 @@ puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'To
 ```
 Save the results:
 ```python
-panda_obj.save_puma_results('Toy_Puma.pairs')
-TODO for pandas!
+panda_obj.save_panda_results('Toy_Puma.pairs')
+TODO for panda!
 ```
 Return a network plot:
 ```python
-from pypanda import analyze_panda
-plot = AnalyzePuma(panda_obj)
+from pypanda.analyze_panda import AnalyzePanda
+plot = AnalyzePanda(panda_obj)
 plot.top_network_plot(top=100, file='top_100_genes.png')
 ```
 Calculate indegrees for further analysis:
