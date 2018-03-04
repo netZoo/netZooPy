@@ -133,8 +133,8 @@ import pandas as pd
 ```
 Run the Panda or Puma algorithms, leave out motif and PPI data to use Pearson correlation network:
 ```python
-p = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt')
-p = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt',..................)
+panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt')
+puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt','ToyData/ALEToyMiRList.txt')
 ```
 Save the results:
 ```python
