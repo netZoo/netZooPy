@@ -8,8 +8,8 @@ Compared to QuackenbushLab/pypanda this repository adds the Python implementatio
 * [Panda algorithm](#panda-algorithm)  
 * [Installation](#installation)  
 * [Usage](#usage)  
-* [Terminal](#run-from-terminal)
-* [python](#run-from-python)
+  * [Run from terminal](#run-from-terminal)
+  * [Run from python](#run-from-python)
 * [Toy data](#toy-data)
 * [Results](#results)
 
