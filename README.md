@@ -3,16 +3,14 @@ Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/Quack
 which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda).  
 Compared to QuackenbushLab/pypanda this repository adds the Python implementation of PUMA ([run_puma.py](run_puma.py) and [pypanda/puma.py](pypanda/puma.py)).  
   
-
-Check David's python commands in this README  
-
 ## Table of Contents
 * [Links to literature](#links-to-literature)
 * [Panda algorithm](#panda-algorithm)  
 * [Installation](#installation)  
 * [Usage](#usage)  
+* [Terminal](#run-from-terminal)
 * [python](#run-from-python)
-* [Terminal](#run-from-the-terminal)
+* [Toy data](#toy-data)
 * [Results](#results)
 
 
@@ -165,6 +163,12 @@ Return a network plot for one of the Lioness single sample networks:
 plot = AnalyzeLioness(l)
 plot.top_network_plot(column= 0, top=100, file='top_100_genes.png')
 ```
+
+### Toy data
+The example gene expression data that we have available here contains gene expression profiles for different samples in the columns. Of note, this is just a small subset of a larger gene expression dataset. We provided these "toy" data so that the user can test the method. 
+
+However, if you plan to model gene regulatory networks on your own dataset, you should use your own expression data as input.
+
 ### Results
 ```
 Example Panda output:
