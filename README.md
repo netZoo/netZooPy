@@ -101,6 +101,7 @@ git clone https://github.com/aless80/pypanda.git
 cd pypuma
 python setup.py install
 ```
+
 ## Usage
 #### Run from terminal
 PyPandas can be run directly from the terminal with the following options:
@@ -164,12 +165,12 @@ plot = AnalyzeLioness(l)
 plot.top_network_plot(column= 0, top=100, file='top_100_genes.png')
 ```
 
-### Toy data
+## Toy data
 The example gene expression data that we have available here contains gene expression profiles for different samples in the columns. Of note, this is just a small subset of a larger gene expression dataset. We provided these "toy" data so that the user can test the method. 
 
 However, if you plan to model gene regulatory networks on your own dataset, you should use your own expression data as input.
 
-### Results
+## Results
 ```
 Example Panda output:
 TF  Gene  Motif Force
