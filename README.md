@@ -123,12 +123,12 @@ To reconstruct a single sample Lioness Pearson correlation network:
 $ pypanda -e ToyData/ToyExpressionData.txt -o test_puma_pearson.txt -q test_lioness_pearson.txt
 ```
 #### Run from python
-Fire up your python shell or ipython notebook. 
-Import PyPuma library:
+Fire up your python shell or ipython notebook.  
+Import the pypuma library:
 ```python
-from pypanda import Panda
-from pypanda import Puma
-from pypanda import Lioness
+from pypanda.panda import Panda
+from pypanda.puma import Puma
+from pypanda.lioness import Lioness
 import pandas as pd
 ```
 Run the Panda or Puma algorithms, leave out motif and PPI data to use Pearson correlation network:
