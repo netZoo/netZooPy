@@ -1,7 +1,8 @@
 ## Description
 Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), 
 which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda).  
-Compared to QuackenbushLab/pypanda this repository adds the Python implementation of PUMA ([run_puma.py](run_puma.py) and [pypanda/puma.py](pypanda/puma.py)).  
+Compared to QuackenbushLab/pypanda this repository adds the Python implementation of PUMA ([run_puma.py](run_puma.py) and [pypanda/puma.py](pypanda/puma.py)). 
+NaN values in normalized matrices are replaced with values normalized by the overall z-score. This allows running the Toy Data provided in this repository.   
   
 ## Table of Contents
 * [Links to literature](#links-to-literature)
@@ -58,47 +59,47 @@ Hamming distance is calculated every iteration.
 
 
 ## Installation
-PyPanda runs on both Python 2.7 and Python 3.4. We recommend the following commands to install PyPandas on UNIX systems:
+PyPanda runs on both Python 2.7 and Python 3.4. We recommend the following commands to install pypandas on UNIX systems:
 #### Using  a virtual environment
 Using [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
 Cloning git and setting up the [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
 ```no-highlight
-pip install --user pipenv   #Make sure you have Pipenv
+pip install --user pipenv   #Make sure you have pipenv
 git clone https://github.com/aless80/pypanda.git
-cd pypuma
-virtualenv pypumaenv #virtual environment created in a folder inside the git folder 
-source pypumaenv/bin/activate
+cd pypanda
+virtualenv pypandaenv #virtual environment created in a folder inside the git folder 
+source pypandaenv/bin/activate
 ```
-Installing pypuma:
+Installing pypanda:
 ```no-highlight
-(pypumaenv)$ pip install -r requirements.txt
-(pypumaenv)$ python setup.py install
+(pypandaenv)$ pip install -r requirements.txt
+(pypandaenv)$ python setup.py install
 ```
 
-Complete uninstall of pypuma:
+Complete uninstall of pypanda:
 ```no-highlight
-(pypuma)$ deactivate	#Quit virtual environment
-rm -rf pypumaenv
-write about uninstalling the setup using --record
+(pypanda)$ deactivate	#Quit virtual environment
+rm -rf pypandaenv
+TODO: write about uninstalling the setup using --record
 ```
 
 #### Using pip 
-Never use sudo pip. Instead you can use pip on the user's install directory:
+Never use ~~sudo pip~~. Instead you can use pip on the user's install directory:
 ```no-highlight
 git clone https://github.com/aless80/pypanda.git
-cd pypuma
+cd pypanda
 python setup.py install --user
-#to run from the command line you will need to make pypuma executable and add the bin directory to your PATH:
+#to run from the command line you will need to make pypanda executable and add the bin directory to your PATH:
 cd bin
-chmod +x pypuma
+chmod +x pypanda
 echo "$(pwd):PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
-To run PyPuma from Windows (tested on Windows 10) install Git (https://git-scm.com/downloads) and Anaconda Python2.7 (https://www.continuum.io/downloads) and from the Anaconda prompt run:
+To run pypanda from Windows (tested on Windows 10) install Git (https://git-scm.com/downloads) and Anaconda Python2.7 (https://www.continuum.io/downloads) and from the Anaconda prompt run:
 ```no-highlight
 git clone https://github.com/aless80/pypanda.git
-cd pypuma
+cd pypanda
 python setup.py install
 ```
 
@@ -113,7 +114,7 @@ PyPandas can be run directly from the terminal with the following options:
 -o, --output (required) output file
 -i, --mir (required) mir data
 ```
-To run PyPuma on toy data:
+To run pypanda on toy data:
 ```
 python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt
 python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_puma.txt -i ./ToyData/ToyMiRList.txt
@@ -124,7 +125,7 @@ $ pypanda -e ToyData/ToyExpressionData.txt -o output_puma_pearson.txt -q output_
 ```
 #### Run from python
 Fire up your python shell or ipython notebook.  
-Import the pypuma library:
+Import the pypanda library:
 ```python
 from pypanda.panda import Panda
 from pypanda.puma import Puma
