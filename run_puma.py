@@ -22,7 +22,7 @@ def main(argv):
     motif = None
     ppi = None
     miR = None
-    output_file = None
+    output_file = "output_puma.txt"
     # Get input options
     try:
         opts, args = getopt.getopt(argv, 'he:m:p:i:o:', ['help', 'expression=', 'motif=', 'ppi=', 'mir=', 'out='])
