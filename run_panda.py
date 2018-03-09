@@ -17,7 +17,7 @@ def main(argv):
     expression_data = None
     motif = None
     ppi = None
-    output_file = None
+    output_file = "output_panda.txt"
     # Get input options
     try:
         opts, args = getopt.getopt(argv, 'he:m:p:o:', ['help', 'expression=', 'motif=', 'ppi=', 'out='])

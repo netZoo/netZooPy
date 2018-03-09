@@ -115,12 +115,12 @@ PyPandas can be run directly from the terminal with the following options:
 ```
 To run PyPuma on toy data:
 ```
-python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt
-python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt -i ./ToyData/ToyMiRList.txt
+python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt
+python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_puma.txt -i ./ToyData/ToyMiRList.txt
 ```
 To reconstruct a single sample Lioness Pearson correlation network:
 ```
-$ pypanda -e ToyData/ToyExpressionData.txt -o test_puma_pearson.txt -q test_lioness_pearson.txt
+$ pypanda -e ToyData/ToyExpressionData.txt -o output_puma_pearson.txt -q output_lioness_pearson.txt
 ```
 #### Run from python
 Fire up your python shell or ipython notebook.  
