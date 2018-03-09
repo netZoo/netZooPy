@@ -103,15 +103,13 @@ class Panda(object):
             norm_row = norm_col.T
         else:
             norm_row = zscore(x, axis=1)
-        #Ale: do as David
+        #Alessandro: replace nan values
         normalized_matrix = (norm_col + norm_row) / math.sqrt(2)
-        #normalize missing values
-        norm_total = (x-np.mean(x))/np.std(x)
-        #norm_total = zscore(x)  #this is not the same
+        norm_total = (x-np.mean(x))/np.std(x)   #NB zscore(x) is not the same
         nan_col = np.isnan(norm_col)
         nan_row = np.isnan(norm_row)
-        normalized_matrix[nan_col] = norm_row[nan_col]/math.sqrt(2)+norm_total[nan_col]/math.sqrt(2)
-        normalized_matrix[nan_row] = norm_col[nan_row]/math.sqrt(2)+norm_total[nan_row]/math.sqrt(2)
+        normalized_matrix[nan_col] = (norm_row[nan_col] + norm_total[nan_col])/math.sqrt(2)
+        normalized_matrix[nan_row] = (norm_col[nan_row] + norm_total[nan_row])/math.sqrt(2)
         normalized_matrix[nan_col & nan_row] = 2*norm_col[nan_col & nan_row]/math.sqrt(2)
         return normalized_matrix
 
