@@ -105,7 +105,7 @@ python setup.py install
 
 ## Usage
 #### Run from terminal
-PyPandas can be run directly from the terminal with the following options:
+pypanda can be run directly from the terminal with the following options:
 ```
 -h help
 -e, --expression (required) expression values
@@ -124,8 +124,8 @@ To reconstruct a single sample Lioness Pearson correlation network:
 $ pypanda -e ToyData/ToyExpressionData.txt -o output_puma_pearson.txt -q output_lioness_pearson.txt
 ```
 #### Run from python
-Fire up your python shell or ipython notebook.  
-Import the pypanda library:
+Fire up your python shell or ipython notebook. 
+Import the classes in the pypanda library:
 ```python
 from pypanda.panda import Panda
 from pypanda.puma import Puma
@@ -140,7 +140,6 @@ puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'To
 Save the results:
 ```python
 panda_obj.save_panda_results('Toy_Puma.pairs')
-TODO for panda!
 ```
 Return a network plot:
 ```python
