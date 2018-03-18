@@ -18,7 +18,7 @@ class Panda(object):
 
     Authors: cychen, davidvi
     """
-    def __init__(self, expression_file, motif_file, ppi_file, save_tmp=True):
+    def __init__(self, expression_file, motif_file, ppi_file, release_memory = False, save_tmp=True):
         # =====================================================================
         # Data loading
         # =====================================================================
@@ -68,7 +68,9 @@ class Panda(object):
             self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
 
         # Clean up useless variables to release memory
-        del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names
+        if release_memory:
+            print("Clearing motif and ppi data, unique tfs, and gene names")
+            del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names
 
         # =====================================================================
         # Network normalization

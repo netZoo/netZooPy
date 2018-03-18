@@ -7,9 +7,37 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
+
+''' panda_obj:
+correlation_matrix
+motif_matrix
+num_genes
+num_tfs
+panda_loop
+panda_network
+ppi_matrix
+save_panda_results'''
+
+
+
 class AnalyzePanda(Panda):
     '''Network plot.'''
     def __init__(self, panda_data):
+        def __panda_results_data_frame(self):
+        '''Results to data frame.'''
+        tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
+        #genes = np.tile(self.gene_names, (len(self.unique_tfs), 1)).transpose().flatten()
+        genes = np.tile(self.gene_names, (len(self.unique_tfs), 1)).flatten(order='F')
+        #motif = self.motif_matrix.transpose().flatten()
+        motif = self.motif_matrix.flatten(order='F')
+        #force = self.panda_network.transpose().flatten()
+        force = self.panda_network.flatten(order='F')
+        ## used at all? self.flat_panda_network = force
+        self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
+        self.export_panda_results = self.export_panda_results[['tf', 'gene', 'motif', 'force']]
+
+
         '''Load variables from panda.'''
         self.panda_results = panda_data.export_panda_results
         return None
