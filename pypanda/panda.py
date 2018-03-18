@@ -230,7 +230,6 @@ class Panda(object):
         return None
     def __create_plot(self, unique_genes, links, file = 'panda.png'):
         '''Run plot.'''
-        #plot
         import networkx as nx
         import matplotlib.pyplot as plt
         g = nx.Graph()

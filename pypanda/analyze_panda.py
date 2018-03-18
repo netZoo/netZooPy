@@ -8,24 +8,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-
-''' panda_obj:
-correlation_matrix
-motif_matrix
-num_genes
-num_tfs
-panda_loop
-panda_network
-ppi_matrix
-save_panda_results
-
-del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names
-
-david: self.gene_names = list(self.expression_data[0])
-'''
-
-
-
 class AnalyzePanda(Panda):
     '''Network plot.'''
     def __init__(self, panda_data):
