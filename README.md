@@ -130,7 +130,6 @@ Import the classes in the pypanda library:
 from pypanda.panda import Panda
 from pypanda.puma import Puma
 from pypanda.lioness import Lioness
-import pandas as pd
 ```
 Run the Panda or Puma algorithms, leave out motif and PPI data to use Pearson correlation network:
 ```python
@@ -143,6 +142,11 @@ panda_obj.save_panda_results('Toy_Panda.pairs.txt')
 panda_obj.save_panda_results('Toy_Puma.pairs.txt')
 ```
 Return a network plot:
+
+```python
+panda_obj.top_network_plot(top=100, file='top_100_genes.png')
+```
+or
 ```python
 from pypanda.analyze_panda import AnalyzePanda
 plot = AnalyzePanda(panda_obj)

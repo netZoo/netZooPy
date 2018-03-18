@@ -194,19 +194,13 @@ class Panda(object):
                 np.savetxt(path, toexport,fmt='%5s', delimiter='/t')
             else:
                 np.save(path, toexport)
-
-
-
-    #Ale: do we want this here instead of analyze_panda?
-    def analyze_panda(self):
+    def top_network_plot(self, top = 100, file = 'panda_top_100.png'):
+        '''Select top genes.'''
         if not hasattr(self,'export_panda_results'):
             raise AttributeError("Panda object does not contain the export_panda_results attribute.\n"+
                 "Run Panda with the flag release_memory=False")
+        #Ale TODO: work in numpy instead of pandas?
         self.panda_results = pd.DataFrame(self.export_panda_results, columns=['tf','gene','motif','force'])
-        #self.panda_results = panda_data.export_panda_results
-
-    def top_network_plot(self, top = 100, file = 'panda_top_100.png'):
-        '''Select top genes.'''
         subset_panda_results = self.panda_results.sort_values(by=['force'], ascending=False)
         subset_panda_results = subset_panda_results[subset_panda_results.tf != subset_panda_results.gene]
         subset_panda_results = subset_panda_results[0:top]
