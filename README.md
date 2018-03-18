@@ -61,9 +61,9 @@ Hamming distance is calculated every iteration.
 ## Installation
 PyPanda runs on both Python 2.7 and Python 3.4. We recommend the following commands to install pypandas on UNIX systems:
 #### Using  a virtual environment
-Using [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
+Using [python virtual environments](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
-Cloning git and setting up the [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
+Cloning git and setting up a [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
 ```no-highlight
 pip install --user pipenv   #Make sure you have pipenv
 git clone https://github.com/aless80/pypanda.git
@@ -121,7 +121,7 @@ python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.
 ```
 To reconstruct a single sample Lioness Pearson correlation network:
 ```
-$ pypanda -e ToyData/ToyExpressionData.txt -o output_puma_pearson.txt -q output_lioness_pearson.txt
+pypanda -e ToyData/ToyExpressionData.txt -o output_puma_pearson.txt -q output_lioness_pearson.txt
 ```
 #### Run from python
 Fire up your python shell or ipython notebook. 
