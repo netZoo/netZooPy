@@ -69,7 +69,7 @@ class Panda(object):
 
         # Clean up useless variables to release memory
         if release_memory:
-            print("Clearing motif and ppi data, unique tfs, and gene names")
+            print("Clearing motif and ppi data, unique tfs, and gene names for speed")
             del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names
 
         # =====================================================================
@@ -167,15 +167,88 @@ class Panda(object):
             step = step + 1
 
         print('Running panda took: %.2f seconds!' % (time.time() - panda_loop_time))
+        #Ale: reintroducing the export_panda_results array if Panda called with release_memory=False
+        if hasattr(self,'unique_tfs'):
+            tfs = np.repeat(self.unique_tfs,self.num_genes,axis=0)
+            genes = np.repeat(self.gene_names,self.num_tfs)
+            #motif = self.motif_matrix.flatten(order='F')
+            motif = motif_matrix.flatten(order='F') #because motif gets rewritten?
+            force = motif_matrix.flatten(order='F')
+            #self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
+            self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
 
     def save_panda_results(self, path='panda.npy'):
         with Timer('Saving PANDA network to %s ...' % path):
-            if path.endswith('.txt'):
-                np.savetxt(path, self.panda_network)
-            elif path.endswith('.csv'):
-                np.savetxt(path, self.panda_network, delimiter=',')
-            elif path.endswith('.tsv'):
-                np.savetxt(path, self.panda_network, delimiter='/t')
+            #Because there are two modes of operation (release_memory), save to file will be different
+            if hasattr(self,'export_panda_results'):
+                toexport = self.export_panda_results
             else:
-                np.save(path, self.panda_network)
+                toexport = self.panda_network
+            #Export to file
+            if path.endswith('.txt'):
+                np.savetxt(path, toexport,fmt='%5s')
+            elif path.endswith('.csv'):
+                np.savetxt(path, toexport,fmt='%5s', delimiter=',')
+            elif path.endswith('.tsv'):
+                np.savetxt(path, toexport,fmt='%5s', delimiter='/t')
+            else:
+                np.save(path, toexport)
+
+
+
+    #Ale: do we want this here instead of analyze_panda?
+    def analyze_panda(self):
+        if not hasattr(self,'export_panda_results'):
+            raise AttributeError("Panda object does not contain the export_panda_results attribute.\n"+
+                "Run Panda with the flag release_memory=False")
+        self.panda_results = pd.DataFrame(self.export_panda_results, columns=['tf','gene','motif','force'])
+        #self.panda_results = panda_data.export_panda_results
+
+    def top_network_plot(self, top = 100, file = 'panda_top_100.png'):
+        '''Select top genes.'''
+        subset_panda_results = self.panda_results.sort_values(by=['force'], ascending=False)
+        subset_panda_results = subset_panda_results[subset_panda_results.tf != subset_panda_results.gene]
+        subset_panda_results = subset_panda_results[0:top]
+        self.__shape_plot_network(subset_panda_results = subset_panda_results, file = file)
+        return None
+    def __shape_plot_network(self, subset_panda_results, file = 'panda.png'):
+        '''Create plot.'''
+        #reshape data for networkx
+        unique_genes = list(set(list(subset_panda_results['tf'])+list(subset_panda_results['gene'])))
+        unique_genes = pd.DataFrame(unique_genes)
+        unique_genes.columns = ['name']
+        unique_genes['index'] = unique_genes.index
+        subset_panda_results = subset_panda_results.merge(unique_genes, how='inner', left_on='tf', right_on='name')
+        subset_panda_results = subset_panda_results.rename(columns = {'index': 'tf_index'})
+        subset_panda_results = subset_panda_results.drop(['name'], 1)
+        subset_panda_results = subset_panda_results.merge(unique_genes, how='inner', left_on='gene', right_on='name')
+        subset_panda_results = subset_panda_results.rename(columns = {'index': 'gene_index'})
+        subset_panda_results = subset_panda_results.drop(['name'], 1)
+        links = subset_panda_results[['tf_index', 'gene_index', 'force']]
+        self.__create_plot(unique_genes = unique_genes, links = links, file = file)
+        return None
+    def __create_plot(self, unique_genes, links, file = 'panda.png'):
+        '''Run plot.'''
+        #plot
+        import networkx as nx
+        import matplotlib.pyplot as plt
+        g = nx.Graph()
+        g.clear()
+        plt.clf()
+        g.add_nodes_from(unique_genes['index'])
+        edges = []
+        for i in range(0, len(links)):
+            print(links)
+            edges = edges + [(links.iloc[i]['tf_index'], links.iloc[i]['gene_index'], float(links.iloc[i]['force'])/200)]
+        g.add_weighted_edges_from(edges)
+        labels = {}
+        for i in range(0, len(unique_genes)):
+            labels[unique_genes.iloc[i]['index']] = unique_genes.iloc[i]['name']
+        pos = nx.spring_layout(g)
+        nx.draw_networkx(g, pos, labels=labels,
+                 node_size=20, font_size=3,
+                 alpha=0.3, linewidth = 0.5, width =0.5)
+        plt.axis('off')
+        plt.savefig(file, dpi=300)
+        return None

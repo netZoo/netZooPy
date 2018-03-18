@@ -17,33 +17,30 @@ num_tfs
 panda_loop
 panda_network
 ppi_matrix
-save_panda_results'''
+save_panda_results
+
+del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names
+
+david: self.gene_names = list(self.expression_data[0])
+'''
 
 
 
 class AnalyzePanda(Panda):
     '''Network plot.'''
     def __init__(self, panda_data):
-        def __panda_results_data_frame(self):
-        '''Results to data frame.'''
-        tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
-        #genes = np.tile(self.gene_names, (len(self.unique_tfs), 1)).transpose().flatten()
-        genes = np.tile(self.gene_names, (len(self.unique_tfs), 1)).flatten(order='F')
-        #motif = self.motif_matrix.transpose().flatten()
-        motif = self.motif_matrix.flatten(order='F')
-        #force = self.panda_network.transpose().flatten()
-        force = self.panda_network.flatten(order='F')
-        ## used at all? self.flat_panda_network = force
-        self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
-        self.export_panda_results = self.export_panda_results[['tf', 'gene', 'motif', 'force']]
-
+        if not hasattr(panda_data,'export_panda_results'):
+            print()
+            raise AttributeError("Panda object does not contain the export_panda_results attribute.\n"+
+                "Run Panda with the flag release_memory=False")
 
         '''Load variables from panda.'''
-        self.panda_results = panda_data.export_panda_results
+        self.panda_results = pd.DataFrame(panda_data.export_panda_results, columns=['tf','gene','motif','force'])
+        #self.panda_results = panda_data.export_panda_results
         return None
     def top_network_plot(self, top = 100, file = 'panda_top_100.png'):
         '''Select top genes.'''
-        subset_panda_results = self.panda_results.sort(['force'], ascending = [0])
+        subset_panda_results = self.panda_results.sort_values(by=['force'], ascending=False)
         subset_panda_results = subset_panda_results[subset_panda_results.tf != subset_panda_results.gene]
         subset_panda_results = subset_panda_results[0:top]
         self.__shape_plot_network(subset_panda_results = subset_panda_results, file = file)
