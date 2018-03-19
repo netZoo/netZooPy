@@ -52,11 +52,11 @@ class Panda(object):
                 self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
 
         with Timer('Creating motif network ...'):
-            self.motif_matrix = np.zeros((self.num_tfs, self.num_genes))
+            self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
             idx_tfs = [tf2idx[x] for x in self.motif_data[0]]
             idx_genes = [gene2idx[x] for x in self.motif_data[1]]
-            idx = np.ravel_multi_index((idx_tfs, idx_genes), self.motif_matrix.shape)
-            self.motif_matrix.ravel()[idx] = self.motif_data[2]
+            idx = np.ravel_multi_index((idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape)
+            self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
 
         with Timer('Creating PPI network ...'):
             self.ppi_matrix = np.identity(self.num_tfs)
@@ -67,18 +67,20 @@ class Panda(object):
             idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
             self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
 
-        # Clean up useless variables to release memory
-        if release_memory:
-            print("Clearing motif and ppi data, unique tfs, and gene names for speed")
-            del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names
-
         # =====================================================================
         # Network normalization
         # =====================================================================
         with Timer('Normalizing networks ...'):
             self.correlation_matrix = self._normalize_network(self.correlation_matrix)
-            self.motif_matrix = self._normalize_network(self.motif_matrix)
+            self.motif_matrix = self._normalize_network(self.motif_matrix_unnormalized)
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
+        
+        # =====================================================================
+        # Clean up useless variables to release memory
+        # =====================================================================
+        if release_memory:
+            print("Clearing motif and ppi data, unique tfs, and gene names for speed")
+            del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
 
         # =====================================================================
         # Saving middle data to tmp
@@ -171,9 +173,8 @@ class Panda(object):
         if hasattr(self,'unique_tfs'):
             tfs = np.repeat(self.unique_tfs,self.num_genes,axis=0)
             genes = np.repeat(self.gene_names,self.num_tfs)
-            #motif = self.motif_matrix.flatten(order='F')
-            motif = motif_matrix.flatten(order='F') #because motif gets rewritten?
-            force = motif_matrix.flatten(order='F')
+            motif = motif_matrix_unnormalized.flatten(order='F') #because motif gets rewritten?
+            force = panda_network.flatten(order='F')
             #self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
             self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
@@ -245,3 +246,16 @@ class Panda(object):
         plt.axis('off')
         plt.savefig(file, dpi=300)
         return None
+
+
+
+    def return_panda_indegree(self):
+        '''Return Panda indegree.'''
+        subset_indegree = self.export_panda_results.loc[:,['gene','force']]
+        self.panda_indegree = subset_indegree.groupby('gene').sum()
+        return self.panda_indegree
+    def return_panda_outdegree(self):
+        '''Return Panda outdegree.'''
+        subset_outdegree = self.export_panda_results.loc[:,['tf','force']]
+        self.panda_outdegree = subset_outdegree.groupby('tf').sum()
+        return self.panda_outdegree
