@@ -18,7 +18,7 @@ class Panda(object):
 
     Authors: cychen, davidvi
     """
-    def __init__(self, expression_file, motif_file, ppi_file, release_memory = False, save_tmp=True):
+    def __init__(self, expression_file, motif_file, ppi_file, save_memory = False, save_tmp=True):
         # =====================================================================
         # Data loading
         # =====================================================================
@@ -78,7 +78,7 @@ class Panda(object):
         # =====================================================================
         # Clean up useless variables to release memory
         # =====================================================================
-        if release_memory:
+        if save_memory:
             print("Clearing motif and ppi data, unique tfs, and gene names for speed")
             del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
 
@@ -169,7 +169,7 @@ class Panda(object):
             step = step + 1
 
         print('Running panda took: %.2f seconds!' % (time.time() - panda_loop_time))
-        #Ale: reintroducing the export_panda_results array if Panda called with release_memory=False
+        #Ale: reintroducing the export_panda_results array if Panda called with save_memory=False
         if hasattr(self,'unique_tfs'):
             tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names,self.num_tfs)
@@ -181,7 +181,7 @@ class Panda(object):
 
     def save_panda_results(self, path='panda.npy'):
         with Timer('Saving PANDA network to %s ...' % path):
-            #Because there are two modes of operation (release_memory), save to file will be different
+            #Because there are two modes of operation (save_memory), save to file will be different
             if hasattr(self,'export_panda_results'):
                 toexport = self.export_panda_results
             else:
@@ -199,7 +199,7 @@ class Panda(object):
         '''Select top genes.'''
         if not hasattr(self,'export_panda_results'):
             raise AttributeError("Panda object does not contain the export_panda_results attribute.\n"+
-                "Run Panda with the flag release_memory=False")
+                "Run Panda with the flag save_memory=False")
         #Ale TODO: work in numpy instead of pandas?
         self.panda_results = pd.DataFrame(self.export_panda_results, columns=['tf','gene','motif','force'])
         subset_panda_results = self.panda_results.sort_values(by=['force'], ascending=False)
