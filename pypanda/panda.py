@@ -246,11 +246,10 @@ class Panda(object):
         plt.savefig(file, dpi=300)
         return None
 
-
-
     def return_panda_indegree(self):
         '''Return Panda indegree.'''
-        subset_indegree = self.export_panda_results.loc[:,['gene','force']]
+        #subset_indegree = self.export_panda_results.loc[:,['gene','force']]
+        subset_indegree = self.panda_results.loc[:,['gene','force']]
         self.panda_indegree = subset_indegree.groupby('gene').sum()
         return self.panda_indegree
     def return_panda_outdegree(self):
