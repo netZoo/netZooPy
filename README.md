@@ -155,11 +155,11 @@ plot.top_network_plot(top=100, file='top_100_genes.png')
 ```-->
 Calculate indegrees for further analysis:
 ```python
-indegree = panda_obj.return_puma_indegree()
+indegree = panda_obj.return_panda_indegree()
 ```
 Calculate outdegrees for further analysis:
 ```python
-outdegree = panda_obj.return_puma_outdegree()
+outdegree = panda_obj.return_panda_outdegree()
 ```
 Run the Lioness algorithm for single sample networks:
 ```python
