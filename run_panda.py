@@ -52,6 +52,13 @@ def main(argv):
     print('Start Panda run ...')
     p = pypanda.Panda(expression_data, motif, ppi, save_tmp=True)
     p.save_panda_results(output_file)
+    p.top_network_plot(top=100, file='top_100_genes.png')
+
+
+    #panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt');
+    #panda_obj.save_panda_results('Toy_Panda.pairs.txt');
+    #panda_obj.top_network_plot(top=100, file='top_100_genes.png');
+
     print('All done!')
 
 if __name__ == '__main__':

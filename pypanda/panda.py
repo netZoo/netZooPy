@@ -173,8 +173,8 @@ class Panda(object):
         if hasattr(self,'unique_tfs'):
             tfs = np.repeat(self.unique_tfs,self.num_genes,axis=0)
             genes = np.repeat(self.gene_names,self.num_tfs)
-            motif = motif_matrix_unnormalized.flatten(order='F') #because motif gets rewritten?
-            force = panda_network.flatten(order='F')
+            motif = self.motif_matrix_unnormalized.flatten(order='F') #because motif gets rewritten?
+            force = self.motif_matrix.flatten(order='F')
             #self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
             self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
@@ -233,7 +233,6 @@ class Panda(object):
         g.add_nodes_from(unique_genes['index'])
         edges = []
         for i in range(0, len(links)):
-            print(links)
             edges = edges + [(links.iloc[i]['tf_index'], links.iloc[i]['gene_index'], float(links.iloc[i]['force'])/200)]
         g.add_weighted_edges_from(edges)
         labels = {}
