@@ -187,7 +187,7 @@ class Puma(object):
             step = step + 1
 
         print('Running puma took: %.2f seconds!' % (time.time() - puma_loop_time))
-        #Ale: reintroducing the export_panda_results array if Panda called with save_memory=False
+        #Ale: reintroducing the export_puma_results array if Puma called with save_memory=False
         if hasattr(self,'unique_tfs'):
             tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names,self.num_tfs)
@@ -215,33 +215,33 @@ class Puma(object):
                 np.save(path, toexport)
     def top_network_plot(self, top = 100, file = 'puma_top_100.png'):
         '''Select top genes.'''
-        if not hasattr(self,'export_panda_results'):
-            raise AttributeError("Panda object does not contain the export_panda_results attribute.\n"+
-                "Run Panda with the flag save_memory=False")
+        if not hasattr(self,'export_puma_results'):
+            raise AttributeError("Puma object does not contain the export_puma_results attribute.\n"+
+                "Run Puma with the flag save_memory=False")
         #Ale TODO: work in numpy instead of pandas?
-        self.panda_results = pd.DataFrame(self.export_panda_results, columns=['tf','gene','motif','force'])
-        subset_panda_results = self.panda_results.sort_values(by=['force'], ascending=False)
-        subset_panda_results = subset_panda_results[subset_panda_results.tf != subset_panda_results.gene]
-        subset_panda_results = subset_panda_results[0:top]
-        self.__shape_plot_network(subset_panda_results = subset_panda_results, file = file)
+        self.puma_results = pd.DataFrame(self.export_puma_results, columns=['tf','gene','motif','force'])
+        subset_puma_results = self.puma_results.sort_values(by=['force'], ascending=False)
+        subset_puma_results = subset_puma_results[subset_puma_results.tf != subset_puma_results.gene]
+        subset_puma_results = subset_puma_results[0:top]
+        self.__shape_plot_network(subset_puma_results = subset_puma_results, file = file)
         return None
-    def __shape_plot_network(self, subset_panda_results, file = 'panda.png'):
+    def __shape_plot_network(self, subset_puma_results, file = 'puma.png'):
         '''Create plot.'''
         #reshape data for networkx
-        unique_genes = list(set(list(subset_panda_results['tf'])+list(subset_panda_results['gene'])))
+        unique_genes = list(set(list(subset_puma_results['tf'])+list(subset_puma_results['gene'])))
         unique_genes = pd.DataFrame(unique_genes)
         unique_genes.columns = ['name']
         unique_genes['index'] = unique_genes.index
-        subset_panda_results = subset_panda_results.merge(unique_genes, how='inner', left_on='tf', right_on='name')
-        subset_panda_results = subset_panda_results.rename(columns = {'index': 'tf_index'})
-        subset_panda_results = subset_panda_results.drop(['name'], 1)
-        subset_panda_results = subset_panda_results.merge(unique_genes, how='inner', left_on='gene', right_on='name')
-        subset_panda_results = subset_panda_results.rename(columns = {'index': 'gene_index'})
-        subset_panda_results = subset_panda_results.drop(['name'], 1)
-        links = subset_panda_results[['tf_index', 'gene_index', 'force']]
+        subset_puma_results = subset_puma_results.merge(unique_genes, how='inner', left_on='tf', right_on='name')
+        subset_puma_results = subset_puma_results.rename(columns = {'index': 'tf_index'})
+        subset_puma_results = subset_puma_results.drop(['name'], 1)
+        subset_puma_results = subset_puma_results.merge(unique_genes, how='inner', left_on='gene', right_on='name')
+        subset_puma_results = subset_puma_results.rename(columns = {'index': 'gene_index'})
+        subset_puma_results = subset_puma_results.drop(['name'], 1)
+        links = subset_puma_results[['tf_index', 'gene_index', 'force']]
         self.__create_plot(unique_genes = unique_genes, links = links, file = file)
         return None
-    def __create_plot(self, unique_genes, links, file = 'panda.png'):
+    def __create_plot(self, unique_genes, links, file = 'puma.png'):
         '''Run plot.'''
         import networkx as nx
         import matplotlib.pyplot as plt
