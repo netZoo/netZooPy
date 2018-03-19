@@ -51,7 +51,7 @@ def main(argv):
     # Run panda
     print('Start Panda run ...')
     panda_obj = pypanda.Panda(expression_data, motif, ppi, save_tmp=True)
-    #panda_obj.save_panda_results(output_file)
+    panda_obj.save_panda_results("Toy_Panda.pairs.txt")
     #panda_obj.top_network_plot(top=100, file='top_100_genes.png')
     #indegree = panda_obj.return_panda_indegree()
     #outdegree = panda_obj.return_panda_outdegree()

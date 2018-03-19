@@ -171,9 +171,9 @@ class Panda(object):
         print('Running panda took: %.2f seconds!' % (time.time() - panda_loop_time))
         #Ale: reintroducing the export_panda_results array if Panda called with release_memory=False
         if hasattr(self,'unique_tfs'):
-            tfs = np.repeat(self.unique_tfs,self.num_genes,axis=0)
+            tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names,self.num_tfs)
-            motif = self.motif_matrix_unnormalized.flatten(order='F') #because motif gets rewritten?
+            motif = self.motif_matrix_unnormalized.flatten(order='F')
             force = self.motif_matrix.flatten(order='F')
             #self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
             self.export_panda_results = np.column_stack((tfs,genes,motif,force))
