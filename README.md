@@ -146,12 +146,13 @@ Return a network plot:
 ```python
 panda_obj.top_network_plot(top=100, file='top_100_genes.png')
 ```
+<!--
 or
 ```python
 from pypanda.analyze_panda import AnalyzePanda
 plot = AnalyzePanda(panda_obj)
 plot.top_network_plot(top=100, file='top_100_genes.png')
-```
+```-->
 Calculate indegrees for further analysis:
 ```python
 indegree = panda_obj.return_puma_indegree()
