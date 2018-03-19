@@ -55,11 +55,17 @@ def main(argv):
         print(__doc__)
         sys.exit()
 
-    # Run puma
+    # Run PUMA
     print('Start Puma run ...')
-    p = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True)
-    p.save_puma_results(output_file)
+    puma_obj = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True)
+    puma_obj.save_puma_results("Puma.pairs.txt")
+    puma_obj.top_network_plot(top=100, file='puma_top100genes.png')
+    #indegree = puma_obj.return_panda_indegree()
+    #outdegree = puma_obj.return_panda_outdegree()
     print('All done!')
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
+
+
+

@@ -44,15 +44,15 @@ def main(argv):
         print('Motif data:', motif)
         print('PPI data:', ppi)
     else:
-        print('Missing input file!')
+        print('Missing inputs!')
         print(__doc__)
         sys.exit()
 
-    # Run panda
+    # Run PANDA
     print('Start Panda run ...')
     panda_obj = pypanda.Panda(expression_data, motif, ppi, save_tmp=True)
-    panda_obj.save_panda_results("Toy_Panda.pairs.txt")
-    #panda_obj.top_network_plot(top=100, file='top_100_genes.png')
+    panda_obj.save_panda_results("Panda.pairs.txt")
+    panda_obj.top_network_plot(top=100, file='panda_top100genes.png')
     #indegree = panda_obj.return_panda_indegree()
     #outdegree = panda_obj.return_panda_outdegree()
     print('All done!')
