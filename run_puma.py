@@ -58,7 +58,7 @@ def main(argv):
     # Run PUMA
     print('Start Puma run ...')
     puma_obj = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True)
-    puma_obj.save_puma_results("Puma.pairs.txt")
+    puma_obj.save_puma_results(output_file)
     puma_obj.top_network_plot(top=100, file='puma_top100genes.png')
     #indegree = puma_obj.return_panda_indegree()
     #outdegree = puma_obj.return_panda_outdegree()
