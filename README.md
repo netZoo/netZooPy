@@ -108,11 +108,12 @@ python setup.py install
 pypanda can be run directly from the terminal with the following options:
 ```
 -h help
--e, --expression (required) expression values
--m, --motif (required) pair file of motif edges, when not provided analysis continues with Pearson correlation matrix
--p, --ppi (required) pair file of PPI edges
--o, --output (required) output file
--i, --mir (required) mir data
+-e, --expression expression values
+-m, --motif pair file of motif edges, when not provided analysis continues with Pearson correlation matrix
+-p, --ppi pair file of PPI edges
+-o, --output output file
+-i, --mir mir data
+-r, --rm_missing
 ```
 To run pypanda on toy data:
 ```
@@ -133,7 +134,7 @@ from pypanda.lioness import Lioness
 ```
 Run the Panda or Puma algorithms, leave out motif and PPI data to use Pearson correlation network:
 ```python
-panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt')
+panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt', remove_missing=False)
 puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt','ToyData/ToyMiRList.txt')
 ```
 Save the results:
