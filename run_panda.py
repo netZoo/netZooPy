@@ -69,7 +69,7 @@ def main(argv):
 
     # Run PANDA
     print('Start Panda run ...')
-    panda_obj = pypanda.Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=True)
+    panda_obj = pypanda.Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=False)
     #panda_obj = pypanda.Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing))
     #panda_obj = pypanda.Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing))
     #panda_obj = pypanda.Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing))
