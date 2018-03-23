@@ -61,7 +61,7 @@ class Panda(object):
         # =====================================================================
         with Timer('Calculating coexpression network ...'):
             if self.expression_data is None:
-                self.correlation_matrix = np.identity(self.num_tfs,dtype=int)
+                self.correlation_matrix = np.identity(self.num_genes,dtype=int)
             else:
                 self.correlation_matrix = np.corrcoef(self.expression_data)
             if np.isnan(self.correlation_matrix).any():
@@ -123,17 +123,23 @@ class Panda(object):
 
     def __remove_missing(self):
         '''Remove genes and tfs not present in all files.'''
-        print("Remove expression not in motif:")
-        motif_unique_genes = set(self.motif_data[1])
-        len_tot = len(self.expression_data)
-        self.expression_data = self.expression_data[self.expression_data.index.isin(motif_unique_genes)]
-        print("   {} rows removed from the initial {}".format(len_tot-len(self.expression_data),len_tot))
-        print("Remove motif not in expression data:")
-        len_tot = len(self.motif_data)
-        self.motif_data = self.motif_data[self.motif_data.iloc[:,1].isin(self.gene_names)]
-        print("   {} rows removed from the initial {}".format(len_tot-len(self.motif_data),len_tot))
-        print("Remove ppi not in motif:")
+        if self.expression_data is not None:
+            print("Remove expression not in motif:")
+            motif_unique_genes = set(self.motif_data[1])
+            len_tot = len(self.expression_data)
+            self.expression_data = self.expression_data[self.expression_data.index.isin(motif_unique_genes)]
+            self.gene_names = self.expression_data.index.tolist()
+            self.num_genes = len(self.gene_names)
+            print("   {} rows removed from the initial {}".format(len_tot-self.num_genes,len_tot))
+        if self.motif_data is not None:
+            print("Remove motif not in expression data:")
+            len_tot = len(self.motif_data)
+            self.motif_data = self.motif_data[self.motif_data.iloc[:,1].isin(self.gene_names)]
+            self.unique_tfs = sorted(set(self.motif_data[0]))
+            self.num_tfs = len(self.unique_tfs)
+            print("   {} rows removed from the initial {}".format(len_tot-len(self.motif_data),len_tot))
         if self.ppi_data is not None:
+            print("Remove ppi not in motif:")
             motif_unique_tfs = np.unique(self.motif_data.iloc[:,0])
             len_tot = len(self.ppi_data)
             self.ppi_data = self.ppi_data[self.ppi_data.iloc[:,0].isin(motif_unique_tfs)]

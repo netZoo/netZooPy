@@ -52,26 +52,11 @@ def main(argv):
         print(__doc__)
         sys.exit()
 
-    '''20180321 - make it work as:
-    Panda(expression_file="myexpr",motif_file='mymotif',ppi_file='myppi')
-    Panda(expression_file="",motif_file='mymotif',ppi_file='myppi') # identity matrix gebruiken voor de expression data
-    Panda(expression_file="myexpr",motif_file='mymotif',ppi_file='')
-    Panda(expression_file="",motif_file='mymotif',ppi_file='')
-    
-    (het werkt hetzelfde als de ppi data. als je geen input van de ppi data hebt, rent hij panda op de identity matrix tussen alle transcription factors)
-    als er geen expression data is, pak je alle genen (2e colon) en maak je daar een identity matrix van
-    
-    en wat dan ook moet werken (dat had david toegevoegd) is:
-    Panda(expression_file="myexpr",motif_file='',ppi_file='') # hier runt hij panda niet, maar maakt hij een correlation matrix van de expression data die hij in lioness kan gebruiken
-    '''
-
-
-
     # Run PANDA
     print('Start Panda run ...')
-    #panda_obj = pypanda.Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing)
+    panda_obj = pypanda.Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing)
-    panda_obj = pypanda.Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing)
+    #panda_obj = pypanda.Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing)
     panda_obj.save_panda_results(output_file)
     panda_obj.top_network_plot(top=100, file='panda_top100genes.png')
