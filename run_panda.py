@@ -7,6 +7,8 @@ Usage:
   -m, --motif (required): pair file of motif edges
   -p, --ppi (required): pair file of PPI edges
   -o, --out (required): output file
+  Example:
+  python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt
 """
 import sys
 import getopt
@@ -41,12 +43,10 @@ def main(argv):
             rm_missing = arg
 
     #Check if required options are given
-    #if expression_data and motif and ppi:
     print('Input data:')
     print('Expression:', expression_data)
     print('Motif data:', motif)
     print('PPI data:', ppi)
-    #else:
     if not expression_data and not motif and not ppi:
         print('Missing inputs!')
         print(__doc__)
@@ -66,3 +66,6 @@ def main(argv):
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
+
+
+

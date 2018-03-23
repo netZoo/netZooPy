@@ -16,7 +16,7 @@ class Panda(object):
     4. Running PANDA algorithm
     5. Writing out PANDA network
 
-    Authors: cychen, davidvi
+    Authors: cychen, davidvi, alessandromarin
     """
     def __init__(self, expression_file, motif_file, ppi_file, save_memory = False, save_tmp=True, remove_missing=False):
         # =====================================================================
@@ -49,7 +49,6 @@ class Panda(object):
             self.ppi_data = None
 
         if remove_missing and motif_file is not None:
-            #hey, update self.num_tfs etc!!
             self.__remove_missing()
 
         # Auxiliary dicts
@@ -131,13 +130,13 @@ class Panda(object):
             self.gene_names = self.expression_data.index.tolist()
             self.num_genes = len(self.gene_names)
             print("   {} rows removed from the initial {}".format(len_tot-self.num_genes,len_tot))
-        if self.motif_data is not None:
-            print("Remove motif not in expression data:")
-            len_tot = len(self.motif_data)
-            self.motif_data = self.motif_data[self.motif_data.iloc[:,1].isin(self.gene_names)]
-            self.unique_tfs = sorted(set(self.motif_data[0]))
-            self.num_tfs = len(self.unique_tfs)
-            print("   {} rows removed from the initial {}".format(len_tot-len(self.motif_data),len_tot))
+        #if self.motif_data is not None:
+        print("Remove motif not in expression data:")
+        len_tot = len(self.motif_data)
+        self.motif_data = self.motif_data[self.motif_data.iloc[:,1].isin(self.gene_names)]
+        self.unique_tfs = sorted(set(self.motif_data[0]))
+        self.num_tfs = len(self.unique_tfs)
+        print("   {} rows removed from the initial {}".format(len_tot-len(self.motif_data),len_tot))
         if self.ppi_data is not None:
             print("Remove ppi not in motif:")
             motif_unique_tfs = np.unique(self.motif_data.iloc[:,0])

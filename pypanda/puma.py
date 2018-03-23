@@ -18,26 +18,37 @@ class Puma(object):
 
     Authors: cychen, davidvi, alessandromarin
     """
-    def __init__(self, expression_file, motif_file, ppi_file, mir_file, save_memory = False, save_tmp=True):
+    def __init__(self, expression_file, motif_file, ppi_file, mir_file, save_memory = False, save_tmp=True, remove_missing=False):
         # =====================================================================
         # Data loading
         # =====================================================================
-        with Timer('Loading expression data ...'):
-            self.expression_data = pd.read_table(expression_file, sep='\t', header=None, index_col=0)
-            self.gene_names = self.expression_data.index.tolist()
-            self.num_genes = len(self.gene_names)
-            print('Expression matrix:', self.expression_data.shape)
-
         with Timer('Loading motif data ...'):
             self.motif_data = pd.read_table(motif_file, sep='\t', header=None)
             self.unique_tfs = sorted(set(self.motif_data[0]))
             self.num_tfs = len(self.unique_tfs)
             print('Unique TFs:', self.num_tfs)
 
-        with Timer('Loading PPI data ...'):
-            self.ppi_data = pd.read_table(ppi_file, sep='\t', header=None)
-            print('Number of PPIs:', self.ppi_data.shape[0])
+        if expression_file:
+            with Timer('Loading expression data ...'):
+                self.expression_data = pd.read_table(expression_file, sep='\t', header=None, index_col=0)
+                self.gene_names = self.expression_data.index.tolist()
+                self.num_genes = len(self.gene_names)
+                print('Expression matrix:', self.expression_data.shape)
+        else:
+            self.gene_names = list(set(self.motif_data[1]))
+            self.num_genes = len(self.gene_names)
+            self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
+            print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
 
+        if ppi_file:
+            with Timer('Loading PPI data ...'):
+                self.ppi_data = pd.read_table(ppi_file, sep='\t', header=None)
+                print('Number of PPIs:', self.ppi_data.shape[0])
+        else:
+            print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
+            self.ppi_data = None
+
+        
         # Alessandro
         with Timer('Loading miR data ...'):
             with open(mir_file, "r") as f:
@@ -45,6 +56,9 @@ class Puma(object):
             TFNames = self.unique_tfs
             sort_idx = np.argsort(TFNames)
             self.s1 = sort_idx[np.searchsorted(TFNames, miR, sorter=sort_idx)]
+
+        if remove_missing and motif_file is not None:
+            self.__remove_missing()
 
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
@@ -54,7 +68,10 @@ class Puma(object):
         # Network construction
         # =====================================================================
         with Timer('Calculating coexpression network ...'):
-            self.correlation_matrix = np.corrcoef(self.expression_data)
+            if self.expression_data is None:
+                self.correlation_matrix = np.identity(self.num_genes,dtype=int)
+            else:
+                self.correlation_matrix = np.corrcoef(self.expression_data)
             if np.isnan(self.correlation_matrix).any():
                 np.fill_diagonal(self.correlation_matrix, 1)
                 self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
@@ -66,14 +83,17 @@ class Puma(object):
             idx = np.ravel_multi_index((idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape)
             self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
 
-        with Timer('Creating PPI network ...'):
-            self.ppi_matrix = np.identity(self.num_tfs)
-            idx_tf1 = [tf2idx[x] for x in self.ppi_data[0]]
-            idx_tf2 = [tf2idx[x] for x in self.ppi_data[1]]
-            idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
-            self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
-            idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
-            self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+        if self.ppi_data is None:
+            self.ppi_matrix = np.identity(self.num_tfs,dtype=int)
+        else:
+            with Timer('Creating PPI network ...'):
+                self.ppi_matrix = np.identity(self.num_tfs)
+                idx_tf1 = [tf2idx[x] for x in self.ppi_data[0]]
+                idx_tf2 = [tf2idx[x] for x in self.ppi_data[1]]
+                idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
+                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
+                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
 
         # =====================================================================
         # Network normalization
@@ -95,7 +115,8 @@ class Puma(object):
         # =====================================================================
         if save_tmp:
             with Timer('Saving expression matrix and normalized networks ...'):
-                np.save('/tmp/expression.npy', self.expression_data.values)
+                if self.expression_data is not None:
+                    np.save('/tmp/expression.npy', self.expression_data.values)
                 np.save('/tmp/motif.normalized.npy', self.motif_matrix)
                 np.save('/tmp/ppi.normalized.npy', self.ppi_matrix)
 
@@ -108,6 +129,31 @@ class Puma(object):
         print('Running PUMA algorithm ...')
         self.puma_network = self.puma_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
 
+    def __remove_missing(self):
+        '''Remove genes and tfs not present in all files.'''
+        if self.expression_data is not None:
+            print("Remove expression not in motif:")
+            motif_unique_genes = set(self.motif_data[1])
+            len_tot = len(self.expression_data)
+            self.expression_data = self.expression_data[self.expression_data.index.isin(motif_unique_genes)]
+            self.gene_names = self.expression_data.index.tolist()
+            self.num_genes = len(self.gene_names)
+            print("   {} rows removed from the initial {}".format(len_tot-self.num_genes,len_tot))
+        #if self.motif_data is not None:
+        print("Remove motif not in expression data:")
+        len_tot = len(self.motif_data)
+        self.motif_data = self.motif_data[self.motif_data.iloc[:,1].isin(self.gene_names)]
+        self.unique_tfs = sorted(set(self.motif_data[0]))
+        self.num_tfs = len(self.unique_tfs)
+        print("   {} rows removed from the initial {}".format(len_tot-len(self.motif_data),len_tot))
+        if self.ppi_data is not None:
+            print("Remove ppi not in motif:")
+            motif_unique_tfs = np.unique(self.motif_data.iloc[:,0])
+            len_tot = len(self.ppi_data)
+            self.ppi_data = self.ppi_data[self.ppi_data.iloc[:,0].isin(motif_unique_tfs)]
+            self.ppi_data = self.ppi_data[self.ppi_data.iloc[:,1].isin(motif_unique_tfs)]
+            print("   {} rows removed from the initial {}".format(len_tot-len(self.ppi_data),len_tot))
+        return None
 
     def _normalize_network(self, x):
         norm_col = zscore(x, axis=0)

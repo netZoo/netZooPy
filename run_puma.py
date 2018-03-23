@@ -23,9 +23,10 @@ def main(argv):
     ppi = None
     miR = None
     output_file = "output_puma.txt"
+    rm_missing = False
     # Get input options
     try:
-        opts, args = getopt.getopt(argv, 'he:m:p:i:o:', ['help', 'expression=', 'motif=', 'ppi=', 'mir=', 'out='])
+        opts, args = getopt.getopt(argv, 'he:m:p:i:o:r', ['help', 'expression=', 'motif=', 'ppi=', 'mir=', 'out=', 'rm_missing'])
     except getopt.GetoptError:
         print(__doc__)
         sys.exit()
@@ -43,21 +44,21 @@ def main(argv):
             output_file = arg
         elif opt in ('-i', '--mir'):
             miR = arg
+        elif opt in ('-r', '--rm_missing'):
+            rm_missing = arg
     #Check if required options are given
-    if expression_data and motif and ppi and miR:
-        print('Input data:')
-        print('Expression:', expression_data)
-        print('Motif data:', motif)
-        print('PPI data:', ppi)
-        print('miR data:', miR)
-    else:
+    print('Input data:')
+    print('Expression:', expression_data)
+    print('Motif data:', motif)
+    print('PPI data:', ppi)
+    if not expression_data and not motif and not ppi and not miR:
         print('Missing inputs!')
         print(__doc__)
         sys.exit()
 
     # Run PUMA
     print('Start Puma run ...')
-    puma_obj = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True)
+    puma_obj = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True, remove_missing=rm_missing)
     puma_obj.save_puma_results(output_file)
     puma_obj.top_network_plot(top=100, file='puma_top100genes.png')
     #indegree = puma_obj.return_panda_indegree()
