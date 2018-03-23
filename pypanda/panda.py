@@ -37,18 +37,19 @@ class Panda(object):
         else:
             self.gene_names = list(set(self.motif_data[1]))
             self.num_genes = len(self.gene_names)
-            self.expression_data = pd.DataFrame(np.identity(self.num_genes, dtype=int))
-            print('Expression matrix: identity matrix with size', self.num_genes)
+            self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
+            print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
 
         if ppi_file:
             with Timer('Loading PPI data ...'):
                 self.ppi_data = pd.read_table(ppi_file, sep='\t', header=None)
                 print('Number of PPIs:', self.ppi_data.shape[0])
         else:
-            self.ppi_data = None
             print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
+            self.ppi_data = None
 
         if remove_missing and motif_file is not None:
+            #hey, update self.num_tfs etc!!
             self.__remove_missing()
 
         # Auxiliary dicts
@@ -59,7 +60,10 @@ class Panda(object):
         # Network construction
         # =====================================================================
         with Timer('Calculating coexpression network ...'):
-            self.correlation_matrix = np.corrcoef(self.expression_data)
+            if self.expression_data is None:
+                self.correlation_matrix = np.identity(self.num_tfs,dtype=int)
+            else:
+                self.correlation_matrix = np.corrcoef(self.expression_data)
             if np.isnan(self.correlation_matrix).any():
                 np.fill_diagonal(self.correlation_matrix, 1)
                 self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
@@ -103,7 +107,8 @@ class Panda(object):
         # =====================================================================
         if save_tmp:
             with Timer('Saving expression matrix and normalized networks ...'):
-                np.save('/tmp/expression.npy', self.expression_data.values)
+                if self.expression_data is not None:
+                    np.save('/tmp/expression.npy', self.expression_data.values)
                 np.save('/tmp/motif.normalized.npy', self.motif_matrix)
                 np.save('/tmp/ppi.normalized.npy', self.ppi_matrix)
 
