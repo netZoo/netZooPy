@@ -22,11 +22,14 @@ class Panda(object):
         # =====================================================================
         # Data loading
         # =====================================================================
-        with Timer('Loading motif data ...'):
-            self.motif_data = pd.read_table(motif_file, sep='\t', header=None)
-            self.unique_tfs = sorted(set(self.motif_data[0]))
-            self.num_tfs = len(self.unique_tfs)
-            print('Unique TFs:', self.num_tfs)
+        if motif_file is not None:
+            with Timer('Loading motif data ...'):
+                self.motif_data = pd.read_table(motif_file, sep='\t', header=None)
+                self.unique_tfs = sorted(set(self.motif_data[0]))
+                self.num_tfs = len(self.unique_tfs)
+                print('Unique TFs:', self.num_tfs)
+        else:
+            self.motif_data = None
 
         if expression_file:
             with Timer('Loading expression data ...'):
@@ -51,10 +54,6 @@ class Panda(object):
         if remove_missing and motif_file is not None:
             self.__remove_missing()
 
-        # Auxiliary dicts
-        gene2idx = {x: i for i,x in enumerate(self.gene_names)}
-        tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
-
         # =====================================================================
         # Network construction
         # =====================================================================
@@ -66,6 +65,15 @@ class Panda(object):
             if np.isnan(self.correlation_matrix).any():
                 np.fill_diagonal(self.correlation_matrix, 1)
                 self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
+
+        if self.motif_data is None:
+            print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
+            #self.panda_network = self.correlation_matrix
+            self.__pearson_results_data_frame()
+            return
+        # Auxiliary dicts
+        gene2idx = {x: i for i,x in enumerate(self.gene_names)}
+        tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
 
         with Timer('Creating motif network ...'):
             self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
@@ -117,8 +125,13 @@ class Panda(object):
         # =====================================================================
         # Running PANDA algorithm
         # =====================================================================
-        print('Running PANDA algorithm ...')
-        self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
+        if self.motif_data is not None:
+            print('Running PANDA algorithm ...')
+            self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
+        else:
+            self.panda_network = self.correlation_matrix
+            self.__pearson_results_data_frame()
+
 
     def __remove_missing(self):
         '''Remove genes and tfs not present in all files.'''
@@ -223,6 +236,15 @@ class Panda(object):
             #self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
             self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
+
+    def __pearson_results_data_frame(self):
+        '''Results to data frame.'''
+        genes_1 = np.tile(self.gene_names, (len(self.gene_names), 1)).flatten()
+        genes_2 = np.tile(self.gene_names, (len(self.gene_names), 1)).transpose().flatten()
+        self.flat_panda_network = self.panda_network.transpose().flatten()
+        self.export_panda_results = pd.DataFrame({'tf':genes_1, 'gene':genes_2, 'force':self.flat_panda_network})
+        self.export_panda_results = self.export_panda_results[['tf', 'gene', 'force']]
+        return None
 
     def save_panda_results(self, path='panda.npy'):
         with Timer('Saving PANDA network to %s ...' % path):

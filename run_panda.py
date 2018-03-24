@@ -3,10 +3,10 @@
 
 Usage:
   -h, --help: help
-  -e, --expression (required): expression values
-  -m, --motif (required): pair file of motif edges
-  -p, --ppi (required): pair file of PPI edges
-  -o, --out (required): output file
+  -e, --expression: expression values
+  -m, --motif: pair file of motif edges
+  -p, --ppi: pair file of PPI edges
+  -o, --out: output file
   Example:
   python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt
 """
@@ -58,6 +58,7 @@ def main(argv):
     #panda_obj = pypanda.Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing)
+    #panda_obj = pypanda.Panda(expression_data, None, ppi, save_tmp=True, remove_missing=rm_missing)
     panda_obj.save_panda_results(output_file)
     panda_obj.top_network_plot(top=100, file='panda_top100genes.png')
     #indegree = panda_obj.return_panda_indegree()

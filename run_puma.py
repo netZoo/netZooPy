@@ -4,11 +4,11 @@
 Usage:
 run_puma
   -h, --help: help
-  -e, --expression (required): expression values
-  -m, --motif (required): pair file of motif edges
-  -p, --ppi (required): pair file of PPI edges
+  -e, --expression: expression values
+  -m, --motif: pair file of motif edges
+  -p, --ppi: pair file of PPI edges
   -i, --mir (required): miR file
-  -o, --out (required): output file
+  -o, --out: output file
   Example:
   python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt
 """
