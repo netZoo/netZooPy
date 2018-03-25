@@ -303,12 +303,19 @@ class Panda(object):
             edges = edges + [(links.iloc[i]['tf_index'], links.iloc[i]['gene_index'], float(links.iloc[i]['force'])/200)]
         g.add_weighted_edges_from(edges)
         labels = {}
-        for i in range(0, len(unique_genes)):
-            labels[unique_genes.iloc[i]['index']] = unique_genes.iloc[i]['name']
+        def split_label(label):
+            ll = len(label)
+            if ll > 6:
+                return label[0:ll/2] + '\n' + label[ll/2:]
+            return label
+        for i, l in enumerate(unique_genes.iloc[:,0]):
+            labels[i] = split_label(l)
         pos = nx.spring_layout(g)
-        nx.draw_networkx(g, pos, labels=labels,
-                 node_size=20, font_size=3,
-                 alpha=0.3, linewidth = 0.5, width =0.5)
+        #nx.draw_networkx(g, pos, labels=labels, node_size=40, font_size=3, alpha=0.3, linewidth = 0.5, width =0.5)
+        colors=range(len(edges))
+        nx.draw_networkx(g, pos, labels=labels, node_size=110, font_size=3, linewidth = 20, width=2.0,
+                         alpha=0.7, edge_cmap=plt.cm.Blues, edge_color=colors, vmin=-100) #, node_color='#A0CBE2',)
+        #nx.draw(g,pos,node_color='#A0CBE2',edge_color=colors,width=4,edge_cmap=plt.cm.Blues,with_labels=False)
         plt.axis('off')
         plt.savefig(file, dpi=300)
         return None

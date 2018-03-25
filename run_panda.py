@@ -60,7 +60,7 @@ def main(argv):
     #panda_obj = pypanda.Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(expression_data, None, ppi, save_tmp=True, remove_missing=rm_missing)
     panda_obj.save_panda_results(output_file)
-    panda_obj.top_network_plot(top=100, file='panda_top100genes.png')
+    panda_obj.top_network_plot(top=70, file='panda_topgenes.png')
     #indegree = panda_obj.return_panda_indegree()
     #outdegree = panda_obj.return_panda_outdegree()
     print('All done!')
