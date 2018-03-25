@@ -313,9 +313,9 @@ class Panda(object):
         pos = nx.spring_layout(g)
         #nx.draw_networkx(g, pos, labels=labels, node_size=40, font_size=3, alpha=0.3, linewidth = 0.5, width =0.5)
         colors=range(len(edges))
-        nx.draw_networkx(g, pos, labels=labels, node_size=110, font_size=3, linewidth = 20, width=2.0,
-                         alpha=0.7, edge_cmap=plt.cm.Blues, edge_color=colors, vmin=-100) #, node_color='#A0CBE2',)
-        #nx.draw(g,pos,node_color='#A0CBE2',edge_color=colors,width=4,edge_cmap=plt.cm.Blues,with_labels=False)
+        options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
+                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidth': 20}
+        nx.draw_spring(g, k=0.25, iterations=50, **options)
         plt.axis('off')
         plt.savefig(file, dpi=300)
         return None
