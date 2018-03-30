@@ -22,11 +22,14 @@ class Puma(object):
         # =====================================================================
         # Data loading
         # =====================================================================
-        with Timer('Loading motif data ...'):
-            self.motif_data = pd.read_table(motif_file, sep='\t', header=None)
-            self.unique_tfs = sorted(set(self.motif_data[0]))
-            self.num_tfs = len(self.unique_tfs)
-            print('Unique TFs:', self.num_tfs)
+        if motif_file is not None:
+            with Timer('Loading motif data ...'):
+                self.motif_data = pd.read_table(motif_file, sep='\t', header=None)
+                self.unique_tfs = sorted(set(self.motif_data[0]))
+                self.num_tfs = len(self.unique_tfs)
+                print('Unique TFs:', self.num_tfs)
+        else:
+            self.motif_data = None
 
         if expression_file:
             with Timer('Loading expression data ...'):
@@ -48,8 +51,6 @@ class Puma(object):
             print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
             self.ppi_data = None
 
-        
-        # Alessandro
         with Timer('Loading miR data ...'):
             with open(mir_file, "r") as f:
                 miR = f.read().splitlines()
@@ -59,10 +60,6 @@ class Puma(object):
 
         if remove_missing and motif_file is not None:
             self.__remove_missing()
-
-        # Auxiliary dicts
-        gene2idx = {x: i for i,x in enumerate(self.gene_names)}
-        tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
 
         # =====================================================================
         # Network construction
@@ -75,6 +72,15 @@ class Puma(object):
             if np.isnan(self.correlation_matrix).any():
                 np.fill_diagonal(self.correlation_matrix, 1)
                 self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
+
+        if self.motif_data is None:
+            print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
+            #self.panda_network = self.correlation_matrix
+            self.__pearson_results_data_frame()
+            return
+        # Auxiliary dicts
+        gene2idx = {x: i for i,x in enumerate(self.gene_names)}
+        tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
 
         with Timer('Creating motif network ...'):
             self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
@@ -243,6 +249,15 @@ class Puma(object):
             self.export_puma_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
 
+    def __pearson_results_data_frame(self):
+        '''Results to data frame.'''
+        genes_1 = np.tile(self.gene_names, (len(self.gene_names), 1)).flatten()
+        genes_2 = np.tile(self.gene_names, (len(self.gene_names), 1)).transpose().flatten()
+        self.flat_panda_network = self.panda_network.transpose().flatten()
+        self.export_panda_results = pd.DataFrame({'tf':genes_1, 'gene':genes_2, 'force':self.flat_panda_network})
+        self.export_panda_results = self.export_panda_results[['tf', 'gene', 'force']]
+        return None
+
     def save_puma_results(self, path='puma.npy'):
         with Timer('Saving PUMA network to %s ...' % path):
             #Because there are two modes of operation (save_memory), save to file will be different
@@ -300,12 +315,31 @@ class Puma(object):
             edges = edges + [(links.iloc[i]['tf_index'], links.iloc[i]['gene_index'], float(links.iloc[i]['force'])/200)]
         g.add_weighted_edges_from(edges)
         labels = {}
-        for i in range(0, len(unique_genes)):
-            labels[unique_genes.iloc[i]['index']] = unique_genes.iloc[i]['name']
+        def split_label(label):
+            ll = len(label)
+            if ll > 6:
+                return label[0:ll/2] + '\n' + label[ll/2:]
+            return label
+        for i, l in enumerate(unique_genes.iloc[:,0]):
+            labels[i] = split_label(l)
         pos = nx.spring_layout(g)
-        nx.draw_networkx(g, pos, labels=labels,
-                 node_size=20, font_size=3,
-                 alpha=0.3, linewidth = 0.5, width =0.5)
+        #nx.draw_networkx(g, pos, labels=labels, node_size=40, font_size=3, alpha=0.3, linewidth = 0.5, width =0.5)
+        colors=range(len(edges))
+        options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
+                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidth': 20}
+        nx.draw_spring(g, k=0.25, iterations=50, **options)
         plt.axis('off')
         plt.savefig(file, dpi=300)
         return None
+
+    def return_panda_indegree(self):
+        '''Return Panda indegree.'''
+        #subset_indegree = self.export_panda_results.loc[:,['gene','force']]
+        subset_indegree = self.panda_results.loc[:,['gene','force']]
+        self.panda_indegree = subset_indegree.groupby('gene').sum()
+        return self.panda_indegree
+    def return_panda_outdegree(self):
+        '''Return Panda outdegree.'''
+        subset_outdegree = self.export_panda_results.loc[:,['tf','force']]
+        self.panda_outdegree = subset_outdegree.groupby('tf').sum()
+        return self.panda_outdegree
