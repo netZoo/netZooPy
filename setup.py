@@ -11,6 +11,7 @@ setup(name='pypanda',
     install_requires=['pandas',
     'numpy',
     'networkx',
-    'matplotlib'
+    'matplotlib',
+    'scipy'
     ],
     zip_safe=False)
