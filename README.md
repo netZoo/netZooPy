@@ -145,7 +145,7 @@ panda_obj.save_panda_results('Toy_Puma.pairs.txt')
 Return a network plot:
 
 ```python
-panda_obj.top_network_plot(top=100, file='top_100_genes.png')
+panda_obj.top_network_plot(top=70, file='top_genes.png')
 ```
 <!--
 or
