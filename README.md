@@ -31,7 +31,7 @@ _Marieke Lydia Kuijjer, Matthew Tung,GuoCheng Yuan,John Quackenbush, Kimberly Gl
 LIONESS can be used to estimate single-sample networks using aggregate networks made with any network reconstruction algorithm (http://arxiv.org/pdf/1505.06440.pdf).
 
 ## Panda algorithm
-<img src="img/panda.jpg" height="30">  
+<img src="img/panda.jpg" height="250">  
 
 To find agreement between the three input networks first the responsibility (R) is calculated.  
 
