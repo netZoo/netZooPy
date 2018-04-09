@@ -297,6 +297,10 @@ class Panda(object):
         g = nx.Graph()
         g.clear()
         plt.clf()
+        #img = plt.imread("../img/panda.jpg")
+        #fig, ax = plt.subplots()
+        #ax.imshow(img, extent=[0, 400, 0, 300])
+        ##ax.plot(x, x, '--', linewidth=5, color='firebrick')
         g.add_nodes_from(unique_genes['index'])
         edges = []
         for i in range(0, len(links)):
