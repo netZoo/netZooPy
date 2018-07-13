@@ -17,16 +17,20 @@ class Lioness(Panda):
     Authors: cychen, davidvi
     """
 
-    # expression_matrix, motif_matrix, ppi_matrix, panda_network, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
-    #panda_obj.expression_data, panda_obj.motif_matrix, panda_obj.ppi_matrix, panda_obj.panda_network
     def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
-            self.expression_matrix = obj.expression_matrix #np.load(
-            self.motif_matrix = obj.motif_matrix #np.load(
-            self.ppi_matrix = obj.ppi_matrix #np.load(
-            self.panda_network = obj.panda_network #np.load(
-            #del obj
+            self.expression_matrix = obj.expression_matrix
+            self.motif_matrix = obj.motif_matrix
+            self.ppi_matrix = obj.ppi_matrix
+            if hasattr(obj,'panda_network'):
+                self.network = obj.panda_network
+            elif hasattr(obj,'puma_network'):
+                self.network = obj.puma_network
+            else:
+                print('Cannot find panda or puma network in object')
+                raise AttributeError('Cannot find panda or puma network in object')
+            del obj
 
         # Get sample range to iterate
         self.n_conditions = self.expression_matrix.shape[1]
@@ -60,7 +64,7 @@ class Lioness(Panda):
 
             with Timer("Inferring LIONESS network:"):
                 subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix))
-                lioness_network = self.n_conditions * (self.panda_network - subset_panda_network) + subset_panda_network
+                lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
 
             with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
                 path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))

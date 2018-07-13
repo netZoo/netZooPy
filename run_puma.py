@@ -26,7 +26,7 @@ def main(argv):
     miR = None
     output_file = "output_puma.txt"
     rm_missing = False
-    lioness = False
+    lioness_file = False
     # Get input options
     try:
         opts, args = getopt.getopt(argv, 'he:m:p:i:o:rq:', ['help', 'expression=', 'motif=', 'ppi=', 'mir=', 'out=', 'rm_missing', 'lioness'])
@@ -50,7 +50,7 @@ def main(argv):
         elif opt in ('-r', '--rm_missing'):
             rm_missing = arg
         elif opt in ('-q', '--lioness'):
-            lioness = arg
+            lioness_file = arg
     #Check if required options are given
     print('Input data:')
     print('Expression:', expression_data)
@@ -63,15 +63,16 @@ def main(argv):
 
     # Run PUMA
     print('Start Puma run ...')
-    puma_obj = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True, remove_missing=rm_missing)
+    puma_obj = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=bool(lioness_file))
     puma_obj.save_puma_results(output_file)
     #puma_obj.top_network_plot(top=100, file='puma_top100genes.png')
     #indegree = puma_obj.return_panda_indegree()
     #outdegree = puma_obj.return_panda_outdegree()
-    if lioness:
+
+    if lioness_file:
         from pypanda.lioness import Lioness
         lioness_obj = Lioness(puma_obj)
-        lioness_obj.save_lioness_results(lioness)
+        lioness_obj.save_lioness_results(lioness_file)
     print('All done!')
 
 if __name__ == '__main__':

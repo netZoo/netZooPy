@@ -127,7 +127,7 @@ class Puma(object):
                 np.save('/tmp/ppi.normalized.npy', self.ppi_matrix)
 
         # Clean up useless variables to release memory
-        if not keep_expression_matrix:
+        if keep_expression_matrix:
             self.expression_matrix = self.expression_data.as_matrix()
         del self.expression_data
 

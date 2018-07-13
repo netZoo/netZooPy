@@ -31,7 +31,6 @@ def main(argv):
         print(__doc__)
         sys.exit()
     for opt, arg in opts:
-        print(opt, arg)
         if opt in ('-h', '--help'):
             print(__doc__)
             sys.exit()
@@ -72,9 +71,6 @@ def main(argv):
     if lioness_file:
         from pypanda.lioness import Lioness
         lioness_obj = Lioness(panda_obj)
-        #expression_matrix, motif_matrix, ppi_matrix, panda_network, start = 1, end = None, save_dir = 'lioness_output', save_fmt = 'npy'):
-        #panda_obj.expression_data,panda_obj.motif_matrix, panda_obj.ppi_matrix, panda_obj.panda_network
-        #save_dir = lioness_file
         lioness_obj.save_lioness_results(lioness_file)
     print('All done!')
 
