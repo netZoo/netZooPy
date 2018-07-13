@@ -78,5 +78,6 @@ class Lioness(Panda):
 
     def save_lioness_results(self, file='lioness.txt'):
         '''Write lioness results to file.'''
-        self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
+        #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
+        np.savetxt(file, self.lioness_network, delimiter="\t",header=False)
         return None
