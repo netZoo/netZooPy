@@ -123,10 +123,15 @@ To run pypanda on toy data:
 python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt -l output_lioness.txt
 python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_puma.txt -i ./ToyData/ToyMiRList.txt -l output_lioness.txt
 ```
-<!--To reconstruct a single sample Lioness Pearson correlation network:
-```
+To reconstruct a single sample Lioness Pearson correlation network:
+<!--```
 pypanda -e ToyData/ToyExpressionData.txt -o output_puma_pearson.txt -q output_lioness_pearson.txt
 ```-->
+
+```python
+python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt -q output_lioness.txt
+
+```
 #### Run from python
 Fire up your python shell or ipython notebook. 
 Import the classes in the pypanda library:
@@ -151,7 +156,6 @@ Return a network plot:
 panda_obj.top_network_plot(top=70, file='top_genes.png')
 ```
 
-Run the Lioness 
 <!--
 or
 ```python
