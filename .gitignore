@@ -16,3 +16,5 @@ dist/
 test_*.txt
 pypumaenv/
 .idea/
+pypuma/__pycache__
+pypuma/__pycache__/*
