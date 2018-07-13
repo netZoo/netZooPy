@@ -18,7 +18,7 @@ class Panda(object):
 
     Authors: cychen, davidvi, alessandromarin
     """
-    def __init__(self, expression_file, motif_file, ppi_file, save_memory = False, save_tmp=True, remove_missing=False):
+    def __init__(self, expression_file, motif_file, ppi_file, save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
         # =====================================================================
         # Data loading
         # =====================================================================
@@ -120,6 +120,8 @@ class Panda(object):
                 np.save('/tmp/ppi.normalized.npy', self.ppi_matrix)
 
         # Clean up useless variables to release memory
+        if keep_expression_matrix:
+            self.expression_matrix = self.expression_data.as_matrix()
         del self.expression_data
 
         # =====================================================================

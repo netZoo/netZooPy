@@ -16,13 +16,17 @@ class Lioness(Panda):
 
     Authors: cychen, davidvi
     """
-    def __init__(self, expression_matrix, motif_matrix, ppi_matrix, panda_network, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+
+    # expression_matrix, motif_matrix, ppi_matrix, panda_network, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    #panda_obj.expression_data, panda_obj.motif_matrix, panda_obj.ppi_matrix, panda_obj.panda_network
+    def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
-            self.expression_matrix = np.load(expression_matrix)
-            self.motif_matrix = np.load(motif_matrix)
-            self.ppi_matrix = np.load(ppi_matrix)
-            self.panda_network = np.load(panda_network)
+            self.expression_matrix = obj.expression_matrix #np.load(
+            self.motif_matrix = obj.motif_matrix #np.load(
+            self.ppi_matrix = obj.ppi_matrix #np.load(
+            self.panda_network = obj.panda_network #np.load(
+            #del obj
 
         # Get sample range to iterate
         self.n_conditions = self.expression_matrix.shape[1]
@@ -35,7 +39,10 @@ class Lioness(Panda):
             os.makedirs(save_dir)
 
         # Run LIONESS
-        self.__lioness_loop()
+        self.lioness_network = self.__lioness_loop()
+
+        # create result data frame
+        #self.export_lioness_results = pd.DataFrame(self.lioness_network)
 
     def __lioness_loop(self):
         for i in self.indexes:
@@ -67,3 +74,9 @@ class Lioness(Panda):
                 else:
                     print("Unknown format %s! Use npy format instead." % self.save_fmt)
                     np.save(path, lioness_network)
+        return lioness_network
+
+    def save_lioness_results(self, file='lioness.txt'):
+        '''Write lioness results to file.'''
+        self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
+        return None

@@ -4,11 +4,13 @@
 Usage:
   -h, --help: help
   -e, --expression: expression values
-  -m, --motif: pair file of motif edges
+  -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided
   -p, --ppi: pair file of PPI edges
   -o, --out: output file
+  -r, --rm_missing
+  -q, --lioness: output for Lioness single sample networks 
   Example:
-  python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt
+  python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt -q output_lioness.txt
 """
 import sys
 import getopt
@@ -21,13 +23,15 @@ def main(argv):
     ppi = None
     output_file = "output_panda.txt"
     rm_missing = False
+    lioness_file = False
     # Get input options
     try:
-        opts, args = getopt.getopt(argv, 'he:m:p:o:r', ['help', 'expression=', 'motif=', 'ppi=', 'out=', 'rm_missing'])
+        opts, args = getopt.getopt(argv, 'he:m:p:o:rq:', ['help', 'expression=', 'motif=', 'ppi=', 'out=', 'rm_missing', 'lioness'])
     except getopt.GetoptError:
         print(__doc__)
         sys.exit()
     for opt, arg in opts:
+        print(opt, arg)
         if opt in ('-h', '--help'):
             print(__doc__)
             sys.exit()
@@ -41,7 +45,8 @@ def main(argv):
             output_file = arg
         elif opt in ('-r', '--rm_missing'):
             rm_missing = arg
-
+        elif opt in ('-q', '--lioness'):
+            lioness_file = arg
     #Check if required options are given
     print('Input data:')
     print('Expression:', expression_data)
@@ -54,15 +59,23 @@ def main(argv):
 
     # Run PANDA
     print('Start Panda run ...')
-    panda_obj = pypanda.Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing)
+    panda_obj = pypanda.Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=bool(lioness_file))
     #panda_obj = pypanda.Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(expression_data, None, ppi, save_tmp=True, remove_missing=rm_missing)
     panda_obj.save_panda_results(output_file)
-    panda_obj.top_network_plot(top=70, file='panda_topgenes.png')
+    #panda_obj.top_network_plot(top=70, file='panda_topgenes.png')
     #indegree = panda_obj.return_panda_indegree()
     #outdegree = panda_obj.return_panda_outdegree()
+
+    if lioness_file:
+        from pypanda.lioness import Lioness
+        lioness_obj = Lioness(panda_obj)
+        #expression_matrix, motif_matrix, ppi_matrix, panda_network, start = 1, end = None, save_dir = 'lioness_output', save_fmt = 'npy'):
+        #panda_obj.expression_data,panda_obj.motif_matrix, panda_obj.ppi_matrix, panda_obj.panda_network
+        #save_dir = lioness_file
+        lioness_obj.save_lioness_results(lioness_file)
     print('All done!')
 
 if __name__ == '__main__':

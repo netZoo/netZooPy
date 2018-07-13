@@ -107,25 +107,26 @@ python setup.py install
 
 ## Usage
 #### Run from terminal
-pypanda can be run directly from the terminal with the following options:
+pypanda (or pypuma) can be run directly from the terminal with the following options:
 ```
 -h help
--e, --expression expression values
--m, --motif pair file of motif edges, when not provided analysis continues with Pearson correlation matrix
--p, --ppi pair file of PPI edges
+-e, --expression: expression values
+-m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided 
+-p, --ppi: pair file of PPI edges
 -o, --output output file
--i, --mir mir data
+-i, --mir mir data: miR file (only for pypuma)
 -r, --rm_missing
+-q, --lioness: output for Lioness single sample networks 
 ```
 To run pypanda on toy data:
 ```
-python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt
-python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_puma.txt -i ./ToyData/ToyMiRList.txt
+python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt -l output_lioness.txt
+python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_puma.txt -i ./ToyData/ToyMiRList.txt -l output_lioness.txt
 ```
-To reconstruct a single sample Lioness Pearson correlation network:
+<!--To reconstruct a single sample Lioness Pearson correlation network:
 ```
 pypanda -e ToyData/ToyExpressionData.txt -o output_puma_pearson.txt -q output_lioness_pearson.txt
-```
+```-->
 #### Run from python
 Fire up your python shell or ipython notebook. 
 Import the classes in the pypanda library:
