@@ -22,3 +22,5 @@ pypandaenv/
 .idea/
 pypuma/__pycache__
 pypuma/__pycache__/*
+Toy_Panda.pairs.txt
+Toy_Puma.pairs.txt
