@@ -3,11 +3,12 @@
 .pyc
 pypanda/*.pyc
 pypuma/*.pyc
+pypanda/output*
+pypuma/output*
 dist/
 *.egg-info/
 .DS_Store
-pypanda/*.pyc
-*.pairs
+*.pairs*
 test/
 lioness*/
 output*
