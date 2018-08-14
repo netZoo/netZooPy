@@ -14,6 +14,7 @@ output*
 .pypirc
 build/
 dist/
+pypuma.egg*
 .pypirc
 test_*.txt
 pypumaenv/
