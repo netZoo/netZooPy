@@ -147,7 +147,7 @@ puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'To
 Save the results:
 ```python
 panda_obj.save_panda_results('Toy_Panda.pairs.txt')
-panda_obj.save_panda_results('Toy_Puma.pairs.txt')
+puma_obj.save_panda_results('Toy_Puma.pairs.txt')
 ```
 Return a network plot:
 
