@@ -74,7 +74,7 @@ class Puma(object):
                 self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
 
         if self.motif_data is None:
-            print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
+            print('Returning the correlation matrix of expression data in <Puma_obj>.correlation_matrix')
             #self.panda_network = self.correlation_matrix
             self.__pearson_results_data_frame()
             return
