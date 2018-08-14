@@ -18,7 +18,7 @@ dist/
 pypuma.egg*
 .pypirc
 test_*.txt
-pypumaenv/
+pypandaenv/
 .idea/
 pypuma/__pycache__
 pypuma/__pycache__/*
