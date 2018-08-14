@@ -1,6 +1,8 @@
 *.bak
 *.log
 .pyc
+pypanda/*.pyc
+pypuma/*.pyc
 dist/
 *.egg-info/
 .DS_Store
