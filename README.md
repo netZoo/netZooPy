@@ -136,7 +136,7 @@ Fire up your python shell or ipython notebook.
 Import the classes in the pypanda library:
 ```python
 from pypanda.panda import Panda
-from pypanda.puma import Puma
+from pypuma.puma import Puma
 from pypanda.lioness import Lioness
 ```
 Run the Panda or Puma algorithms, leave out motif and PPI data to use Pearson correlation network:
@@ -170,8 +170,9 @@ Calculate outdegrees for further analysis:
 ```python
 outdegree = panda_obj.return_panda_outdegree()
 ```
-Run the Lioness algorithm for single sample networks:
+To run the Lioness algorithm for single sample networks, first run panda (or puma) using the keep_expression_matrix flag, then use lioness as follows:
 ```python
+panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
 lioness_obj = Lioness(panda_obj)
 ```
 Save Lioness results:
