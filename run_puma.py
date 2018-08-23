@@ -16,7 +16,7 @@ run_puma
 """
 import sys
 import getopt
-import pypanda
+import pypuma
 
 def main(argv):
     #Create variables
@@ -63,14 +63,14 @@ def main(argv):
 
     # Run PUMA
     print('Start Puma run ...')
-    puma_obj = pypanda.Puma(expression_data, motif, ppi, miR, save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=bool(lioness_file))
+    puma_obj = pypuma.Puma(expression_data, motif, ppi, miR, save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=bool(lioness_file))
     puma_obj.save_puma_results(output_file)
     #puma_obj.top_network_plot(top=100, file='puma_top100genes.png')
     #indegree = puma_obj.return_panda_indegree()
     #outdegree = puma_obj.return_panda_outdegree()
 
     if lioness_file:
-        from pypanda.lioness import Lioness
+        from pypuma.lioness import Lioness
         lioness_obj = Lioness(puma_obj)
         lioness_obj.save_lioness_results(lioness_file)
     print('All done!')
