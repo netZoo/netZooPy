@@ -334,6 +334,7 @@ class Panda(object):
         return self.panda_indegree
     def return_panda_outdegree(self):
         '''Return Panda outdegree.'''
-        subset_outdegree = self.export_panda_results.loc[:,['tf','force']]
+        export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
+        subset_outdegree = export_panda_results_pd.loc[:,['tf','force']]
         self.panda_outdegree = subset_outdegree.groupby('tf').sum()
         return self.panda_outdegree

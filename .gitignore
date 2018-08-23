@@ -22,5 +22,6 @@ pypandaenv/
 .idea/
 pypuma/__pycache__
 pypuma/__pycache__/*
+top*genes.png
 Toy_Panda.pairs.txt
 Toy_Puma.pairs.txt

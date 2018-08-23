@@ -320,7 +320,7 @@ class Puma(object):
         def split_label(label):
             ll = len(label)
             if ll > 6:
-                return label[0:ll/2] + '\n' + label[ll/2:]
+                return label[0:math.ceil(ll/2)] + '\n' + label[math.ceil(ll/2):]
             return label
         for i, l in enumerate(unique_genes.iloc[:,0]):
             labels[i] = split_label(l)
@@ -341,7 +341,8 @@ class Puma(object):
         self.panda_indegree = subset_indegree.groupby('gene').sum()
         return self.panda_indegree
     def return_panda_outdegree(self):
-        '''Return Panda outdegree.'''
-        subset_outdegree = self.export_panda_results.loc[:,['tf','force']]
-        self.panda_outdegree = subset_outdegree.groupby('tf').sum()
-        return self.panda_outdegree
+        '''Return Puma outdegree.'''
+        export_puma_results_pd = pd.DataFrame(self.export_puma_results,columns=['tf','gene','motif','force'])
+        subset_outdegree = export_puma_results_pd.loc[:,['tf','force']]
+        self.puma_outdegree = subset_outdegree.groupby('tf').sum()
+        return self.puma_outdegree
