@@ -170,7 +170,7 @@ Calculate outdegrees for further analysis:
 ```python
 outdegree = panda_obj.return_panda_outdegree()
 ```
-To run the Lioness algorithm for single sample networks, first run panda (or puma) using the keep_expression_matrix flag, then use lioness as follows:
+To run the Lioness algorithm for single sample networks, first run panda (or puma) using the keep_expression_matrix flag, then use Lioness as follows:
 ```python
 panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
 lioness_obj = Lioness(panda_obj)
