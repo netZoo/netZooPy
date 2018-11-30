@@ -79,11 +79,10 @@ Installing pypanda:
 (pypandaenv)$ python setup.py install
 ```
 
-Complete uninstall of pypanda:
+Complete removal of virtual environment and pypanda:
 ```no-highlight
 (pypanda)$ deactivate	#Quit virtual environment
 rm -rf pypandaenv
-TODO: write about uninstalling the setup using --record
 ```
 
 #### Using pip 
@@ -97,6 +96,10 @@ cd bin
 chmod +x pypanda
 echo "$(pwd):PATH" >> ~/.bashrc
 source ~/.bashrc
+```
+Uninstall of pypanda:
+```no-highlight
+pip uninstall pypanda
 ```
 To run pypanda from Windows (tested on Windows 10) install Git (https://git-scm.com/downloads) and Anaconda Python2.7 (https://www.continuum.io/downloads) and from the Anaconda prompt run:
 ```no-highlight
