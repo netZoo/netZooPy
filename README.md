@@ -152,35 +152,22 @@ from pypanda.panda import Panda
 from pypuma.puma import Puma
 from pypanda.lioness import Lioness
 ```
-Run the Panda or Puma algorithms, leave out motif and PPI data to use Pearson correlation network:
+Run the Panda algorithm, leave out motif and PPI data to use Pearson correlation network:
 ```python
 panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt', remove_missing=False)
-puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt','ToyData/ToyMiRList.txt')
 ```
 Save the results:
 ```python
 panda_obj.save_panda_results('Toy_Panda.pairs.txt')
-puma_obj.save_panda_results('Toy_Puma.pairs.txt')
 ```
 Return a network plot:
 
 ```python
 panda_obj.top_network_plot(top=70, file='top_genes.png')
 ```
-
-<!--
-or
-```python
-from pypanda.analyze_panda import AnalyzePanda
-plot = AnalyzePanda(panda_obj)
-plot.top_network_plot(top=100, file='top_100_genes.png')
-```-->
-Calculate indegrees for further analysis:
+Calculate in- and outdegrees for further analysis:
 ```python
 indegree = panda_obj.return_panda_indegree()
-```
-Calculate outdegrees for further analysis:
-```python
 outdegree = panda_obj.return_panda_outdegree()
 ```
 To run the Lioness algorithm for single sample networks, first run panda (or puma) using the keep_expression_matrix flag, then use Lioness as follows:
@@ -196,6 +183,11 @@ Return a network plot for one of the Lioness single sample networks:
 ```python
 plot = AnalyzeLioness(lioness_obj)
 plot.top_network_plot(column= 0, top=100, file='top_100_genes.png')
+```
+
+Run the Puma algorithm, leave out motif and PPI data to use Pearson correlation network:
+```python
+puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt','ToyData/ToyMiRList.txt')
 ```
 
 ## Toy data
