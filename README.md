@@ -61,23 +61,24 @@ Hamming distance is calculated every iteration.
 
 
 ## Installation
-PyPanda runs on both Python 2.7 and Python 3.4. We recommend the following commands to install pypandas on UNIX systems:
+PyPanda runs on both Python 2.7. We recommend the following commands to install pypandas on UNIX systems:
 #### Using  a virtual environment
 Using [python virtual environments](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
-Cloning git and setting up a [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
+Cloning git and getting up a [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
 ```no-highlight
 pip install --user pipenv   #Make sure you have pipenv
 git clone https://github.com/aless80/pypanda.git
 cd pypanda
+```
+Creating a virtual environment and installing pypanda:
+```no-highlight
 virtualenv pypandaenv #virtual environment created in a folder inside the git folder 
 source pypandaenv/bin/activate
-```
-Installing pypanda:
-```no-highlight
 (pypandaenv)$ pip install -r requirements.txt
-(pypandaenv)$ python setup.py install
+(pypandaenv)$ python setup.py install --record files.txt
 ```
+
 
 Complete removal of virtual environment and pypanda:
 ```no-highlight
@@ -97,7 +98,10 @@ chmod +x pypanda
 echo "$(pwd):PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
-Uninstall pypanda:
+Uninstall pypanda from virtual environment:
+```no-highlight
+cat files.txt | xargs rm -rf
+```
 ```no-highlight
 pip uninstall pypanda
 ```
@@ -215,3 +219,8 @@ Sample1 Sample2 Sample3 Sample4
 
 TF, Gene and Motif order is identical to the panda output file.
 ```
+
+
+<!--
+	name 'xrange' is not defined
+	-->
