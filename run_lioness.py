@@ -59,7 +59,8 @@ def main(argv):
 
 
     #Check if required options are given
-    if expression_data and motif and ppi and panda_net and save_dir and save_fmt:
+    if expression_data is None or motif is None or ppi is None \
+            or panda_net is None or save_dir is None or save_fmt is None:
         print('Input data:')
         print('Expression:   ', expression_data)
         print('Motif matrix: ', motif)

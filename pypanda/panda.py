@@ -99,7 +99,8 @@ class Panda(object):
         # =====================================================================
         with Timer('Normalizing networks ...'):
             self.correlation_matrix = self._normalize_network(self.correlation_matrix)
-            self.motif_matrix = self._normalize_network(self.motif_matrix_unnormalized)
+            with np.errstate(invalid='ignore'): #silly warning bothering people
+                self.motif_matrix = self._normalize_network(self.motif_matrix_unnormalized)
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
         
         # =====================================================================

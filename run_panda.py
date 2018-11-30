@@ -51,7 +51,7 @@ def main(argv):
     print('Expression:', expression_data)
     print('Motif data:', motif)
     print('PPI data:', ppi)
-    if not expression_data and not motif and not ppi:
+    if expression_data is None or motif is None or ppi is None:
         print('Missing inputs!')
         print(__doc__)
         sys.exit()
