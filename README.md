@@ -61,11 +61,11 @@ Hamming distance is calculated every iteration.
 
 
 ## Installation
-PyPanda runs on both Python 2.7. We recommend the following commands to install pypandas on UNIX systems:
+PyPanda runs on Python 2.7. We recommend the following commands to install pypandas on UNIX systems:
 #### Using  a virtual environment
 Using [python virtual environments](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
-Cloning git and getting up a [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
+Cloning git and setting up a [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
 ```no-highlight
 pip install --user pipenv   #Make sure you have pipenv
 git clone https://github.com/aless80/pypanda.git
