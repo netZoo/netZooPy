@@ -56,6 +56,7 @@ def main(argv):
     print('Expression:', expression_data)
     print('Motif data:', motif)
     print('PPI data:', ppi)
+    print('miR file:', miR)
     if (expression_data is None and motif is None) or miR is None:
         print('Missing inputs!')
         print(__doc__)
@@ -70,7 +71,7 @@ def main(argv):
     #outdegree = puma_obj.return_panda_outdegree()
 
     if lioness_file:
-        from pypuma.lioness import Lioness
+        from pypuma.lioness_for_puma import Lioness
         lioness_obj = Lioness(puma_obj)
         lioness_obj.save_lioness_results(lioness_file)
     print('All done!')

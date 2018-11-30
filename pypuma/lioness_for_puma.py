@@ -30,6 +30,8 @@ class Lioness(Puma):
             else:
                 print('Cannot find puma network in object')
                 raise AttributeError('Cannot find puma network in object')
+            # Alessandro
+            self.s1 = obj.s1
             del obj
 
         # Get sample range to iterate

@@ -128,7 +128,7 @@ To run pypanda on toy data:
 ```
 python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt
 ```
-To reconstruct a single sample Lioness Pearson correlation network:
+To reconstruct a single sample Lioness Pearson correlation network (this can take some time):
 ```python
 python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt -q output_lioness.txt
 ```
@@ -137,7 +137,7 @@ To run pypuma on toy data:
 ```python
 python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_puma.txt -i ./ToyData/ToyMiRList.txt
 ```
-To reconstruct a single sample Lioness Pearson correlation network using pypuma:
+To reconstruct a single sample Lioness Pearson correlation network using pypuma (this can take some time):
 ```python
 python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o output_puma.txt -q output_lioness.txt
 ```
@@ -225,8 +225,3 @@ Sample1 Sample2 Sample3 Sample4
 
 TF, Gene and Motif order is identical to the panda output file.
 ```
-
-
-<!--
-	name 'xrange' is not defined
-	-->
