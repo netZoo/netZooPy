@@ -2,16 +2,16 @@ from __future__ import print_function
 
 import os, os.path
 import numpy as np
-from .panda import Panda
+from .puma import Puma
 from .timer import Timer
 
-class Lioness(Panda):
+class Lioness(Puma):
     """Using LIONESS to infer single-sample gene regulatory networks.
 
-    1. Reading in PANDA network and preprocessed middle data
+    1. Reading in PUMA network and preprocessed middle data
     2. Computing coexpression network
     3. Normalizing coexpression network
-    4. Running PANDA algorithm
+    4. Running PUMA algorithm
     5. Writing out LIONESS networks
 
     Authors: cychen, davidvi
@@ -23,13 +23,13 @@ class Lioness(Panda):
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
-            if hasattr(obj,'panda_network'):
-                self.network = obj.panda_network
+            if hasattr(obj,'puma_network'):
+                self.network = obj.puma_network
             elif hasattr(obj,'puma_network'):
                 self.network = obj.puma_network
             else:
-                print('Cannot find panda or puma network in object')
-                raise AttributeError('Cannot find panda or puma network in object')
+                print('Cannot find puma network in object')
+                raise AttributeError('Cannot find puma network in object')
             del obj
 
         # Get sample range to iterate
@@ -63,8 +63,8 @@ class Lioness(Panda):
                 correlation_matrix = self._normalize_network(correlation_matrix)
 
             with Timer("Inferring LIONESS network:"):
-                subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix))
-                lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
+                subset_puma_network = self.puma_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix))
+                lioness_network = self.n_conditions * (self.network - subset_puma_network) + subset_puma_network
 
             with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
                 path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))

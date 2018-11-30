@@ -75,7 +75,7 @@ class Puma(object):
 
         if self.motif_data is None:
             print('Returning the correlation matrix of expression data in <Puma_obj>.correlation_matrix')
-            #self.panda_network = self.correlation_matrix
+            #self.puma_network = self.correlation_matrix
             self.__pearson_results_data_frame()
             return
         # Auxiliary dicts
@@ -255,9 +255,9 @@ class Puma(object):
         '''Results to data frame.'''
         genes_1 = np.tile(self.gene_names, (len(self.gene_names), 1)).flatten()
         genes_2 = np.tile(self.gene_names, (len(self.gene_names), 1)).transpose().flatten()
-        self.flat_panda_network = self.panda_network.transpose().flatten()
-        self.export_panda_results = pd.DataFrame({'tf':genes_1, 'gene':genes_2, 'force':self.flat_panda_network})
-        self.export_panda_results = self.export_panda_results[['tf', 'gene', 'force']]
+        self.flat_puma_network = self.puma_network.transpose().flatten()
+        self.export_puma_results = pd.DataFrame({'tf':genes_1, 'gene':genes_2, 'force':self.flat_puma_network})
+        self.export_puma_results = self.export_puma_results[['tf', 'gene', 'force']]
         return None
 
     def save_puma_results(self, path='puma.npy'):
@@ -334,13 +334,13 @@ class Puma(object):
         plt.savefig(file, dpi=300)
         return None
 
-    def return_panda_indegree(self):
-        '''Return Panda indegree.'''
-        #subset_indegree = self.export_panda_results.loc[:,['gene','force']]
-        subset_indegree = self.panda_results.loc[:,['gene','force']]
-        self.panda_indegree = subset_indegree.groupby('gene').sum()
-        return self.panda_indegree
-    def return_panda_outdegree(self):
+    def return_puma_indegree(self):
+        '''Return Puma indegree.'''
+        #subset_indegree = self.export_puma_results.loc[:,['gene','force']]
+        subset_indegree = self.puma_results.loc[:,['gene','force']]
+        self.puma_indegree = subset_indegree.groupby('gene').sum()
+        return self.puma_indegree
+    def return_puma_outdegree(self):
         '''Return Puma outdegree.'''
         export_puma_results_pd = pd.DataFrame(self.export_puma_results,columns=['tf','gene','motif','force'])
         subset_outdegree = export_puma_results_pd.loc[:,['tf','force']]
