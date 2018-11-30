@@ -61,7 +61,7 @@ Hamming distance is calculated every iteration.
 
 
 ## Installation
-PyPanda runs on Python 2.7. We recommend the following commands to install pypandas on UNIX systems:
+PyPanda runs on Python 2.7. You can either run the pypanda script directly (see [Usage](#usage)) or install it on your system. We recommend the following commands to install pypandas on UNIX systems:
 #### Using  a virtual environment
 Using [python virtual environments](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
@@ -144,7 +144,8 @@ python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.
 For pypuma see also [PyPuma](https://github.com/aless80/pypuma#installation). 
 
 #### Run from python
-Fire up your python shell or ipython notebook. Use the python installation in the virtual environment. 
+Fire up your python shell or ipython notebook. Use the python installation in the virtual environment if you installed pypanda there. 
+
 Import the classes in the pypanda library:
 ```python
 from pypanda.panda import Panda
