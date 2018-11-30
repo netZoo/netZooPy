@@ -144,7 +144,7 @@ python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.
 For pypuma see also [PyPuma](https://github.com/aless80/pypuma#installation). 
 
 #### Run from python
-Fire up your python shell or ipython notebook. 
+Fire up your python shell or ipython notebook. Use the python installation in the virtual environment. 
 Import the classes in the pypanda library:
 ```python
 from pypanda.panda import Panda
