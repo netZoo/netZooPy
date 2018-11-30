@@ -97,7 +97,7 @@ chmod +x pypanda
 echo "$(pwd):PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
-Uninstall of pypanda:
+Uninstall pypanda:
 ```no-highlight
 pip uninstall pypanda
 ```
