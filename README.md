@@ -78,8 +78,10 @@ source pypandaenv/bin/activate
 (pypandaenv)$ pip install -r requirements.txt
 (pypandaenv)$ python setup.py install --record files.txt
 ```
-
-
+Uninstall pypanda from virtual environment:
+```no-highlight
+cat files.txt | xargs rm -rf
+```
 Complete removal of virtual environment and pypanda:
 ```no-highlight
 (pypanda)$ deactivate	#Quit virtual environment
@@ -98,10 +100,7 @@ chmod +x pypanda
 echo "$(pwd):PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
-Uninstall pypanda from virtual environment:
-```no-highlight
-cat files.txt | xargs rm -rf
-```
+
 ```no-highlight
 pip uninstall pypanda
 ```
