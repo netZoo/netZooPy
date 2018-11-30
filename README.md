@@ -139,7 +139,7 @@ python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.
 ```
 To reconstruct a single sample Lioness Pearson correlation network using pypuma:
 ```python
-python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
+python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o output_puma.txt -q output_lioness.txt
 ```
 For pypuma see also [PyPuma](https://github.com/aless80/pypuma#installation). 
 
