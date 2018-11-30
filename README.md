@@ -119,8 +119,8 @@ pypanda (or pypuma) can be run directly from the terminal with the following opt
 -e, --expression: expression values
 -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided 
 -p, --ppi: pair file of PPI edges
--o, --output output file
--i, --mir mir data: miR file (only for pypuma)
+-o, --output: output file
+-i, --mir: mir data miR file (only for pypuma)
 -r, --rm_missing
 -q, --lioness: output for Lioness single sample networks 
 ```
