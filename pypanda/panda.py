@@ -330,7 +330,8 @@ class Panda(object):
     def return_panda_indegree(self):
         '''Return Panda indegree.'''
         #subset_indegree = self.export_panda_results.loc[:,['gene','force']]
-        subset_indegree = self.panda_results.loc[:,['gene','force']]
+        export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
+        subset_indegree = export_panda_results_pd.loc[:,['gene','force']]
         self.panda_indegree = subset_indegree.groupby('gene').sum()
         return self.panda_indegree
     def return_panda_outdegree(self):
