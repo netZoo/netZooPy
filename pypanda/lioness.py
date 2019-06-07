@@ -2,7 +2,7 @@
 
 import os, os.path
 import numpy as np
-from .panda import Panda
+# from .panda import Panda
 # from .timer import Timer
 
 class Timer(object):
