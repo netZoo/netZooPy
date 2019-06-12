@@ -56,7 +56,7 @@ class Lioness(Panda):
             os.makedirs(save_dir)
 
         # Run LIONESS
-        self.lioness_network = self.__lioness_loop()
+        self.total_lioness_network = self.__lioness_loop()
 
         # create result data frame
         #self.export_lioness_results = pd.DataFrame(self.lioness_network)
@@ -91,10 +91,15 @@ class Lioness(Panda):
                 else:
                     print("Unknown format %s! Use npy format instead." % self.save_fmt)
                     np.save(path, lioness_network)
-        return lioness_network
+            if i == 0:
+                self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+            else:
+                self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
+
+        return self.total_lioness_network
 
     def save_lioness_results(self, file='lioness.txt'):
         '''Write lioness results to file.'''
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
-        np.savetxt(file, self.lioness_network, delimiter="\t",header="")
+        np.savetxt(file, self.total_lioness_network, delimiter="\t",header="")
         return None
