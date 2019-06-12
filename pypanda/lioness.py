@@ -5,18 +5,6 @@ import numpy as np
 # from .panda import Panda
 # from .timer import Timer
 
-class Timer(object):
-    def __init__(self, name=None):
-        if name:
-            print(name)
-
-    def __enter__(self):
-        self.tic = time.time()
-
-    def __exit__(self, type, value, traceback):
-        print('  Elapsed time: %.2f sec.' % (time.time() - self.tic))
-
-
 
 class Lioness(Panda):
     """Using LIONESS to infer single-sample gene regulatory networks.
