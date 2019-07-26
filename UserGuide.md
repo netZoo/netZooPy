@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# netZooPy
-=======
 ## Description
 Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), 
 which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda).  
@@ -220,4 +217,3 @@ Sample1 Sample2 Sample3 Sample4
 
 TF, Gene and Motif order is identical to the panda output file.
 ```
->>>>>>> pypanda/devel-update
