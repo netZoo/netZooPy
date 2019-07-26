@@ -1,11 +1,25 @@
-from __future__ import print_function
+# from __future__ import print_function
 
 import math
 import time
 import pandas as pd
 import numpy as np
 from scipy.stats import zscore
-from .timer import Timer
+# from .timer import Timer
+
+
+class Timer(object):
+    def __init__(self, name=None):
+        if name:
+            print(name)
+
+    def __enter__(self):
+        self.tic = time.time()
+
+    def __exit__(self, type, value, traceback):
+        print('  Elapsed time: %.2f sec.' % (time.time() - self.tic))
+
+
 
 class Panda(object):
     """ Using PANDA to infer gene regulatory network.
