@@ -44,6 +44,7 @@ class Panda(object):
                 print('Unique TFs:', self.num_tfs)
         else:
             self.motif_data = None
+            self.num_tfs    = 0
 
         if expression_file:
             with Timer('Loading expression data ...'):
@@ -83,6 +84,7 @@ class Panda(object):
         if self.motif_data is None:
             print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
             #self.panda_network = self.correlation_matrix
+            self.panda_network = self.correlation_matrix
             self.__pearson_results_data_frame()
             return
         # Auxiliary dicts
