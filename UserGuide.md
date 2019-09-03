@@ -1,7 +1,9 @@
 ## Description
-Forked from [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), 
-which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda).  
-Compared to QuackenbushLab/pypanda this repository adds the Python implementation of PUMA ([run_puma.py](run_puma.py) and [pypanda/puma.py](pypanda/puma.py)). 
+This repo is based on the following repos:
+- [https://github.com/aless80/pypanda](https://github.com/aless80/pypanda),
+- [https://github.com/QuackenbushLab/pypanda](https://github.com/QuackenbushLab/pypanda), 
+- which was based on [https://github.com/davidvi/pypanda](https://github.com/davidvi/pypanda).  
+- Compared to QuackenbushLab/pypanda this repository adds the Python implementation of PUMA ([run_puma.py](netZooPy/netZooPy/pypuma/run_puma.py) and [netZooPy/netZooPy/pypuma/puma.py](pypanda/puma.py)). 
 NaN values in normalized matrices are replaced with values normalized by the overall z-score. This allows running the Toy Data provided in this repository.   
   
 ## Table of Contents
@@ -25,7 +27,8 @@ C and MATLAB code: [https://github.com/mararie/PUMA](https://github.com/mararie/
 _Glass K, Huttenhower C, Quackenbush J, Yuan GC. Passing Messages Between Biological Networks to Refine Predicted Interactions, PLoS One, 2013 May 31;8(5):e64832_  
 Original PANDA C++ code: [http://sourceforge.net/projects/panda-net/](http://sourceforge.net/projects/panda-net/).  
 
-* **[LIONESS](https://arxiv.org/abs/1505.06440)** (Linear Interpolation to Obtain Network Estimates for Single Samples)   
+* **[LIONESS](https://arxiv.org/abs/1505.06440)** (Linear Interpolation to Obtain Network Estimates for Single Samples)
+* **[LIONESSR](https://doi.org/10.1016/j.isci.2019.03.02)** The R version   
 _Marieke Lydia Kuijjer, Matthew Tung,GuoCheng Yuan,John Quackenbush, Kimberly Glass. Estimating sample-specific regulatory networks_  
 
 LIONESS can be used to estimate single-sample networks using aggregate networks made with any network reconstruction algorithm (http://arxiv.org/pdf/1505.06440.pdf).
@@ -61,22 +64,22 @@ Hamming distance is calculated every iteration.
 
 
 ## Installation
-PyPanda runs on Python 2.7. You can either run the pypanda script directly (see [Usage](#usage)) or install it on your system. We recommend the following commands to install pypandas on UNIX systems:
+PyPanda runs on Python 3. You can either run the pypanda script directly (see [Usage](#usage)) or install it on your system. We recommend the following commands to install pypandas on UNIX systems:
 #### Using  a virtual environment
 Using [python virtual environments](http://docs.python-guide.org/en/latest/dev/virtualenvs/) is the cleanest installation method. 
 
 Cloning git and setting up a [python virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/):
 ```no-highlight
 pip install --user pipenv   #Make sure you have pipenv
-git clone https://github.com/aless80/pypanda.git
-cd pypanda
+git clone https://github.com/netZoo/netZooPy.git
+cd netZooPy
 ```
 Creating a virtual environment and installing pypanda:
 ```no-highlight
 virtualenv pypandaenv #virtual environment created in a folder inside the git folder 
 source pypandaenv/bin/activate
-(pypandaenv)$ pip install -r requirements.txt
-(pypandaenv)$ python setup.py install --record files.txt
+(pypandaenv)$ pip3 install -r requirements.txt
+(pypandaenv)$ python3 setup.py install --record files.txt
 ```
 Uninstall pypanda from virtual environment:
 ```no-highlight
@@ -91,9 +94,9 @@ rm -rf pypandaenv
 #### Using pip 
 Never use ~~sudo pip~~. Instead you can use pip on the user's install directory:
 ```no-highlight
-git clone https://github.com/aless80/pypanda.git
+git clone https://github.com/netZooPy/netZooPy.git
 cd pypanda
-python setup.py install --user
+python3 setup.py install --user
 #to run from the command line you will need to make pypanda executable and add the bin directory to your PATH:
 cd bin
 chmod +x pypanda
@@ -104,11 +107,11 @@ source ~/.bashrc
 ```no-highlight
 pip uninstall pypanda
 ```
-To run pypanda from Windows (tested on Windows 10) install Git (https://git-scm.com/downloads) and Anaconda Python2.7 (https://www.continuum.io/downloads) and from the Anaconda prompt run:
+To run pypanda from Windows (tested on Windows 10) install Git (https://git-scm.com/downloads) and Anaconda Python3 (https://www.continuum.io/downloads) and from the Anaconda prompt run:
 ```no-highlight
-git clone https://github.com/aless80/pypanda.git
-cd pypanda
-python setup.py install
+git clone https://github.com/netZooPy/netZooPy.git
+cd netZooPy
+python3 setup.py install
 ```
 
 ## Usage
@@ -130,18 +133,18 @@ python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData
 ```
 To reconstruct a single sample Lioness Pearson correlation network (this can take some time):
 ```python
-python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_panda.txt -q output_lioness.txt
+python3 run_panda.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o output_panda.txt -q output_lioness.txt
 ```
 
 To run pypuma on toy data:
 ```python
-python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o output_puma.txt -i ./ToyData/ToyMiRList.txt
+python3 run_puma.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o output_puma.txt -i ../../tests//ToyData/ToyMiRList.txt
 ```
 To reconstruct a single sample Lioness Pearson correlation network using pypuma (this can take some time):
 ```python
-python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o output_puma.txt -q output_lioness.txt
+python3 run_puma.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -i ../../tests/ToyData/ToyMiRList.txt -o output_puma.txt -q output_lioness.txt
 ```
-For pypuma see also [PyPuma](https://github.com/aless80/pypuma#installation). 
+For pypuma see also [PyPuma](https://github.com/netZooPy/netZooPy/pypuma#installation). 
 
 #### Run from python
 Fire up your python shell or ipython notebook. Use the python installation in the virtual environment if you installed pypanda there. 
@@ -154,7 +157,7 @@ from pypanda.lioness import Lioness
 ```
 Run the Panda algorithm, leave out motif and PPI data to use Pearson correlation network:
 ```python
-panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt', remove_missing=False)
+panda_obj = Panda('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False)
 ```
 Save the results:
 ```python
@@ -172,7 +175,7 @@ outdegree = panda_obj.return_panda_outdegree()
 ```
 To run the Lioness algorithm for single sample networks, first run panda (or puma) using the keep_expression_matrix flag, then use Lioness as follows:
 ```python
-panda_obj = Panda('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
+panda_obj = Panda('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
 lioness_obj = Lioness(panda_obj)
 ```
 Save Lioness results:
@@ -187,7 +190,7 @@ plot.top_network_plot(column= 0, top=100, file='top_100_genes.png')
 
 Run the Puma algorithm, leave out motif and PPI data to use Pearson correlation network:
 ```python
-puma_obj = Puma('ToyData/ToyExpressionData.txt', 'ToyData/ToyMotifData.txt', 'ToyData/ToyPPIData.txt','ToyData/ToyMiRList.txt')
+puma_obj = Puma('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt','../../tests/ToyData/ToyMiRList.txt')
 ```
 
 ## Toy data

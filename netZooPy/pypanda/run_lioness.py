@@ -16,7 +16,7 @@ Usage:
 """
 import sys
 import getopt
-import pypanda
+from lioness import Lioness
 
 def main(argv):
     #Create variables
@@ -76,7 +76,7 @@ def main(argv):
 
     # Run panda
     print('Start LIONESS run ...')
-    L = pypanda.Lioness(expression_data, motif, ppi, panda_net, start=start, end=end, save_dir=save_dir, save_fmt=save_fmt)
+    L = Lioness(expression_data, motif, ppi, panda_net, start=start, end=end, save_dir=save_dir, save_fmt=save_fmt)
     print('All done!')
 
 if __name__ == '__main__':

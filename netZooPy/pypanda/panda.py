@@ -5,7 +5,7 @@ import time
 import pandas as pd
 import numpy as np
 from scipy.stats import zscore
-from .timer import Timer
+from timer import Timer
 
 class Panda(object):
     """ Using PANDA to infer gene regulatory network.
@@ -327,7 +327,7 @@ class Panda(object):
         plt.savefig(file, dpi=300)
         return None
 
-   def return_panda_indegree(self):
+    def return_panda_indegree(self):
         '''Return Panda indegree.'''
         #subset_indegree = self.export_panda_results.loc[:,['gene','force']]
         export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
@@ -335,6 +335,7 @@ class Panda(object):
         subset_indegree['force']=pd.to_numeric(subset_indegree.force)
         self.panda_indegree = subset_indegree.groupby('gene').sum()
         return self.panda_indegree
+    
     def return_panda_outdegree(self):
         '''Return Panda outdegree.'''
         export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
