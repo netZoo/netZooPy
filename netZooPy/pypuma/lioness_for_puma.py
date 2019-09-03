@@ -2,8 +2,8 @@ from __future__ import print_function
 
 import os, os.path
 import numpy as np
-from .puma import Puma
-from .timer import Timer
+from puma import Puma
+from timer import Timer
 
 class Lioness(Puma):
     """Using LIONESS to infer single-sample gene regulatory networks.
