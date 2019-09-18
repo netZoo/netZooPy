@@ -77,8 +77,8 @@ class Panda(object):
 
         with Timer('Creating motif network ...'):
             self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
-            idx_tfs = [tf2idx[x] for x in self.motif_data[0]]
-            idx_genes = [gene2idx[x] for x in self.motif_data[1]]
+            idx_tfs = [tf2idx.get(x, 0) for x in self.motif_data[0]]
+            idx_genes = [gene2idx.get(x, 0) for x in self.motif_data[1]]
             idx = np.ravel_multi_index((idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape)
             self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
 
@@ -87,8 +87,8 @@ class Panda(object):
         else:
             with Timer('Creating PPI network ...'):
                 self.ppi_matrix = np.identity(self.num_tfs)
-                idx_tf1 = [tf2idx[x] for x in self.ppi_data[0]]
-                idx_tf2 = [tf2idx[x] for x in self.ppi_data[1]]
+                idx_tf1 = [tf2idx.get(x, 0) for x in self.ppi_data[0]]
+                idx_tf2 = [tf2idx.get(x, 0) for x in self.ppi_data[1]]
                 idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
                 self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
                 idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
