@@ -5,6 +5,8 @@ python:
 
 install:
    - pip install -r requirements.txt
+   - cd netZooPy
+   - pip install .
 
 script: 
    - pytest

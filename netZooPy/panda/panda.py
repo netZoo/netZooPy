@@ -28,7 +28,7 @@ class Panda(object):
         # =====================================================================
         if motif_file is not None:
             with Timer('Loading motif data ...'):
-                self.motif_data = pd.read_table(motif_file, sep='\t', header=None)
+                self.motif_data = pd.read_csv(motif_file, sep='\t', header=None)
                 self.unique_tfs = sorted(set(self.motif_data[0]))
                 self.num_tfs = len(self.unique_tfs)
                 print('Unique TFs:', self.num_tfs)
@@ -37,7 +37,7 @@ class Panda(object):
 
         if expression_file:
             with Timer('Loading expression data ...'):
-                self.expression_data = pd.read_table(expression_file, sep='\t', header=None, index_col=0)
+                self.expression_data = pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
                 self.gene_names = self.expression_data.index.tolist()
                 self.num_genes = len(self.gene_names)
                 print('Expression matrix:', self.expression_data.shape)
@@ -49,7 +49,7 @@ class Panda(object):
 
         if ppi_file:
             with Timer('Loading PPI data ...'):
-                self.ppi_data = pd.read_table(ppi_file, sep='\t', header=None)
+                self.ppi_data = pd.read_csv(ppi_file, sep='\t', header=None)
                 print('Number of PPIs:', self.ppi_data.shape[0])
         else:
             print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
@@ -126,7 +126,7 @@ class Panda(object):
 
         # Clean up useless variables to release memory
         if keep_expression_matrix:
-            self.expression_matrix = self.expression_data.as_matrix()
+            self.expression_matrix = self.expression_data.values()
         del self.expression_data
 
         # =====================================================================
