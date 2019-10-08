@@ -6,15 +6,19 @@ from puma import Puma
 from timer import Timer
 
 class Lioness(Puma):
-    """Using LIONESS to infer single-sample gene regulatory networks.
+    """
+    Description:
+         Using LIONESS to infer single-sample gene regulatory networks.
 
-    1. Reading in PUMA network and preprocessed middle data
-    2. Computing coexpression network
-    3. Normalizing coexpression network
-    4. Running PUMA algorithm
-    5. Writing out LIONESS networks
+    Usage:
+        1. Reading in PUMA network and preprocessed middle data
+        2. Computing coexpression network
+        3. Normalizing coexpression network
+        4. Running PUMA algorithm
+        5. Writing out LIONESS networks
 
-    Authors: cychen, davidvi
+    Authors: 
+        cychen, davidvi
     """
 
     def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Run PUMA algorithm from the command line.
+"""
+Description:
+Run PUMA algorithm from the command line.
 
 Usage:
 run_puma
@@ -11,6 +13,7 @@ run_puma
   -o, --out: output file
   -r, --rm_missing
   -q, --lioness: output for Lioness single sample networks 
+
   Example:
   python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
 """
