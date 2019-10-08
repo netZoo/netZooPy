@@ -19,5 +19,5 @@ def test_panda():
     res=pd.read_csv(gt_file, sep='\t', header=None)
     gt =pd.read_csv(output_file, sep='\t', header=None)
 
-    assert(res.equals(gt))
+    pandas.testing.assert_frame_equal(res,gt,check_less_precise=True)
     print('Test panda passed was successful!')
