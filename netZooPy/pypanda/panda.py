@@ -12,12 +12,12 @@ class Panda(object):
     Description:
        Using PANDA to infer gene regulatory network.
 
-    Usage
-    1. Reading in input data (expression data, motif prior, TF PPI data)
-    2. Computing coexpression network
-    3. Normalizing networks
-    4. Running PANDA algorithm
-    5. Writing out PANDA network
+    Usage:
+    	1. Reading in input data (expression data, motif prior, TF PPI data)
+    	2. Computing coexpression network
+    	3. Normalizing networks
+    	4. Running PANDA algorithm
+    	5. Writing out PANDA network
 
     Authors: 
        cychen, davidvi, alessandromarin

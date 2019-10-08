@@ -8,15 +8,19 @@ from scipy.stats import zscore
 from timer import Timer
 
 class Puma(object):
-    """ Using PUMA to infer gene regulatory network.
+    """ 
+    Description:
+        Using PUMA to infer gene regulatory network.
 
-    1. Reading in input data (expression data, motif prior, TF PPI data, miR)
-    2. Computing coexpression network
-    3. Normalizing networks
-    4. Running PUMA algorithm
-    5. Writing out PUMA network
+    Usage:
+        1. Reading in input data (expression data, motif prior, TF PPI data, miR)
+        2. Computing coexpression network
+        3. Normalizing networks
+        4. Running PUMA algorithm
+        5. Writing out PUMA network
 
-    Authors: cychen, davidvi, alessandromarin
+    Authors: 
+        cychen, davidvi, alessandromarin
     """
     def __init__(self, expression_file, motif_file, ppi_file, mir_file, save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
         # =====================================================================
