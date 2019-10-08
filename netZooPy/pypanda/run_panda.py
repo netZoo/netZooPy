@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Run PANDA algorithm from the command line.
+"""
+Description:
+   Run PANDA algorithm from the command line.
 
 Usage:
   -h, --help: help
@@ -9,8 +11,9 @@ Usage:
   -o, --out: output file
   -r, --rm_missing
   -q, --lioness: output for Lioness single sample networks 
-  Example:
-  python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_puma.txt -q output_lioness.txt
+  
+Example:
+  python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
 """
 import sys
 import getopt

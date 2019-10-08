@@ -7,15 +7,19 @@ from timer import Timer
 
 
 class Lioness(Panda):
-    """Using LIONESS to infer single-sample gene regulatory networks.
+    """
+    Description:
+       Using LIONESS to infer single-sample gene regulatory networks.
 
-    1. Reading in PANDA network and preprocessed middle data
-    2. Computing coexpression network
-    3. Normalizing coexpression network
-    4. Running PANDA algorithm
-    5. Writing out LIONESS networks
+    Usage:
+       1. Reading in PANDA network and preprocessed middle data
+       2. Computing coexpression network
+       3. Normalizing coexpression network
+       4. Running PANDA algorithm
+       5. Writing out LIONESS networks
 
-    Authors: cychen, davidvi
+    Authors: 
+       cychen, davidvi
     """
 
     def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
