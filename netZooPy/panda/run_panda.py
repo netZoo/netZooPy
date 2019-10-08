@@ -72,7 +72,7 @@ def main(argv):
     #outdegree = panda_obj.return_panda_outdegree()
 
     if lioness_file:
-        from lioness import Lioness
+        from netZooPy.lioness.lioness import Lioness
         lioness_obj = Lioness(panda_obj)
         lioness_obj.save_lioness_results(lioness_file)
     print('All done!')
