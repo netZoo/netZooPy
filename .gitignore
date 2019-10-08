@@ -29,3 +29,4 @@ test.py
 files.txt
 *.pyc
 travis_*.txt
+*.npy
