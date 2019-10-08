@@ -17,7 +17,7 @@ Example:
 """
 import sys
 import getopt
-from panda import Panda
+from netZooPy.panda.panda import Panda
 
 def main(argv):
     #Create variables

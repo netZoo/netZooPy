@@ -283,9 +283,9 @@
 
 ## lioness_for_puma
 
-### class Lioness
+### class LionessPuma
 
-    Lioness(Puma)
+    LionessPuma(Puma)
 
     Description:
          Using LIONESS to infer single-sample gene regulatory networks.

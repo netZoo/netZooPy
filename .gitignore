@@ -27,3 +27,4 @@ Toy_Panda.pairs.txt
 Toy_Puma.pairs.txt
 test.py
 files.txt
+*.pyc

@@ -6,6 +6,18 @@ To install netZooPy on your computer, please check the following requirements:
 
 - Python 3
 
+In addition to the following pip packages:
+
+- networkx
+
+- numpy
+
+- pandas
+
+- matplotlib
+
+- scipy
+
 ## Install
 
 - git clone https://github.com/netZoo/netZooPy.git
