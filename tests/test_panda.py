@@ -16,7 +16,7 @@ def test_panda():
     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=False, remove_missing=rm_missing,
                       keep_expression_matrix=bool(lioness_file))
     panda_obj.save_panda_results(output_file)
-    res=pd.read_csv('test_panda.txt', sep='\t', header=None)
+    res=pd.read_csv(gt_file, sep='\t', header=None)
     gt =pd.read_csv(output_file, sep='\t', header=None)
 
     assert(res.equals(gt))
