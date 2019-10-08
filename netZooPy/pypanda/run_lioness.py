@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Run LIONESS algorithm from the command line.
+"""
+Description:
+  Run LIONESS algorithm from the command line.
 
 Usage:
   -h, --help: help
@@ -11,7 +13,8 @@ Usage:
   -f, --format: output format (txt, npy, or mat)
   start: to start from nth sample (optional)
   end: to end at nth sample (optional, must with start)
-  Example:
+  
+Example:
   python run_lioness.py -e expression.npy -m motif.npy -p ppi.npy -n panda.npy -o /tmp -f npy 1 100
 """
 import sys
