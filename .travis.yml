@@ -8,7 +8,7 @@ install:
    - pip3 install pytest
    - pwd
    - pip3 install -e .
-   - pip3 install --user codecov
+   - pip3 install codecov
 
 script: 
    - pytest
