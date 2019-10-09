@@ -12,7 +12,7 @@ install:
    - pip install pytest-cov
 
 script: 
-   - pytest --cov=netZooPy netZooPy
+   - pytest --cov=netZooPy tests
 
 branches:
   only:
