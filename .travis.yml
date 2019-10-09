@@ -13,5 +13,10 @@ install:
 script: 
    - pytest
 
+branches:
+  only:
+  - master
+  - devel
+
 after_success:
    - codecov
