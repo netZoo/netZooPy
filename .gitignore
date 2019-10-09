@@ -10,7 +10,7 @@ dist/
 .DS_Store
 *.pairs*
 test/
-lioness*/
+lioness_output/
 output*
 .pypirc
 build/
@@ -27,3 +27,6 @@ Toy_Panda.pairs.txt
 Toy_Puma.pairs.txt
 test.py
 files.txt
+*.pyc
+travis_*.txt
+*.npy
