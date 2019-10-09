@@ -13,6 +13,12 @@ netZooPy is a Python package of network methods.
 ## Quick guide
 `git clone https://github.com/netZoo/netZooPy.git` into your local disk.
 
+Then `cd netZooPy`
+
+and install netZooPy through pip `pip3 install -e .`
+
+Upon completion you can load netZooPy in your python code `import netZooPy`
+
 ## User guide
 Please refer to the [user guide](UserGuide.md) and the [documentation](https://netzoopy.readthedocs.io/en/latest/) website for installation instructions and usage.
 
