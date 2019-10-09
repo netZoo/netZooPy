@@ -9,9 +9,15 @@ install:
    - pwd
    - pip3 install -e .
    - pip3 install codecov
+   - pip install pytest-cov
 
 script: 
-   - pytest
+   - pytest --cov=netZooPy tests
+
+branches:
+  only:
+  - master
+  - devel
 
 after_success:
    - codecov

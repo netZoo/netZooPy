@@ -1,6 +1,28 @@
 # Functions
 
-## Panda
+## netZooPy.panda
+
+### analyze_panda
+
+#### class AnalyzePanda
+
+     AnalyzePanda(Panda)
+     Network plot.
+
+#### top_network_plot
+
+     top_network_plot(self, top = 100, file = 'panda_top_100.png')
+     Select top genes
+
+#### shape_plot_network
+
+    __shape_plot_network(self, subset_panda_results, file = 'panda.png')
+    Create plot
+
+#### create_plot
+
+    __create_plot(self, unique_genes, links, file = 'panda.png')
+    Run plot
 
 ### run_panda
 
@@ -21,28 +43,6 @@
     Example:
 
         python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
-
-### run_lioness
-
-    Description:
-
-        Run LIONESS algorithm from the command line.
-
-    Usage:
-
-        -h, --help: help
-        -e, --expression: expression matrix (.npy)
-        -m, --motif: motif matrix, normalized (.npy)
-        -p, --ppi: ppi matrix, normalized (.npy)
-        -n, --npy: PANDA network (.npy)
-        -o, --out: output folder
-        -f, --format: output format (txt, npy, or mat)
-        start: to start from nth sample (optional)
-        end: to end at nth sample (optional, must with start)
-
-    Example:
-
-        python run_lioness.py -e expression.npy -m motif.npy -p ppi.npy -n panda.npy -o /tmp -f npy 1 100
 
 ### panda
 
@@ -121,7 +121,29 @@
 	return_panda_outdegree(self)
         Return Panda outdegree.
 
-## Lioness
+## netZooPy.lioness
+
+### run_lioness
+
+    Description:
+
+        Run LIONESS algorithm from the command line.
+
+    Usage:
+
+        -h, --help: help
+        -e, --expression: expression matrix (.npy)
+        -m, --motif: motif matrix, normalized (.npy)
+        -p, --ppi: ppi matrix, normalized (.npy)
+        -n, --npy: PANDA network (.npy)
+        -o, --out: output folder
+        -f, --format: output format (txt, npy, or mat)
+        start: to start from nth sample (optional)
+        end: to end at nth sample (optional, must with start)
+
+    Example:
+
+        python run_lioness.py -e expression.npy -m motif.npy -p ppi.npy -n panda.npy -o /tmp -f npy 1 100
 
 ### lioness
 
@@ -157,7 +179,7 @@
 
     save_lioness_results(self, file='lioness.txt')
 
-### AnalyzeLioness
+### analyze_lioness
 
 #### class AnalyzeLioness
 
@@ -204,7 +226,7 @@
 
      save_lioness_results(self, file='lioness.txt')
 
-## Puma
+## netZooPy.puma
 
 ### run_puma
 
