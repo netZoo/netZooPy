@@ -8,7 +8,7 @@ Linux[![LINUX](https://travis-ci-job-status.herokuapp.com/badge/netZoo/netZooPy/
 Macos: test are under construction.
 
 ## Description
-netZooPy is a Python package of network methods.
+netZooPy is a Python package of network methods. Methods included are: PANDA, LIONESS, AND PUMA.
 
 ## Quick guide
 `git clone https://github.com/netZoo/netZooPy.git` into your local disk.
