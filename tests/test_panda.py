@@ -26,9 +26,9 @@ def test_panda():
     #2. with argument values
     rm_missing= False
     panda_obj = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
-                      keep_expression_matrix=True, save_memory = True)
+                      keep_expression_matrix=True) # save_memory = True)
     panda_obj.save_panda_results(output_file)
     res=pd.read_csv(gt_file, sep=' ', header=None)
-    gt =pd.read_csv(output_file, sep=' ', header=None)
-    pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
+    gt2 =pd.read_csv(output_file, sep=' ', header=None)
+    pd.testing.assert_frame_equal(res,gt2,check_less_precise=False,check_exact=False)
     print('Test panda passed was successful!')
