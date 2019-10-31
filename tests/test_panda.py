@@ -24,7 +24,7 @@ def test_panda():
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
     #2. with argument values
-    rm_missing=True
+    rm_missing= False
     panda_obj = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
                       keep_expression_matrix=True, save_memory = True)
     panda_obj.save_panda_results(output_file)
