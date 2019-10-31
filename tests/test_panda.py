@@ -13,11 +13,21 @@ def test_panda():
     rm_missing     = False
     output_file    ='travis_test_panda.txt'
     gt_file        ='tests/panda/test_panda.txt'
+
+    #1. Vanilla panda
     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=False, remove_missing=rm_missing,
                       keep_expression_matrix=bool(lioness_file))
     panda_obj.save_panda_results(output_file)
     res=pd.read_csv(gt_file, sep=' ', header=None)
     gt =pd.read_csv(output_file, sep=' ', header=None)
     #assert(gt.equals(round(res,3)))
+    pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
+    
+    #2. with argument values
+     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=False, remove_missing=rm_missing,
+                      keep_expression_matrix=bool(lioness_file), save_memory = True, save_tmp=False, remove_missing=True, keep_expression_matrix = True)
+    panda_obj.save_panda_results(output_file)
+    res=pd.read_csv(gt_file, sep=' ', header=None)
+    gt =pd.read_csv(output_file, sep=' ', header=None)
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
     print('Test panda passed was successful!')
