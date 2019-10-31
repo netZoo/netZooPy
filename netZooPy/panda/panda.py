@@ -72,7 +72,7 @@ class Panda(object):
 
         if self.motif_data is None:
             print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
-            #self.panda_network = self.correlation_matrix
+            self.panda_network = self.correlation_matrix
             self.__pearson_results_data_frame()
             return
         # Auxiliary dicts
@@ -112,7 +112,7 @@ class Panda(object):
         # =====================================================================
         if save_memory:
             print("Clearing motif and ppi data, unique tfs, and gene names for speed")
-            del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
+            del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
 
         # =====================================================================
         # Saving middle data to tmp
