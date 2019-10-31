@@ -24,8 +24,9 @@ def test_panda():
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
     #2. with argument values
-    panda_obj      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
-                      keep_expression_matrix=bool(lioness_file), save_memory = True, remove_missing=True, keep_expression_matrix = True)
+    rm_missing=True
+    panda_obj = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=bool(lioness_file), save_memory = True, keep_expression_matrix = True)
     panda_obj.save_panda_results(output_file)
     res=pd.read_csv(gt_file, sep=' ', header=None)
     gt =pd.read_csv(output_file, sep=' ', header=None)
