@@ -112,7 +112,7 @@ class Panda(object):
         # =====================================================================
         if save_memory:
             print("Clearing motif and ppi data, unique tfs, and gene names for speed")
-            del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
+            del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
 
         # =====================================================================
         # Saving middle data to tmp
