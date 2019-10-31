@@ -26,7 +26,7 @@ def test_panda():
     #2. with argument values
     rm_missing=True
     panda_obj = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
-                      keep_expression_matrix=bool(lioness_file), save_memory = True, keep_expression_matrix = True)
+                      keep_expression_matrix=True, save_memory = True)
     panda_obj.save_panda_results(output_file)
     res=pd.read_csv(gt_file, sep=' ', header=None)
     gt =pd.read_csv(output_file, sep=' ', header=None)
