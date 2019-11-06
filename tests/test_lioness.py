@@ -28,4 +28,4 @@ def test_lioness():
     res = np.load('tests/lioness/lioness.1.npy')
 
     # Compare to ground truth
-    assert(np.array_equal(gt,res))
+    assert(np.allclose(gt,res))
