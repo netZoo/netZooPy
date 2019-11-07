@@ -17,15 +17,24 @@ def test_lioness():
     gt_file        ='tests/panda/test_panda.txt'
     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
                       keep_expression_matrix=bool(lioness_file))
-    
-
     # Set parameters
     lioness_obj = Lioness(panda_obj)
     lioness_obj.save_lioness_results(lioness_file)
-
     # Read first lioness network
-    gt  = np.load('lioness_output/lioness.1.npy')
-    res = np.load('tests/lioness/lioness.1.npy')
+    res  = np.load('lioness_output/lioness.1.npy')
+    gt = np.load('tests/lioness/lioness.1.npy')
+    # Compare to ground truth
+    assert(np.allclose(gt,res))
 
+    #2. Testing Lioness with motif set to None to compute Lioness on coexpression networks
+    motif          = None
+    # Make sure to keep epxression matrix for next step
+    panda_obj      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True)
+    lioness_obj    = Lioness(panda_obj)
+    lioness_obj.save_lioness_results(lioness_file)
+    # Read first lioness network
+    res  = np.load('lioness_output/lioness.1.npy')
+    gt   = np.load('tests/lioness/lionessCoexpression.1.npy')
     # Compare to ground truth
     assert(np.allclose(gt,res))
