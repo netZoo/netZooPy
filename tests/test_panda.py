@@ -2,6 +2,7 @@ import pytest
 import os
 from netZooPy.panda.panda import Panda
 import pandas as pd
+import numpy as np
 
 def test_panda():
     #print(os.getcwd())
@@ -18,17 +19,21 @@ def test_panda():
     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=False, remove_missing=rm_missing,
                       keep_expression_matrix=bool(lioness_file))
     panda_obj.save_panda_results(output_file)
-    res=pd.read_csv(gt_file, sep=' ', header=None)
-    gt =pd.read_csv(output_file, sep=' ', header=None)
+    res=pd.read_csv(output_file, sep=' ', header=None)
+    gt =pd.read_csv(gt_file, sep=' ', header=None)
     #assert(gt.equals(round(res,3)))
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
     #2. with argument values
     rm_missing= False
     panda_obj = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
-                      keep_expression_matrix=True) # save_memory = True)
+                      keep_expression_matrix=True, save_memory=True)
     panda_obj.save_panda_results(output_file)
-    res=pd.read_csv(gt_file, sep=' ', header=None)
-    gt2 =pd.read_csv(output_file, sep=' ', header=None)
-    pd.testing.assert_frame_equal(res,gt2,check_less_precise=False,check_exact=False)
+    res =pd.read_csv(output_file, sep=' ', header=None)
+    assert(np.allclose(gt.iloc[:,3],res.transpose().values.flatten()))
     print('Test panda passed was successful!')
+
+    #3. From command line
+    #os.system('python3 run_panda.py -e ./tests/ToyData/ToyExpressionData.txt -m ./tests/ToyData/ToyMotifData.txt -p ./tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt')
+    #res2 =pd.read_csv(output_file, sep=' ', header=None)
+    #pd.testing.assert_frame_equal(res,res2,check_less_precise=False,check_exact=False)

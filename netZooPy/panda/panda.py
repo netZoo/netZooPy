@@ -19,6 +19,9 @@ class Panda(object):
     	4. Running PANDA algorithm
     	5. Writing out PANDA network
 
+    Inputs:
+        save_memory: True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
+                     False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.
     Authors: 
        cychen, davidvi, alessandromarin
     """
