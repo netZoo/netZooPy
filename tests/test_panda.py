@@ -32,3 +32,8 @@ def test_panda():
     gt2 =pd.read_csv(output_file, sep=' ', header=None)
     pd.testing.assert_frame_equal(res,gt2,check_less_precise=False,check_exact=False)
     print('Test panda passed was successful!')
+
+    #3. From command line
+    os.system('python3 run_panda.py -e ./tests/ToyData/ToyExpressionData.txt -m ./tests/ToyData/ToyMotifData.txt -p ./tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt')
+    res2 =pd.read_csv(output_file, sep=' ', header=None)
+    pd.testing.assert_frame_equal(res,res2,check_less_precise=False,check_exact=False)
