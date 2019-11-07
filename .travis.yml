@@ -2,9 +2,10 @@ language: python
 python:
    - "3.6"
    - "3.7"
-   - "3.8"
+   - "3.8-dev"
 
 install:
+   - pip3 install numpy=
    - pip3 install -r requirements.txt
    - pip3 install pytest
    - pwd
