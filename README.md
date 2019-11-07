@@ -3,9 +3,9 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Documentation Status](https://readthedocs.org/projects/netzoopy/badge/?version=latest)](https://netzoopy.readthedocs.io/en/latest/?badge=latest)
   
-Linux[![LINUX](https://travis-ci-job-status.herokuapp.com/badge/netZoo/netZooPy/devel/linux)](https://travis-ci.org/netZoo/netZooPy)
+Macos[![MACOS](https://travis-ci-job-status.herokuapp.com/badge/netZoo/netZooPy/devel/macos)](https://travis-ci.org/netZoo/netZooPy)
 
-Macos: test are under construction.
+Linux: test are under construction.
 
 ## Description
 netZooPy is a Python package of network methods. Methods included are: PANDA, LIONESS, AND PUMA.
