@@ -19,14 +19,15 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u'netZooPy'
+project   = u'netZooPy'
 copyright = u'2019, netZoo'
-author = u'netZoo'
+author    = u'netZoo'
 
 # The short X.Y version
-version = u'0.1.1'
+__version__ = "0.1.1"
+version     = ".".join(__version__.split(".")[:2])
 # The full version, including alpha/beta/rc tags
-release = version
+release     = __version__
 
 
 # -- General configuration ---------------------------------------------------
