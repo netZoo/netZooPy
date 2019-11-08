@@ -15,22 +15,22 @@ Usage:
   end: to end at nth sample (optional, must with start)
   
 Example:
-  python run_lioness.py -e expression.npy -m motif.npy -p ppi.npy -n panda.npy -o /tmp -f npy 1 100
+  python3 run_lioness.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o /tmp -f npy 1 2
 """
 import sys
 import getopt
-from lioness import Lioness
+from netZooPy.lioness.lioness import Lioness
+from netZooPy.panda.panda import Panda
 
 def main(argv):
     #Create variables
     expression_data = None
     motif = None
     ppi = None
-    panda_net = None
     save_dir = None
     save_fmt = None
     try:
-        opts, args = getopt.getopt(argv, 'he:m:p:n:o:f:', ['help', 'expression=', 'motif=', 'ppi=', 'npy=', 'out=', 'format='])
+        opts, args = getopt.getopt(argv, 'he:m:p:n:o:f:', ['help', 'expression=', 'motif=', 'ppi=', 'out=', 'format='])
     except getopt.GetoptError as err:
         print(str(err))  # will print something like "option -a not recognized"
         print(__doc__)
@@ -60,26 +60,25 @@ def main(argv):
     if len(args) == 2:
         start, end = map(int, args)
 
-
     #Check if required options are given
     if expression_data is None or motif is None or ppi is None \
-            or panda_net is None or save_dir is None or save_fmt is None:
+            or save_dir is None or save_fmt is None:
+        print('Missing argument!')
+        print(__doc__)
+        return 1
+    else:
         print('Input data:')
         print('Expression:   ', expression_data)
         print('Motif matrix: ', motif)
         print('PPI matrix:   ', ppi)
-        print('PANDA network:', panda_net)
         print('Output folder:', save_dir)
         print('Output format:', save_fmt)
         print('Sample range: ', start, '-', end)
-    else:
-        print('Missing argument!')
-        print(__doc__)
-        return 1
 
     # Run panda
     print('Start LIONESS run ...')
-    L = Lioness(expression_data, motif, ppi, panda_net, start=start, end=end, save_dir=save_dir, save_fmt=save_fmt)
+    obj = Panda(expression_data, motif, ppi, keep_expression_matrix=True)
+    L   = Lioness(obj, start=start, end=end, save_dir=save_dir, save_fmt=save_fmt)
     print('All done!')
 
 if __name__ == '__main__':
