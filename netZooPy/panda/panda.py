@@ -24,7 +24,10 @@ class Panda(object):
                     if set to none, the gene coexpression matrix is returned as a result network.
         save_memory: True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
                      False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.
-    
+        keep_expression_matrix: keeps the input expression matrix in the result Panda object.
+
+     Outputs:
+
      Authors: 
        cychen, davidvi, alessandromarin
     """
