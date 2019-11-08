@@ -5,7 +5,7 @@
   
 Macos[![MACOS](https://travis-ci-job-status.herokuapp.com/badge/netZoo/netZooPy/devel/macos)](https://travis-ci.org/netZoo/netZooPy)
 
-Linux: test are under construction.
+Linux: tests are under construction.
 
 ## Description
 netZooPy is a Python package of network methods. 
