@@ -20,6 +20,7 @@ class Lioness(Panda):
        5. Writing out LIONESS networks
 
     Inputs:
+       obj: PANDA object, generated with keep_expression_matrix=True.
        obj.motif_matrix: TF DNA motif binding data in tf-by-gene format.
                          If set to None, Lioness will be performed on gene coexpression network.
 
