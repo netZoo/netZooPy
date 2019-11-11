@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import os, os.path,sys
 import numpy as np
+import pandas as pd
 from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
@@ -31,6 +32,7 @@ class Lioness(Panda):
     def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
+            self.export_panda_results = obj.export_panda_results
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
@@ -57,7 +59,7 @@ class Lioness(Panda):
         self.total_lioness_network = self.__lioness_loop()
 
         # create result data frame
-        #self.export_lioness_results = pd.DataFrame(self.lioness_network)
+        self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
     def __lioness_loop(self):
         for i in self.indexes:
