@@ -20,7 +20,7 @@ class AnalyzeLioness(Lioness):
         return None
     def top_network_plot(self, column = 0, top = 100, file = 'lioness_top_100.png'):
         '''Select top genes.'''
-        self.export_panda_results[['force']] = self.lioness_results.ix[:,column]
+        self.export_panda_results[['force']] = self.lioness_results.iloc[:,column]
         plot = AnalyzePanda(self)
         plot.top_network_plot(top, file)
         return None
