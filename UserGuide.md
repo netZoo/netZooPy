@@ -151,9 +151,9 @@ Fire up your python shell or ipython notebook. Use the python installation in th
 
 Import the classes in the pypanda library:
 ```python
-from pypanda.panda import Panda
-from pypuma.puma import Puma
-from pypanda.lioness import Lioness
+from netZooPy.panda.panda import Panda
+from netZooPy.puma.puma import Puma
+from netZooPy.lioness.lioness import Lioness
 ```
 Run the Panda algorithm, leave out motif and PPI data to use Pearson correlation network:
 ```python
