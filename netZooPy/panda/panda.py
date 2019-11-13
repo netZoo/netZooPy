@@ -254,8 +254,8 @@ class Panda(object):
             genes = np.repeat(self.gene_names,self.num_tfs)
             motif = self.motif_matrix_unnormalized.flatten(order='F')
             force = self.motif_matrix.flatten(order='F')
-            #self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
-            self.export_panda_results = np.column_stack((tfs,genes,motif,force))
+            self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
+            #self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
 
     def __pearson_results_data_frame(self):
