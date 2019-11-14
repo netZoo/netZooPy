@@ -19,7 +19,16 @@ class Panda(object):
     	4. Running PANDA algorithm
     	5. Writing out PANDA network
 
-    Authors: 
+    Inputs:
+        motif_data: path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1).
+                    if set to none, the gene coexpression matrix is returned as a result network.
+        save_memory: True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
+                     False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.
+        keep_expression_matrix: keeps the input expression matrix in the result Panda object.
+
+     Outputs:
+
+     Authors: 
        cychen, davidvi, alessandromarin
     """
     def __init__(self, expression_file, motif_file, ppi_file, save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
@@ -70,11 +79,18 @@ class Panda(object):
                 np.fill_diagonal(self.correlation_matrix, 1)
                 self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
 
+        # Clean up useless variables to release memory
+        if keep_expression_matrix:
+            self.expression_matrix = self.expression_data.values
+
         if self.motif_data is None:
             print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
-            #self.panda_network = self.correlation_matrix
+            self.panda_network = self.correlation_matrix
+            self.motif_matrix  = self.motif_data
+            self.ppi_matrix    = self.ppi_data
             self.__pearson_results_data_frame()
             return
+
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
         tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
@@ -112,7 +128,7 @@ class Panda(object):
         # =====================================================================
         if save_memory:
             print("Clearing motif and ppi data, unique tfs, and gene names for speed")
-            del self.motif_data, self.ppi_data, self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
+            del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
 
         # =====================================================================
         # Saving middle data to tmp
@@ -124,9 +140,7 @@ class Panda(object):
                 np.save('/tmp/motif.normalized.npy', self.motif_matrix)
                 np.save('/tmp/ppi.normalized.npy', self.ppi_matrix)
 
-        # Clean up useless variables to release memory
-        if keep_expression_matrix:
-            self.expression_matrix = self.expression_data.values
+        # delete expression data
         del self.expression_data
 
         # =====================================================================
@@ -240,8 +254,8 @@ class Panda(object):
             genes = np.repeat(self.gene_names,self.num_tfs)
             motif = self.motif_matrix_unnormalized.flatten(order='F')
             force = self.motif_matrix.flatten(order='F')
-            #self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
-            self.export_panda_results = np.column_stack((tfs,genes,motif,force))
+            self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
+            #self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
 
     def __pearson_results_data_frame(self):
