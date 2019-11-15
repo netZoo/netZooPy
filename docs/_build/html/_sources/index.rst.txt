@@ -21,6 +21,7 @@ netZooPy has started as a merge of the following repositories and forks:
 
 - Cho-Yi Chen's `fork <https://github.com/QuackenbushLab/pypanda>`_.
 
+- Genis Calderer's `pysambar <https://github.com/genis/pysambar>`_ and `pycondor <https://github.com/genis/pycondr>`_
 
 Contents
 ========
