@@ -85,9 +85,10 @@ class Panda(object):
 
         if self.motif_data is None:
             print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
-            self.panda_network = self.correlation_matrix
-            self.motif_matrix  = self.motif_data
-            self.ppi_matrix    = self.ppi_data
+            self.panda_network        = self.correlation_matrix
+            self.export_panda_results = self.correlation_matrix
+            self.motif_matrix         = self.motif_data
+            self.ppi_matrix           = self.ppi_data
             self.__pearson_results_data_frame()
             return
 
