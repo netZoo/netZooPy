@@ -284,7 +284,7 @@ class Panda(object):
                 np.savetxt(path, toexport,fmt='%s', delimiter='/t')
             else:
                 np.save(path, toexport)
-    def top_network_plot(self, top = 100, file = 'panda_top_100.png'):
+    def top_network_plot(self, top = 100, file = 'panda_top_100.png',plot_bipart=False):
         '''Select top genes.'''
         if not hasattr(self,'export_panda_results'):
             raise AttributeError("Panda object does not contain the export_panda_results attribute.\n"+
@@ -294,9 +294,9 @@ class Panda(object):
         subset_panda_results = self.panda_results.sort_values(by=['force'], ascending=False)
         subset_panda_results = subset_panda_results[subset_panda_results.tf != subset_panda_results.gene]
         subset_panda_results = subset_panda_results[0:top]
-        self.__shape_plot_network(subset_panda_results = subset_panda_results, file = file)
+        self.__shape_plot_network(subset_panda_results = subset_panda_results, file = file, plot_bipart=plot_bipart)
         return None
-    def __shape_plot_network(self, subset_panda_results, file = 'panda.png'):
+    def __shape_plot_network(self, subset_panda_results, file = 'panda.png',plot_bipart=False):
         '''Create plot.'''
         #reshape data for networkx
         unique_genes = list(set(list(subset_panda_results['tf'])+list(subset_panda_results['gene'])))
@@ -310,9 +310,9 @@ class Panda(object):
         subset_panda_results = subset_panda_results.rename(columns = {'index': 'gene_index'})
         subset_panda_results = subset_panda_results.drop(['name'], 1)
         links = subset_panda_results[['tf_index', 'gene_index', 'force']]
-        self.__create_plot(unique_genes = unique_genes, links = links, file = file)
+        self.__create_plot(unique_genes = unique_genes, links = links, file = file,plot_bipart=plot_bipart)
         return None
-    def __create_plot(self, unique_genes, links, file = 'panda.png'):
+    def __create_plot(self, unique_genes, links, file = 'panda.png',plot_bipart=False):
         '''Run plot.'''
         import networkx as nx
         import matplotlib.pyplot as plt
@@ -332,16 +332,25 @@ class Panda(object):
         def split_label(label):
             ll = len(label)
             if ll > 6:
-                return label[0:ll/2] + '\n' + label[ll/2:]
+                return label[0:int(np.ceil(ll/2))] + '\n' + label[int(np.ceil(ll/2)):]
             return label
         for i, l in enumerate(unique_genes.iloc[:,0]):
             labels[i] = split_label(l)
-        pos = nx.spring_layout(g)
+        if not plot_bipart:
+            pos = nx.spring_layout(g)
+        else:
+            pos = nx.drawing.layout.bipartite_layout(g, set(links['tf_index']))
         #nx.draw_networkx(g, pos, labels=labels, node_size=40, font_size=3, alpha=0.3, linewidth = 0.5, width =0.5)
-        colors=range(len(edges))
+        print(plot_bipart)
+        if not plot_bipart:
+            colors=range(len(edges))
+        else:
+            colors=list(zip(*edges))[-1]
+                                                     
         options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
                    'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidth': 20}
-        nx.draw_spring(g, k=0.25, iterations=50, **options)
+        
+        nx.draw_networkx(g, k=0.25, iterations=50, pos=pos,**options)
         plt.axis('off')
         plt.savefig(file, dpi=300)
         return None
@@ -349,16 +358,12 @@ class Panda(object):
     def return_panda_indegree(self):
         '''Return Panda indegree.'''
         #subset_indegree = self.export_panda_results.loc[:,['gene','force']]
-        export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
-        subset_indegree = export_panda_results_pd.loc[:,['gene','force']]
-        subset_indegree['force']=pd.to_numeric(subset_indegree.force)
+        subset_indegree = self.panda_results.loc[:,['gene','force']]
         self.panda_indegree = subset_indegree.groupby('gene').sum()
         return self.panda_indegree
-    
     def return_panda_outdegree(self):
         '''Return Panda outdegree.'''
         export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
         subset_outdegree = export_panda_results_pd.loc[:,['tf','force']]
-        subset_outdegree['force']=pd.to_numeric(subset_outdegree.force)
         self.panda_outdegree = subset_outdegree.groupby('tf').sum()
         return self.panda_outdegree
