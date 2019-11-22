@@ -4,7 +4,7 @@ python:
    - "3.7"
 
 install:
-   - apt install build-essential python-dev libxml2 libxml2-dev zlib1g-dev
+   - sudo apt install build-essential python-dev libxml2 libxml2-dev zlib1g-dev
    - pip3 install -r requirements.txt
    - pip3 install pytest
    - pwd
