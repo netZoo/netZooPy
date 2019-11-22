@@ -8,10 +8,10 @@ from scipy.cluster.hierarchy import linkage,cut_tree
 import pkg_resources
 
 ## Default toydata files
-esize = pkg_resources.resource_filename('pysambar', 'ToyData/esizef.csv')
-genes = pkg_resources.resource_filename('pysambar', 'ToyData/genes.txt')
-sign = pkg_resources.resource_filename('pysambar', 'ToyData/h.all.v6.1.symbols.gmt')
-mut = pkg_resources.resource_filename('pysambar', 'ToyData/mut.ucec.csv')
+esize = pkg_resources.resource_filename('netZooPy', 'ToyData/esizef.csv')
+genes = pkg_resources.resource_filename('netZooPy', 'ToyData/genes.txt')
+sign = pkg_resources.resource_filename('netZooPy', 'ToyData/h.all.v6.1.symbols.gmt')
+mut = pkg_resources.resource_filename('netZooPy', 'ToyData/mut.ucec.csv')
 
 
 def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
