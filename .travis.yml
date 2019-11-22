@@ -4,7 +4,7 @@ python:
    - "3.7"
 
 install:
-   - sudo add-apt-repository ppa:igraph/ppa
+   - sudo add-apt-repository ppa:igraph/ppa -y
    - sudo apt-get update
    - sudo apt install build-essential python-dev libxml2 libxml2-dev zlib1g-dev
    - sudo apt-get install python-igraph
