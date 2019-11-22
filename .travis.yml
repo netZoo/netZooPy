@@ -4,7 +4,7 @@ python:
    - "3.7"
 
 install:
-   - brew install igraph
+   - pip install python-igraph
    - pip3 install -r requirements.txt
    - pip3 install pytest
    - pwd
