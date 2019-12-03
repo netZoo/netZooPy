@@ -2,6 +2,10 @@
 Changelog
 ==========
 
+
+
+- added 3.8 to Ubunutu test server (along with 3.6 and 3.7 )
+
 0.5.0 (2019-10-01)
 ------------------
 
