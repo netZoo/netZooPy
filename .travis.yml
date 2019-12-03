@@ -4,11 +4,9 @@ python:
    - "3.7"
 
 before_install:
-   - sudo apt-get update
-   - sudo apt install build-essential python3-dev python-dev libxml2 libxml2-dev zlib1g-dev
+   - pip3 install python-igraph
 
 install:
-   - pip install -r requirements.txt
    - pip3 install -r requirements.txt
    - pip3 install pytest
    - pwd
