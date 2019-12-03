@@ -4,13 +4,7 @@ python:
    - "3.7"
 
 before_install:
-   - sudo apt-get install python3-dev
-   - sudo apt install build-essential python-dev libxml2 libxml2-dev zlib1g-dev
-   - sudo add-apt-repository ppa:igraph/ppa -y
-   - sudo rm -rf /var/lib/apt/lists/*
-   - sudo rm -rf /etc/apt/sources.list.d/*
-   - sudo apt-get update
-   - sudo apt-get install python-igraph
+   - sudo apt install build-essential python3-dev libxml2 libxml2-dev zlib1g-dev
 
 install:
    - pip3 install -r requirements.txt
