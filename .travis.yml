@@ -3,13 +3,16 @@ python:
    - "3.6"
    - "3.7"
 
-install:
+before_install:
+   - sudo apt-get install python3-dev
    - sudo apt install build-essential python-dev libxml2 libxml2-dev zlib1g-dev
    - sudo add-apt-repository ppa:igraph/ppa -y
    - sudo rm -rf /var/lib/apt/lists/*
    - sudo rm -rf /etc/apt/sources.list.d/*
    - sudo apt-get update
    - sudo apt-get install python-igraph
+
+install:
    - pip3 install -r requirements.txt
    - pip3 install pytest
    - pwd
