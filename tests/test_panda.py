@@ -21,7 +21,6 @@ def test_panda():
     panda_obj.save_panda_results(output_file)
     res=pd.read_csv(output_file, sep=' ', header=None)
     gt =pd.read_csv(gt_file, sep=' ', header=None)
-    #assert(gt.equals(round(res,3)))
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
     #2. with argument values
@@ -30,7 +29,7 @@ def test_panda():
                       keep_expression_matrix=True, save_memory=True)
     panda_obj.save_panda_results(output_file)
     res =pd.read_csv(output_file, sep=' ', header=None)
-    assert(np.allclose(gt.iloc[:,3],res.transpose().values.flatten()))
+    pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
     print('Test panda passed was successful!')
 
     #3. From command line
