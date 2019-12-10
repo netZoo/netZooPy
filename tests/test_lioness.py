@@ -8,9 +8,9 @@ import numpy as np
 def test_lioness():
     print('Start lioness test!')
     #1. First generate temporary PANDA files as inputs for Lioness
-    ppi            ='tests/ToyData/ToyPPIData.txt'
-    motif          ='tests/ToyData/ToyMotifData.txt'
-    expression_data='tests/ToyData/ToyExpressionData.txt'
+    ppi            ='tests/puma/ToyData/ToyPPIData.txt'
+    motif          ='tests/puma/ToyData/ToyMotifData.txt'
+    expression_data='tests/puma/ToyData/ToyExpressionData.txt'
     lioness_file   ='Travis'
     rm_missing     =False
     output_file    ='panda.npy'

@@ -7,9 +7,9 @@ import numpy as np
 def test_panda():
     #print(os.getcwd())
     print('Start Panda run ...')
-    ppi            ='tests/ToyData/ToyPPIData.txt'
-    motif          ='tests/ToyData/ToyMotifData.txt'
-    expression_data='tests/ToyData/ToyExpressionData.txt'
+    ppi            ='tests/puma/ToyData/ToyPPIData.txt'
+    motif          ='tests/puma/ToyData/ToyMotifData.txt'
+    expression_data='tests/puma/ToyData/ToyExpressionData.txt'
     lioness_file   =''
     rm_missing     = False
     output_file    ='travis_test_panda.txt'
@@ -21,7 +21,6 @@ def test_panda():
     panda_obj.save_panda_results(output_file)
     res=pd.read_csv(output_file, sep=' ', header=None)
     gt =pd.read_csv(gt_file, sep=' ', header=None)
-    #assert(gt.equals(round(res,3)))
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
     #2. with argument values
@@ -30,10 +29,10 @@ def test_panda():
                       keep_expression_matrix=True, save_memory=True)
     panda_obj.save_panda_results(output_file)
     res =pd.read_csv(output_file, sep=' ', header=None)
-    assert(np.allclose(gt.iloc[:,3],res.transpose().values.flatten()))
+    pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
     print('Test panda passed was successful!')
 
     #3. From command line
-    os.system('python3 run_panda.py -e ./tests/ToyData/ToyExpressionData.txt -m ./tests/ToyData/ToyMotifData.txt -p ./tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt')
+    os.system('python3 run_panda.py -e ./tests/puma/ToyData/ToyExpressionData.txt -m ./tests/puma/ToyData/ToyMotifData.txt -p ./tests/puma/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt')
     res2 =pd.read_csv(output_file, sep=' ', header=None)
     pd.testing.assert_frame_equal(res,res2,check_less_precise=False,check_exact=False)
