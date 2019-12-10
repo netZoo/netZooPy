@@ -1,0 +1,14 @@
+,reg,com
+0,Andromeda.glaucophylla,2
+1,Aronia.melanocarpa,5
+2,Calopogon.pulchellus,1
+3,Chamaedaphne.calyculata,6
+4,Gaylussacia.baccata,6
+5,Kalmia.angustifolia,4
+6,Kalmia.polifolia,5
+7,Ledum.groenlandicum,5
+8,Nemopanthus.mucronata,0
+9,Salix.fragilis,7
+10,Smilacina.trifolia,0
+11,Spiraea.alba,3
+12,Vaccinium.myrtilloides,2
