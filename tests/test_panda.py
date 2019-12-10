@@ -7,9 +7,9 @@ import numpy as np
 def test_panda():
     #print(os.getcwd())
     print('Start Panda run ...')
-    ppi            ='tests/ToyData/ToyPPIData.txt'
-    motif          ='tests/ToyData/ToyMotifData.txt'
-    expression_data='tests/ToyData/ToyExpressionData.txt'
+    ppi            ='tests/puma/ToyData/ToyPPIData.txt'
+    motif          ='tests/puma/ToyData/ToyMotifData.txt'
+    expression_data='tests/puma/ToyData/ToyExpressionData.txt'
     lioness_file   =''
     rm_missing     = False
     output_file    ='travis_test_panda.txt'
@@ -33,6 +33,6 @@ def test_panda():
     print('Test panda passed was successful!')
 
     #3. From command line
-    os.system('python3 run_panda.py -e ./tests/ToyData/ToyExpressionData.txt -m ./tests/ToyData/ToyMotifData.txt -p ./tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt')
+    os.system('python3 run_panda.py -e ./tests/puma/ToyData/ToyExpressionData.txt -m ./tests/puma/ToyData/ToyMotifData.txt -p ./tests/puma/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt')
     res2 =pd.read_csv(output_file, sep=' ', header=None)
     pd.testing.assert_frame_equal(res,res2,check_less_precise=False,check_exact=False)
