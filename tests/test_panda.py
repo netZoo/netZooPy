@@ -23,6 +23,13 @@ def test_panda():
     gt =pd.read_csv(gt_file, sep=' ', header=None)
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
+    #3. In-degree and out-degree
+    panda_obj.return_panda_indegree()
+    panda_obj.return_panda_outdegree()
+    # Lazy test
+    assert (round(panda_obj.panda_indegree.iloc[0].loc['force'], 5) == 1.13971)
+    assert (round(panda_obj.panda_outdegree.iloc[0].loc['force'], 5) == 1030.06840)
+
     #2. Legacy
     panda_obj = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
                       keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
@@ -32,3 +39,6 @@ def test_panda():
     gt = pd.read_csv(gt_file, sep=' ', header=None)
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
     print('Test panda passed was successful!')
+
+
+
