@@ -25,8 +25,17 @@ class Panda(object):
         save_memory: True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
                      False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.
         keep_expression_matrix: keeps the input expression matrix in the result Panda object.
+        modeProcess: The input data processing mode.
+                    'legacy': refers to the processing mode in netZooPy<=0.5
+                    (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
+                    'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
+        remove_missing: removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'
 
-     Outputs:
+     Methods:
+        return_panda_indegree: computes indegree of panda network, only if save_memory = False
+        return_panda_outdegree: computes outdegree of panda network, only if save_memory = False
+
+    Outputs:
 
      Authors: 
        cychen, davidvi, alessandromarin
@@ -550,8 +559,8 @@ class Panda(object):
 
     def return_panda_indegree(self):
         '''Return Panda indegree.'''
-        #subset_indegree = self.export_panda_results.loc[:,['gene','force']]
-        subset_indegree = self.panda_results.loc[:,['gene','force']]
+        export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
+        subset_indegree = export_panda_results_pd.loc[:,['gene','force']]
         self.panda_indegree = subset_indegree.groupby('gene').sum()
         return self.panda_indegree
     def return_panda_outdegree(self):
