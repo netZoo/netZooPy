@@ -25,105 +25,37 @@ class Panda(object):
         save_memory: True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
                      False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.
         keep_expression_matrix: keeps the input expression matrix in the result Panda object.
+        modeProcess: The input data processing mode.
+                    'legacy': refers to the processing mode in netZooPy<=0.5
+                    (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
+                    'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
+        remove_missing: removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'
 
-     Outputs:
+     Methods:
+        return_panda_indegree: computes indegree of panda network, only if save_memory = False
+        return_panda_outdegree: computes outdegree of panda network, only if save_memory = False
+
+    Outputs:
 
      Authors: 
        cychen, davidvi, alessandromarin
     """
-    def __init__(self, expression_file, motif_file, ppi_file, save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
-        # =====================================================================
-        # Data loading
-        # =====================================================================
-        if motif_file is not None:
-            with Timer('Loading motif data ...'):
-                self.motif_data = pd.read_csv(motif_file, sep='\t', header=None)
-                self.unique_tfs = sorted(set(self.motif_data[0]))
-                self.num_tfs = len(self.unique_tfs)
-                print('Unique TFs:', self.num_tfs)
-        else:
-            self.motif_data = None
-
-        if expression_file:
-            with Timer('Loading expression data ...'):
-                self.expression_data = pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
-                self.gene_names = self.expression_data.index.tolist()
-                self.num_genes = len(self.gene_names)
-                print('Expression matrix:', self.expression_data.shape)
-        else:
-            self.gene_names = list(set(self.motif_data[1]))
-            self.num_genes = len(self.gene_names)
-            self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
-            print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
-
-        if ppi_file:
-            with Timer('Loading PPI data ...'):
-                self.ppi_data = pd.read_csv(ppi_file, sep='\t', header=None)
-                print('Number of PPIs:', self.ppi_data.shape[0])
-        else:
-            print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
-            self.ppi_data = None
-
-        if remove_missing and motif_file is not None:
-            self.__remove_missing()
-
-        # =====================================================================
-        # Network construction
-        # =====================================================================
-        with Timer('Calculating coexpression network ...'):
-            if self.expression_data is None:
-                self.correlation_matrix = np.identity(self.num_genes,dtype=int)
-            else:
-                self.correlation_matrix = np.corrcoef(self.expression_data)
-            if np.isnan(self.correlation_matrix).any():
-                np.fill_diagonal(self.correlation_matrix, 1)
-                self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
-
-        # Clean up useless variables to release memory
-        if keep_expression_matrix:
-            self.expression_matrix = self.expression_data.values
-
-        if self.motif_data is None:
-            print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
-            self.panda_network        = self.correlation_matrix
-            self.export_panda_results = self.correlation_matrix
-            self.motif_matrix         = self.motif_data
-            self.ppi_matrix           = self.ppi_data
-            self.__pearson_results_data_frame()
+    def __init__(self, expression_file, motif_file, ppi_file, save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
+        
+        # Read data
+        self.processData(modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
+        if hasattr(self, 'export_panda_results'):
             return
-
-        # Auxiliary dicts
-        gene2idx = {x: i for i,x in enumerate(self.gene_names)}
-        tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
-
-        with Timer('Creating motif network ...'):
-            self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
-            idx_tfs = [tf2idx.get(x, 0) for x in self.motif_data[0]]
-            idx_genes = [gene2idx.get(x, 0) for x in self.motif_data[1]]
-            idx = np.ravel_multi_index((idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape)
-            self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
-
-        if self.ppi_data is None:
-            self.ppi_matrix = np.identity(self.num_tfs,dtype=int)
-        else:
-            with Timer('Creating PPI network ...'):
-                self.ppi_matrix = np.identity(self.num_tfs)
-                idx_tf1 = [tf2idx.get(x, 0) for x in self.ppi_data[0]]
-                idx_tf2 = [tf2idx.get(x, 0) for x in self.ppi_data[1]]
-                idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
-                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
-                idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
-                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
-
         # =====================================================================
         # Network normalization
         # =====================================================================
+
         with Timer('Normalizing networks ...'):
             self.correlation_matrix = self._normalize_network(self.correlation_matrix)
             with np.errstate(invalid='ignore'): #silly warning bothering people
                 self.motif_matrix = self._normalize_network(self.motif_matrix_unnormalized)
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
-        
+
         # =====================================================================
         # Clean up useless variables to release memory
         # =====================================================================
@@ -194,8 +126,278 @@ class Panda(object):
         nan_row = np.isnan(norm_row)
         normalized_matrix[nan_col] = (norm_row[nan_col] + norm_total[nan_col])/math.sqrt(2)
         normalized_matrix[nan_row] = (norm_col[nan_row] + norm_total[nan_row])/math.sqrt(2)
-        normalized_matrix[nan_col & nan_row] = 2*norm_col[nan_col & nan_row]/math.sqrt(2)
+        normalized_matrix[nan_col & nan_row] = 2*norm_total[nan_col & nan_row]/math.sqrt(2)
         return normalized_matrix
+
+    def processData(self, modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix):
+        if modeProcess=="legacy":
+            # =====================================================================
+            # Data loading
+            # =====================================================================
+            if motif_file is not None:
+                with Timer('Loading motif data ...'):
+                    self.motif_data = pd.read_csv(motif_file, sep='\t', header=None)
+                    self.unique_tfs = sorted(set(self.motif_data[0]))
+                    self.num_tfs = len(self.unique_tfs)
+                    print('Unique TFs:', self.num_tfs)
+            else:
+                self.motif_data = None
+
+            if expression_file:
+                with Timer('Loading expression data ...'):
+                    self.expression_data = pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
+                    self.gene_names = self.expression_data.index.tolist()
+                    self.num_genes = len(self.gene_names)
+                    print('Expression matrix:', self.expression_data.shape)
+            else:
+                self.gene_names = list(set(self.motif_data[1]))
+                self.num_genes = len(self.gene_names)
+                self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
+                print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
+
+            if ppi_file:
+                with Timer('Loading PPI data ...'):
+                    self.ppi_data = pd.read_csv(ppi_file, sep='\t', header=None)
+                    print('Number of PPIs:', self.ppi_data.shape[0])
+            else:
+                print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
+                self.ppi_data = None
+
+            if remove_missing and motif_file is not None:
+                self.__remove_missing()
+
+            # =====================================================================
+            # Network construction
+            # =====================================================================
+            with Timer('Calculating coexpression network ...'):
+                if self.expression_data is None:
+                    self.correlation_matrix = np.identity(self.num_genes,dtype=int)
+                else:
+                    self.correlation_matrix = np.corrcoef(self.expression_data)
+                if np.isnan(self.correlation_matrix).any():
+                    np.fill_diagonal(self.correlation_matrix, 1)
+                    self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
+
+            # Clean up useless variables to release memory
+            if keep_expression_matrix:
+                self.expression_matrix = self.expression_data.values
+
+            if self.motif_data is None:
+                print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
+                self.panda_network        = self.correlation_matrix
+                self.export_panda_results = self.correlation_matrix
+                self.motif_matrix         = self.motif_data
+                self.ppi_matrix           = self.ppi_data
+                self.__pearson_results_data_frame()
+                return
+
+            # Auxiliary dicts
+            gene2idx = {x: i for i,x in enumerate(self.gene_names)}
+            tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
+
+            with Timer('Creating motif network ...'):
+                self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
+                idx_tfs = [tf2idx.get(x, 0) for x in self.motif_data[0]]
+                idx_genes = [gene2idx.get(x, 0) for x in self.motif_data[1]]
+                idx = np.ravel_multi_index((idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape)
+                self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
+
+            if self.ppi_data is None:
+                self.ppi_matrix = np.identity(self.num_tfs,dtype=int)
+            else:
+                with Timer('Creating PPI network ...'):
+                    self.ppi_matrix = np.identity(self.num_tfs)
+                    idx_tf1 = [tf2idx.get(x, 0) for x in self.ppi_data[0]]
+                    idx_tf2 = [tf2idx.get(x, 0) for x in self.ppi_data[1]]
+                    idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
+                    self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                    idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
+                    self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+        elif modeProcess=="union":
+            # =====================================================================
+            # Data loading
+            # =====================================================================
+            if motif_file is not None:
+                with Timer('Loading motif data ...'):
+                    self.motif_data  = pd.read_csv(motif_file, sep='\t', header=None)
+                    self.motif_tfs   = sorted(set(self.motif_data[0]))
+                    self.motif_genes = sorted(set(self.motif_data[1]))
+            else:
+                self.motif_data = None
+
+            if expression_file:
+                with Timer('Loading expression data ...'):
+                    self.expression_data = pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
+                    self.expression_genes = self.expression_data.index.tolist()
+                    print('Expression matrix:', self.expression_data.shape)
+            else:
+                self.gene_names = list(set(self.motif_data[1]))
+                self.num_genes = len(self.gene_names)
+                self.expression_data = None  # pd.DataFrame(np.identity(self.num_genes, dtype=int))
+                print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
+
+            if ppi_file:
+                with Timer('Loading PPI data ...'):
+                    self.ppi_data = pd.read_csv(ppi_file, sep='\t', header=None)
+                    self.ppi_tfs  = sorted(set(self.ppi_data[0]))
+                    print('Number of PPIs:', self.ppi_data.shape[0])
+            else:
+                print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
+                self.ppi_data = None
+
+            self.gene_names = sorted( np.unique(self.motif_genes +  self.expression_genes ))
+            self.unique_tfs = sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
+            self.num_genes  = len(self.gene_names)
+            self.num_tfs    = len(self.unique_tfs)
+
+            # Initialize data
+            self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
+            # Auxiliary dicts
+            gene2idx = {x: i for i, x in enumerate(self.gene_names)}
+            tf2idx = {x: i for i, x in enumerate(self.unique_tfs)}
+            # Populate gene expression
+            idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
+            print(self.expression.shape)
+            print(self.expression_data.shape)
+            self.expression[idx_geneEx,:] = self.expression_data.values
+            self.expression_data=pd.DataFrame(data=self.expression)
+
+            # =====================================================================
+            # Network construction
+            # =====================================================================
+            with Timer('Calculating coexpression network ...'):
+                if self.expression_data is None:
+                    self.correlation_matrix = np.identity(self.num_genes, dtype=int)
+                else:
+                    self.correlation_matrix = np.corrcoef(self.expression_data)
+                if np.isnan(self.correlation_matrix).any():
+                    np.fill_diagonal(self.correlation_matrix, 1)
+                    self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
+
+            # Clean up useless variables to release memory
+            if keep_expression_matrix:
+                self.expression_matrix = self.expression_data.values
+
+            if self.motif_data is None:
+                print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
+                self.panda_network = self.correlation_matrix
+                self.export_panda_results = self.correlation_matrix
+                self.motif_matrix = self.motif_data
+                self.ppi_matrix   = self.ppi_data
+                self.__pearson_results_data_frame()
+                return
+
+            with Timer('Creating motif network ...'):
+                self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
+                idx_tfs = [tf2idx.get(x, 0) for x in self.motif_data[0]]
+                idx_genes = [gene2idx.get(x, 0) for x in self.motif_data[1]]
+                idx = np.ravel_multi_index((idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape)
+                self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
+
+            if self.ppi_data is None:
+                self.ppi_matrix = np.identity(self.num_tfs, dtype=int)
+            else:
+                with Timer('Creating PPI network ...'):
+                    self.ppi_matrix = np.identity(self.num_tfs)
+                    idx_tf1 = [tf2idx.get(x, 0) for x in self.ppi_data[0]]
+                    idx_tf2 = [tf2idx.get(x, 0) for x in self.ppi_data[1]]
+                    idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
+                    self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                    idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
+                    self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+        elif modeProcess=="intersection":
+            # =====================================================================
+            # Data loading
+            # =====================================================================
+            if motif_file is not None:
+                with Timer('Loading motif data ...'):
+                    self.motif_data = pd.read_csv(motif_file, sep='\t', header=None)
+                    self.motif_tfs = sorted(set(self.motif_data[0]))
+                    self.motif_genes = sorted(set(self.motif_data[1]))
+            else:
+                self.motif_data = None
+
+            if expression_file:
+                with Timer('Loading expression data ...'):
+                    self.expression_data = pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
+                    self.expression_genes = self.expression_data.index.tolist()
+                    print('Expression matrix:', self.expression_data.shape)
+            else:
+                self.gene_names = list(set(self.motif_data[1]))
+                self.num_genes = len(self.gene_names)
+                self.expression_data = None  # pd.DataFrame(np.identity(self.num_genes, dtype=int))
+                print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
+
+            if ppi_file:
+                with Timer('Loading PPI data ...'):
+                    self.ppi_data = pd.read_csv(ppi_file, sep='\t', header=None)
+                    self.ppi_tfs = sorted(set(self.ppi_data[0]))
+                    print('Number of PPIs:', self.ppi_data.shape[0])
+            else:
+                print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
+                self.ppi_data = None
+
+            self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
+            self.unique_tfs = sorted(np.unique( list(set(self.ppi_tfs).intersection(set(self.motif_tfs)) )))
+            self.num_genes  = len(self.gene_names)
+            self.num_tfs    = len(self.unique_tfs)
+
+            # Initialize data
+            self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
+            # Auxiliary dicts
+            gene2idx = {x: i for i, x in enumerate(self.gene_names)}
+            tf2idx = {x: i for i, x in enumerate(self.unique_tfs)}
+            # Populate gene expression
+            idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
+            print(self.expression.shape)
+            print(self.expression_data.shape)
+            self.expression[idx_geneEx, :] = self.expression_data.values
+            self.expression_data = pd.DataFrame(data=self.expression)
+
+            # =====================================================================
+            # Network construction
+            # =====================================================================
+            with Timer('Calculating coexpression network ...'):
+                if self.expression_data is None:
+                    self.correlation_matrix = np.identity(self.num_genes, dtype=int)
+                else:
+                    self.correlation_matrix = np.corrcoef(self.expression_data)
+                if np.isnan(self.correlation_matrix).any():
+                    np.fill_diagonal(self.correlation_matrix, 1)
+                    self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
+
+            # Clean up useless variables to release memory
+            if keep_expression_matrix:
+                self.expression_matrix = self.expression_data.values
+
+            if self.motif_data is None:
+                print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
+                self.panda_network = self.correlation_matrix
+                self.export_panda_results = self.correlation_matrix
+                self.motif_matrix = self.motif_data
+                self.ppi_matrix = self.ppi_data
+                self.__pearson_results_data_frame()
+                return
+
+            with Timer('Creating motif network ...'):
+                self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
+                idx_tfs = [tf2idx.get(x, 0) for x in self.motif_data[0]]
+                idx_genes = [gene2idx.get(x, 0) for x in self.motif_data[1]]
+                idx = np.ravel_multi_index((idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape)
+                self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
+
+            if self.ppi_data is None:
+                self.ppi_matrix = np.identity(self.num_tfs, dtype=int)
+            else:
+                with Timer('Creating PPI network ...'):
+                    self.ppi_matrix = np.identity(self.num_tfs)
+                    idx_tf1 = [tf2idx.get(x, 0) for x in self.ppi_data[0]]
+                    idx_tf2 = [tf2idx.get(x, 0) for x in self.ppi_data[1]]
+                    idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
+                    self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                    idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
+                    self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+        return
 
     def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix):
         """Panda algorithm.
@@ -357,8 +559,8 @@ class Panda(object):
 
     def return_panda_indegree(self):
         '''Return Panda indegree.'''
-        #subset_indegree = self.export_panda_results.loc[:,['gene','force']]
-        subset_indegree = self.panda_results.loc[:,['gene','force']]
+        export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
+        subset_indegree = export_panda_results_pd.loc[:,['gene','force']]
         self.panda_indegree = subset_indegree.groupby('gene').sum()
         return self.panda_indegree
     def return_panda_outdegree(self):
