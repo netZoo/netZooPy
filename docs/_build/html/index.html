@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Home &mdash; netZooPy 0.1 documentation</title>
+  <title>Home &mdash; netZooPy 0.1.1 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.1',
+              VERSION:'0.1.1',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -66,6 +66,10 @@
 
           
             
+            
+              <div class="version">
+                0.1
+              </div>
             
           
 
@@ -171,6 +175,13 @@
 <div class="section" id="home">
 <h1>Home<a class="headerlink" href="#home" title="Permalink to this headline">¶</a></h1>
 <p>netZooPy is a catalog of methods for the reconstruction and analysis of gene regulatory networks.</p>
+<p>netZooPy has started as a merge of the following repositories and forks:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/davidvi/pypanda">pypanda</a> from David Van Ijzendorn,</li>
+<li>Alessandro Marin’s pypanda and Marieke Kuijjer’s pypuma <a class="reference external" href="https://github.com/aless80/pypanda">fork</a>, and</li>
+<li>Cho-Yi Chen’s <a class="reference external" href="https://github.com/QuackenbushLab/pypanda">fork</a>.</li>
+<li>Genis Calderer’s <a class="reference external" href="https://github.com/genis/pysambar">pysambar</a> and <a class="reference external" href="https://github.com/genis/pycondr">pycondor</a></li>
+</ul>
 </div>
 <div class="section" id="contents">
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
@@ -189,10 +200,16 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="functions/index.html">Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="functions/index.html#panda">Panda</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions/index.html#netzoopy-panda">netZooPy.panda</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="functions/index.html#analyze-panda">analyze_panda</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="functions/index.html#class-analyzepanda">class AnalyzePanda</a></li>
+<li class="toctree-l4"><a class="reference internal" href="functions/index.html#top-network-plot">top_network_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="functions/index.html#shape-plot-network">shape_plot_network</a></li>
+<li class="toctree-l4"><a class="reference internal" href="functions/index.html#create-plot">create_plot</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="functions/index.html#run-panda">run_panda</a></li>
-<li class="toctree-l3"><a class="reference internal" href="functions/index.html#run-lioness">run_lioness</a></li>
-<li class="toctree-l3"><a class="reference internal" href="functions/index.html#id1">panda</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="functions/index.html#panda">panda</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="functions/index.html#class-panda">class Panda</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="functions/index.html#init">init</a></li>
 <li class="toctree-l5"><a class="reference internal" href="functions/index.html#remove-missing">remove_missing</a></li>
@@ -204,9 +221,9 @@
 </li>
 <li class="toctree-l5"><a class="reference internal" href="functions/index.html#pearson-results-data-frame">pearson_results_data_frame</a></li>
 <li class="toctree-l5"><a class="reference internal" href="functions/index.html#save-panda-results">save_panda_results</a></li>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#top-network-plot">top_network_plot</a></li>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#shape-plot-network">shape_plot_network</a></li>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#create-plot">create_plot</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id1">top_network_plot</a></li>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id2">shape_plot_network</a></li>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id3">create_plot</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="functions/index.html#split-label">split_label</a></li>
 </ul>
 </li>
@@ -218,38 +235,39 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="functions/index.html#lioness">Lioness</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="functions/index.html#id2">lioness</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions/index.html#netzoopy-lioness">netZooPy.lioness</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="functions/index.html#run-lioness">run_lioness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functions/index.html#lioness">lioness</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="functions/index.html#class-lioness">class Lioness</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id3">init</a></li>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id4">init</a></li>
 <li class="toctree-l5"><a class="reference internal" href="functions/index.html#lioness-loop">lioness_loop</a></li>
 <li class="toctree-l5"><a class="reference internal" href="functions/index.html#save-lioness-results">save_lioness_results</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="functions/index.html#analyzelioness">AnalyzeLioness</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="functions/index.html#analyze-lioness">analyze_lioness</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="functions/index.html#class-analyzelioness">class AnalyzeLioness</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id4">init</a></li>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id5">top_network_plot</a></li>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id5">init</a></li>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id6">top_network_plot</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="functions/index.html#lioness-for-puma">lioness_for_puma</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="functions/index.html#class-lionesspuma">class LionessPuma</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id6">init</a></li>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id7">lioness_loop</a></li>
-<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id8">save_lioness_results</a></li>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id7">init</a></li>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id8">lioness_loop</a></li>
+<li class="toctree-l5"><a class="reference internal" href="functions/index.html#id9">save_lioness_results</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="functions/index.html#puma">Puma</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions/index.html#netzoopy-puma">netZooPy.puma</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="functions/index.html#run-puma">run_puma</a></li>
-<li class="toctree-l3"><a class="reference internal" href="functions/index.html#id9">puma</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="functions/index.html#puma">puma</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="functions/index.html#class-puma">class Puma</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="functions/index.html#id10">init</a></li>
 <li class="toctree-l5"><a class="reference internal" href="functions/index.html#id11">remove_missing</a></li>
@@ -287,7 +305,15 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">0.5.0 (2019-10-01)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.4.0 (2019-10-01)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.3.0 (2019-11-14)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">0.2.0 (2019-11-13)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id5">0.1.1 (2019-9-3)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id6">0.1.0 (2019-7-26)</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>

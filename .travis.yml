@@ -2,6 +2,7 @@ language: python
 python:
    - "3.6"
    - "3.7"
+   - "3.8"
 
 install:
    - pip3 install -r requirements.txt
@@ -9,9 +10,10 @@ install:
    - pwd
    - pip3 install -e .
    - pip3 install codecov
+   - pip install pytest-cov
 
 script: 
-   - pytest
+   - travis_wait pytest --cov=netZooPy tests
 
 branches:
   only:

@@ -20,7 +20,13 @@ In addition to the following pip packages:
 
 ## Install
 
-- git clone https://github.com/netZoo/netZooPy.git
+- `git clone https://github.com/netZoo/netZooPy.git`
+
+- `cd netZooPy`
+
+- `pip3 install -e .`
+
+- Then you can import netZooPy in your code through `import netZooPy`
 
 ## Troubleshooting
 
