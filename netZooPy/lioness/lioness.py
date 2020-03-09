@@ -43,7 +43,7 @@ class Lioness(Panda):
             else:
                 print('Cannot find panda or puma network in object')
                 raise AttributeError('Cannot find panda or puma network in object')
-            del obj
+            # del obj
 
         # Get sample range to iterate
         self.n_conditions = self.expression_matrix.shape[1]
@@ -59,7 +59,7 @@ class Lioness(Panda):
         self.total_lioness_network = self.__lioness_loop()
 
         # create result data frame
-        self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
     def __lioness_loop(self):
         for i in self.indexes:
@@ -85,11 +85,17 @@ class Lioness(Panda):
                     subset_panda_network = correlation_matrix_orig
 
             lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
+            # lioness_network=pd.DataFrame(lioness_network)
+            # lioness_network.columns=obj.gene_names
+            # lioness_network.index=obj.unique_tfs
+            # meta_path = os.path.join(self.save_dir,"lioness_meta.txt")
+            # pd.melt(lioness_network).to_csv(meta_path,sep='\t',float_format='%1.4f')
 
             with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
                 path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
+
                 if self.save_fmt == 'txt':
-                    np.savetxt(path, lioness_network)
+                    pd.melt(pd.DataFrame(lioness_network)).value.to_csv(path,sep='\t',float_format='%1.4f',index=False,header=False)
                 elif self.save_fmt == 'npy':
                     np.save(path, lioness_network)
                 elif self.save_fmt == 'mat':
@@ -98,12 +104,12 @@ class Lioness(Panda):
                 else:
                     print("Unknown format %s! Use npy format instead." % self.save_fmt)
                     np.save(path, lioness_network)
-            if i == 0:
-                self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
-            else:
-                self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
+        #     if i == 0:
+        #         self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+        #     else:
+        #         self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
 
-        return self.total_lioness_network
+        # return self.total_lioness_network
 
     def save_lioness_results(self, file='lioness.txt'):
         '''Write lioness results to file.'''

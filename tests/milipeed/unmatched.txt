@@ -1,0 +1,586 @@
+#Split in new
+chr1	13328195	13698405	PRAMEF18
+#Split in new
+chr1	144614958	145370304	NBPF9
+#Split in new
+chr1	144146810	146467744	NBPF20
+#Split in new
+chr1	147574322	148346929	NBPF8
+#Split in new
+chr1	144614958	144830407	NBPF8
+#Split in new
+chr1	148250249	149109725	NBPF25P
+#Split in new
+chr1	145293370	146466121	NBPF10
+#Split in new
+chr1	147574322	148346929	NBPF8
+#Split in new
+chr1	144614958	144830407	NBPF8
+#Split in new
+chr1	145293370	146466121	NBPF10
+#Split in new
+chr1	144614958	144830407	NBPF9
+#Split in new
+chr1	144614958	144830407	NBPF8
+#Split in new
+chr1	147574322	148346929	NBPF8
+#Partially deleted in new
+chr1	2572806	2706230	TTC34
+#Split in new
+chr1	13052393	13112702	PRAMEF26
+#Split in new
+chr1	13052239	13112702	PRAMEF25
+#Split in new
+chr1	144298163	144340759	LINC00623
+#Split in new
+chr1	144298163	144340759	LINC00623
+#Split in new
+chr1	144298163	144341756	LINC00623
+#Split in new
+chr1	144300467	144341077	LINC00869
+#Split in new
+chr1	144300467	144341077	LINC00869
+#Split in new
+chr1	144300467	144341077	LINC00869
+#Split in new
+chr1	144298163	144340759	LINC00623
+#Split in new
+chr1	145289769	145370303	NBPF25P
+#Split in new
+chr1	146373856	146467639	NBPF12
+#Split in new
+chr1	145827204	146467743	NBPF25P
+#Split in new
+chr1	149553002	149553787	PPIAL4C
+#Split in new
+chr1	149553002	149553787	PPIAL4A
+#Split in new
+chr1	223714971	223853436	CAPN8
+#Split in new
+chr1	13035498	13039011	PRAMEF18
+#Split in new
+chr1	13035542	13038381	PRAMEF22
+#Split in new
+chr1	13108513	13117751	PRAMEF5
+#Split in new
+chr1	13328832	13331671	PRAMEF22
+#Split in new
+chr1	13607699	13611533	PRAMEF8
+#Split in new
+chr1	13607699	13611533	PRAMEF7
+#Split in new
+chr1	13641972	13648987	PRAMEF15
+#Split in new
+chr1	13644799	13648656	PRAMEF27
+#Split in new
+chr1	143717587	143744519	LINC01138
+#Split in new
+chr1	143717587	143744519	LINC01138
+#Split in new
+chr1	144363461	144364246	PPIAL4C
+#Split in new
+chr1	144363461	144364246	PPIAL4A
+#Split in new
+chr1	145924387	145945477	PDZK1P1
+#Split in new
+chr1	146032541	146082633	NBPF11
+#Split in new
+chr1	146032541	146082633	NBPF11
+#Split in new
+chr1	146032541	146082633	NBPF11
+#Split in new
+chr1	146032541	146066256	NBPF11
+#Split in new
+chr1	147954634	147955419	PPIAL4C
+#Split in new
+chr1	147954634	147955419	PPIAL4A
+#Split in new
+chr1	148201751	148202536	PPIAL4D
+#Split in new
+chr1	148201751	148202536	PPIAL4E
+#Split in new
+chr1	148201751	148202536	PPIAL4F
+#Split in new
+chr1	148250248	148346929	NBPF9
+#Split in new
+chr1	148250248	148346756	NBPF14
+#Split in new
+chr1	148560846	148596267	NBPF15
+#Split in new
+chr1	148558187	148596267	NBPF15
+#Split in new
+chr1	148806014	148806799	PPIAL4D
+#Split in new
+chr1	148806014	148806799	PPIAL4E
+#Split in new
+chr1	148806014	148806799	PPIAL4F
+#Split in new
+chr1	149576466	149619134	LINC00623
+#Split in new
+chr1	149576261	149672983	LOC103091866
+#Split in new
+chr1	149576261	149672983	LOC103091866
+#Split in new
+chr1	149576261	149672983	LOC103091866
+#Split in new
+chr1	149576261	149672983	LOC103091866
+#Split in new
+chr1	149576261	149672983	LOC103091866
+#Split in new
+chr1	149576466	149619134	LINC00623
+#Split in new
+chr1	149576160	149651107	LINC00869
+#Split in new
+chr1	149576466	149619134	LINC00623
+#Split in new
+chr1	149575481	149619134	LINC00623
+#Partially deleted in new
+chr2	109745996	110262213	SH3RF3
+#Partially deleted in new
+chr2	149632791	149883273	KIF5C
+#Partially deleted in new
+chr2	233924676	234116549	INPP5D
+#Partially deleted in new
+chr2	233924676	234116549	INPP5D
+#Split in new
+chr2	19167728	19226726	LINC01376
+#Partially deleted in new
+chr2	172778934	172848600	HAT1
+#Partially deleted in new
+chr2	172778934	172848600	HAT1
+#Partially deleted in new
+chr2	239756672	239832244	TWIST2
+#Partially deleted in new
+chr3	66119284	66429351	SLC25A26
+#Split in new
+chr4	75480590	75490485	AREG
+#Partially deleted in new
+chr5	138784242	138842328	ECSCR
+#Partially deleted in new
+chr5	138784242	138842328	ECSCR
+#Partially deleted in new
+chr5	138784242	138842328	ECSCR
+#Partially deleted in new
+chr7	139246315	139477693	HIPK2
+#Partially deleted in new
+chr7	139246315	139477693	HIPK2
+#Partially deleted in new
+chr7	153584181	154686000	DPP6
+#Partially deleted in new
+chr7	153749502	154380340	DPP6
+#Partially deleted in new
+chr7	153749502	154686000	DPP6
+#Partially deleted in new
+chr7	154002296	154686000	DPP6
+#Partially deleted in new
+chr7	154002296	154686000	DPP6
+#Partially deleted in new
+chr7	192968	300740	FAM20C
+#Partially deleted in new
+chr7	50343678	50472798	IKZF1
+#Partially deleted in new
+chr7	50344264	50472798	IKZF1
+#Partially deleted in new
+chr7	50344264	50472798	IKZF1
+#Partially deleted in new
+chr7	50348275	50472798	IKZF1
+#Partially deleted in new
+chr7	50348275	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Partially deleted in new
+chr7	50358643	50472798	IKZF1
+#Split in new
+chr7	74702376	74988276	PMS2P5
+#Split in new
+chr7	74601103	74867641	GTF2IP1
+#Split in new
+chr7	130146079	130353598	COPG2
+#Partially deleted in new
+chr7	143318541	143422176	TCAF2
+#Partially deleted in new
+chr7	143318044	143422176	TCAF2
+#Partially deleted in new
+chr7	50344264	50437142	IKZF1
+#Partially deleted in new
+chr7	50344264	50437537	IKZF1
+#Partially deleted in new
+chr7	50348275	50437537	IKZF1
+#Split in new
+chr7	74247755	74267872	GTF2IRD2
+#Partially deleted in new
+chr7	74456269	74489717	RCC1L
+#Partially deleted in new
+chr7	74470621	74489717	RCC1L
+#Split in new
+chr7	100547051	100611619	MUC3A
+#Split in new
+chr8	145486001	145515120	BOP1
+#Partially deleted in new
+chr8	144939491	144952632	EPPK1
+#Split in new
+chr8	145437879	145440954	HGH1
+#Split in new
+chr8	145597703	145618453	ADCK5
+#Split in new
+chr9	69204537	69262593	CBWD6
+#Partially deleted in new
+chr9	133028157	133309510	HMCN2
+#Split in new
+chr9	39443813	39464526	ZNF658B
+#Split in new
+chr9	43685195	43924057	CNTNAP3P2
+#Split in new
+chr9	43684884	43922473	CNTNAP3B
+#Split in new
+chr9	41321109	41327364	SPATA31A7
+#Split in new
+chr9	41321106	41327364	SPATA31A5
+#Split in new
+chr9	41306132	41311985	FAM74A1
+#Split in new
+chr9	41588832	41609544	ZNF658B
+#Split in new
+chr9	43624501	43630730	SPATA31A6
+#Split in new
+chr9	43608372	43615527	FAM74A7
+#Split in new
+chr9	44384584	44391314	LOC101927827
+#Split in new
+chr9	46385603	46387373	FAM27E2
+#Split in new
+chr9	67784943	67786625	FAM27E3
+#Split in new
+chr9	67779122	67781179	LOC102723709
+#Split in new
+chr9	67792928	67794189	FAM27B
+#Split in new
+chr9	67785633	67786685	LOC105379807
+#Partially deleted in new
+chrX	10413349	10851809	MID1
+#Split in new
+chrX	49188103	49313700	GAGE8
+#Split in new
+chrX	49197606	49294588	GAGE8
+#Split in new
+chrX	49216647	49294598	GAGE2C
+#Split in new
+chrX	49178508	49294588	GAGE12J
+#Split in new
+chrX	49178515	49294598	GAGE2E
+#Split in new
+chrX	49188080	49294588	GAGE13
+#Split in new
+chrX	49197581	49313700	GAGE2A
+#Split in new
+chrX	49207134	49304144	GAGE2A
+#Split in new
+chrX	49216633	49294588	GAGE2A
+#Split in new
+chrX	49216658	49304144	GAGE8
+#Split in new
+chrX	46771867	46920641	JADE3
+#Split in new
+chrX	46771710	46920641	JADE3
+#Partially deleted in new
+chrX	120011344	120066151	CT47A10
+#Partially deleted in new
+chrX	120011344	120066151	CT47A9
+#Partially deleted in new
+chrX	120011344	120066151	CT47A8
+#Partially deleted in new
+chrX	120011344	120066151	CT47A5
+#Partially deleted in new
+chrX	120011344	120066151	CT47A4
+#Partially deleted in new
+chrX	120011344	120066151	CT47A3
+#Partially deleted in new
+chrX	120011344	120066151	CT47A2
+#Partially deleted in new
+chrX	120011344	120066151	CT47A1
+#Partially deleted in new
+chrX	120011344	120066151	CT47A12
+#Partially deleted in new
+chrX	120011344	120066151	CT47A11
+#Split in new
+chrX	134866213	134874249	CT45A2
+#Split in new
+chrX	134866213	134874249	CT45A8
+#Split in new
+chrX	134866414	134874244	CT45A7
+#Split in new
+chrX	134866213	134874248	CT45A6
+#Split in new
+chrX	134847184	134891539	CT45A1
+#Split in new
+chrX	149531544	149682448	MAMLD1
+#Split in new
+chrX	1314893	1331616	CRLF2
+#Split in new
+chrX	1314893	1331616	CRLF2
+#Split in new
+chrX	1314893	1331616	CRLF2
+#Split in new
+chrX	49207159	49214420	GAGE8
+#Split in new
+chrX	49226170	49233491	GAGE2C
+#Split in new
+chrX	49216676	49223943	GAGE12I
+#Split in new
+chrX	49216648	49223939	GAGE4
+#Split in new
+chrX	49197595	49214430	GAGE2C
+#Split in new
+chrX	49207148	49223953	GAGE2C
+#Split in new
+chrX	49197562	49223943	GAGE2D
+#Split in new
+chrX	49207115	49214420	GAGE2D
+#Split in new
+chrX	49216656	49223943	GAGE5
+#Split in new
+chrX	49216677	49223939	GAGE7
+#Split in new
+chrX	49226137	49233481	GAGE2D
+#Split in new
+chrX	49235707	49242997	GAGE2B
+#Split in new
+chrX	134847385	134856984	CT45A7
+#Split in new
+chrX	134883688	134891515	CT45A7
+#Split in new
+chrX	134883487	134891519	CT45A6
+#Split in new
+chrX	134883487	134891519	CT45A3
+#Split in new
+chrX	140084755	140085871	SPANXB1
+#Split in new
+chrX	152338258	152340864	PNMA6A
+#Partially deleted in new
+chrY	9236075	9368285	TSPY4
+#Split in new
+chrY	1264893	1281616	CRLF2
+#Split in new
+chrY	1264893	1281616	CRLF2
+#Split in new
+chrY	1264893	1281616	CRLF2
+#Split in new
+chr10	48215723	48237508	AGAP9
+#Split in new
+chr10	51371378	51734610	TIMM23B
+#Split in new
+chr10	51371378	51734610	TIMM23B
+#Split in new
+chr10	51371378	51747981	TIMM23B
+#Split in new
+chr10	51371378	51734610	TIMM23B
+#Partially deleted in new
+chr10	128593977	129250781	DOCK1
+#Partially deleted in new
+chr10	128593977	129250781	DOCK1
+#Split in new
+chr10	17851341	18200091	MRC1
+#Split in new
+chr10	18041226	18089854	TMEM236
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026433	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026433	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	51026320	51371371	PARG
+#Split in new
+chr10	47225570	47243511	BMS1P6
+#Split in new
+chr10	47191843	47213626	AGAP9
+#Split in new
+chr10	48952591	48980339	GLUD1P7
+#Split in new
+chr10	48927373	48952629	BMS1P5
+#Split in new
+chr10	51253907	51371344	PARGP1
+#Split in new
+chr11	1151579	1222366	MUC5AC
+#Partially deleted in new
+chr12	7187514	7245043	C1R
+#Partially deleted in new
+chr12	109301904	109459045	SVOP
+#Partially deleted in new
+chr12	122516633	122631894	MLXIP
+#Split in new
+chr12	132680916	132905905	GALNT9
+#Partially deleted in new
+chr13	114321596	114438637	GRK1
+#Split in new
+chr15	82632349	83018198	GOLGA6L10
+#Split in new
+chr15	82804002	83195272	GOLGA6L17P
+#Split in new
+chr15	82804768	83108111	GOLGA6L9
+#Split in new
+chr15	23403865	23579357	GOLGA6L22
+#Split in new
+chr15	82944745	82976263	GOLGA2P10
+#Split in new
+chr15	82944745	82976263	GOLGA2P10
+#Split in new
+chr15	82944745	82976263	GOLGA2P10
+#Split in new
+chr15	82944749	82976258	LOC727751
+#Split in new
+chr15	82944749	82976258	LOC727751
+#Partially deleted in new
+chr15	20874796	20961480	NBEAP1
+#Split in new
+chr15	23435069	23448423	GOLGA8EP
+#Split in new
+chr15	82932433	82939197	GOLGA6L10
+#Split in new
+chr15	83023840	83084341	UBE2Q2P2
+#Split in new
+chr17	34581084	34591996	TBC1D3F
+#Split in new
+chr17	34581084	34591982	TBC1D3G
+#Split in new
+chr17	34581028	34591996	TBC1D3H
+#Split in new
+chr19	40353962	40440533	FCGBP
+#Split in new
+chr19	20578625	20607771	ZNF826P
+#Split in new
+chr19	54799849	54804221	LILRA3
+#Split in new
+chr19	54799849	54804265	LILRA3
+#Partially deleted in new
+chr20	34894244	35157040	DLGAP4
+#Split in new
+chr22	20328519	20706784	LOC101927859
+#Split in new
+chr22	18043138	18073656	SLC25A18
+#Split in new
+chr22	18043138	18073656	SLC25A18
+#Split in new
+chr22	24340594	24347258	GSTTP1
+#Split in new
+chr22	24385937	24401899	GSTTP2
+#Partially deleted in new
+chr6_apd_hap1	395478	538313	LOC101929006
+#Partially deleted in new
+chr6_apd_hap1	395478	561686	LOC101929006
+#Partially deleted in new
+chr6_apd_hap1	1566816	1606562	HCG18
+#Partially deleted in new
+chr6_apd_hap1	1566816	1606562	HCG18
+#Partially deleted in new
+chr6_apd_hap1	1442003	1605540	HCG17
+#Partially deleted in new
+chr6_apd_hap1	1566816	1606562	HCG18
+#Partially deleted in new
+chr6_apd_hap1	1566816	1606562	HCG18
+#Partially deleted in new
+chr6_apd_hap1	3604983	3654074	C6orf10
+#Partially deleted in new
+chr6_apd_hap1	3598892	3654074	C6orf10
+#Partially deleted in new
+chr6_apd_hap1	3598270	3654074	C6orf10
+#Partially deleted in new
+chr6_dbb_hap3	4325157	4378196	HLA-DPB2
+#Partially deleted in new
+chr6_mcf_hap5	991650	1359214	HLA-F
+#Partially deleted in new
+chr6_mcf_hap5	991650	1359214	HLA-F
+#Partially deleted in new
+chr6_mcf_hap5	466833	561774	LOC101929006
+#Partially deleted in new
+chr6_mcf_hap5	383133	453829	OR2J3
+#Partially deleted in new
+chr6_mcf_hap5	1150097	1295564	HLA-A
+#Partially deleted in new
+chr6_mcf_hap5	1150097	1295564	HLA-A
+#Partially deleted in new
+chr6_mcf_hap5	3602826	3730627	LOC101929163
+#Partially deleted in new
+chr6_mcf_hap5	3602856	3697382	LOC101929163
+#Partially deleted in new
+chr6_mcf_hap5	3602856	3755069	LOC101929163
+#Partially deleted in new
+chr6_mcf_hap5	174341	195331	TRIM27
+#Partially deleted in new
+chr6_qbl_hap6	2461711	2772598	MICB
+#Partially deleted in new
+chr6_mann_hap4	2069705	2351537	MUC22
+#Partially deleted in new
+chr6_mann_hap4	2069705	2351537	MUC22
+#Partially deleted in new
+chr6_mann_hap4	2717714	2821820	MICB
+#Partially deleted in new
+chr6_mann_hap4	2514257	2821820	MICB
+#Partially deleted in new
+chr6_mann_hap4	2717714	2821820	MICB
+#Partially deleted in new
+chr6_mann_hap4	2043579	2058722	FLOT1
+#Partially deleted in new
+chr6_mann_hap4	2043579	2058722	FLOT1
+#Partially deleted in new
+chr6_mann_hap4	2283510	2351537	MUC22
+#Partially deleted in new
+chr6_ssto_hap7	3038542	3061268	MSH5
+#Partially deleted in new
+chr6_ssto_hap7	3038542	3063437	MSH5-SAPCD1
+#Partially deleted in new
+chr6_ssto_hap7	3038542	3061268	MSH5
+#Partially deleted in new
+chr6_ssto_hap7	3038542	3061268	MSH5
+#Partially deleted in new
+chr6_ssto_hap7	3038542	3061268	MSH5
+#Partially deleted in new
+chr6_ssto_hap7	4370139	4430060	BRD2
+#Partially deleted in new
+chr6_ssto_hap7	4367204	4430060	BRD2
+#Partially deleted in new
+chr6_ssto_hap7	4369432	4430060	BRD2
+#Partially deleted in new
+chr6_ssto_hap7	4369432	4430060	BRD2
+#Split in new
+chrUn_gl000228	112604	124171	DUX4
+#Split in new
+chr19_gl000209_random	131432	145743	KIR2DS2
+#Split in new
+chr19_gl000209_random	131432	145743	KIR2DS2
+#Split in new
+chr19_gl000209_random	131432	145743	KIR2DS2
+#Split in new
+chr19_gl000209_random	131432	145743	KIR2DS2
+#Split in new
+chr19_gl000209_random	131432	145743	KIR2DS2
