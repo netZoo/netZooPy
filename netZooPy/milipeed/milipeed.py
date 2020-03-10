@@ -39,7 +39,7 @@ class Milipeed(Panda):
         # =====================================================================
         # Data loading
         # =====================================================================
-        if methylation_file is not None and motif_file is not None:
+        if methylation_file is not None and motif_file is not None: ## if methylation files are many
             with Timer('Loading methylation data ...'):
                 
                 tmp = pd.read_csv(methylation_file, sep='\t', header=0,index_col=0)
@@ -49,13 +49,17 @@ class Milipeed(Panda):
                 self.methylation_genes = self.mdata['target'].tolist()
                 self.methylation_tfs = self.mdata['source'].tolist()
                 print('Methylation matrix:', self.mdata.shape)
-        elif methylation_file is not None and motif_file is None:
+        elif methylation_file is not None and motif_file is None: ## if methylation is already in matrix
             self.mdata=pd.read_csv(methylation_file,sep='\t',names=['source','target'],header='0')
             self.methylation_subjects = sorted(set(self.mdata.columns))
+        elif methylation_file is None and motif_file is not None:
+            print('Cannot calculate methylation informed motif: will use generic motif')
+            self.mdata = pd.read_csv(motif_file, sep='\t', index_col=2,names=['source','target'])
+            self.mdata['weight']=1
+            self.methylation_subjects=None
 
-        else:
-            print('Cannot calculate methylation informed motif: you should try playing with another netZoo animal')
-
+        if expression_file is None and methylation_file is None and motif_file is not None:
+            
         if expression_file is None:
             self.expression_genes=self.methylation_map['target']
             self.expression_subjects=self.methylation_subjects
@@ -106,12 +110,14 @@ class Milipeed(Panda):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
+        if 
         # Run MILIPEED
         self.total_milipeed_network = self.__milipeed_loop()
 
         # # create result data frame
         # self.export_milipeed_results = pd.DataFrame(self.total_milipeed_network)
-
+        # pd.DataFrame(self.subjects).to_csv('mili_subj.txt',index=False)
+        
     def __milipeed_loop(self):
         for iii in self.indexes:
             print("Running MILIPEED for subject %d:" % (iii+1))
