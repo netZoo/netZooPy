@@ -18,7 +18,8 @@ import statsmodels.api as sm
 
 class AnalyzeMilipeed(Milipeed):
     '''GLM MILIPEED links discriminated by age, sex, BMI, FEV and PY.'''
-    def __init__(self,input_path,gene_subset,outdir='.',mili_nets='/udd/redmo/analyses/MILIPEED/mili_subj.txt',links_file='/udd/redmo/analyses/MILIPEED/milipeed_links.txt',meta='/udd/redmo/analyses/MILIPEED/subj_metadata.txt'):
+    # def __init__(self,input_path,gene_subset,outdir='.',mili_nets='/udd/redmo/analyses/MILIPEED/mili_subj.txt',links_file='/udd/redmo/analyses/MILIPEED/milipeed_links.txt',meta='/udd/redmo/analyses/MILIPEED/subj_metadata.txt'):
+    def __init__(self,input_path,gene_subset,outdir='.',mili_nets,links_file',meta):
         '''Load variables from Milipeed.'''
         self.metadata = pd.read_csv(meta,sep='\t',header=0,index_col=0)
         subjmeta = pd.read_csv(mili_nets,sep='\t',names=['subj'],index_col=0)

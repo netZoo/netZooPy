@@ -36,11 +36,11 @@ class Milipeed(Panda):
        dcolinmorgan, bmarouen,
     """
 
-    def __init__(self, expression_file, methylation_file, ppi_file, motif_file='~/netZooPy/tests/milipeed/MotifPrior_CGmap.txt', start=1, end=None,save_dir='milipeed_output', save_fmt='txt'):
+    def __init__(self, expression_file, methylation_file, ppi_file, motif_file='tests/milipeed/MotifPrior_CGmap.txt', start=1, end=None,save_dir='milipeed_output', save_fmt='txt'):
         # =====================================================================
         # Data loading
         # =====================================================================
-        if methylation_file is not None and motif_file is not None: ## if methylation files are many
+        if methylation_file is not None and motif_file is not None: ## if CGs need to map to TF-genes
             with Timer('Loading methylation data ...'):
                 
                 tmp = pd.read_csv(methylation_file, sep='\t', header=0,index_col=0)
@@ -50,7 +50,7 @@ class Milipeed(Panda):
                 self.methylation_genes = self.mdata['target'].tolist()
                 self.methylation_tfs = self.mdata['source'].tolist()
                 print('Methylation matrix:', self.mdata.shape)
-        elif methylation_file is not None and motif_file is None: ## if methylation is already in matrix
+        elif methylation_file is not None and motif_file is None: ## if methylation is already in TF-gene x subject matrix
             self.mdata=pd.read_csv(methylation_file,sep='\t',names=['source','target'],header='0')
             self.methylation_subjects = sorted(set(self.mdata.columns))
         # elif methylation_file is None and motif_file is not None:
