@@ -51,8 +51,13 @@ class Milipeed(Panda):
                 self.methylation_tfs = self.mdata['source'].tolist()
                 print('Methylation matrix:', self.mdata.shape)
         elif methylation_file is not None and motif_file is None: ## if methylation is already in TF-gene x subject matrix
-            self.mdata=pd.read_csv(methylation_file,sep='\t',names=['source','target'],header='0')
-            self.methylation_subjects = sorted(set(self.mdata.columns))
+            self.mdata=pd.read_csv(methylation_file,sep='\t',header=0)
+            # self.mdata['source']=self.mdata.iloc[0]
+            # self.mdata['target']=self.mdata.iloc[1]
+            self.methylation_genes = self.mdata.iloc[:,1].tolist()
+            self.methylation_tfs = self.mdata.iloc[:,0].tolist()
+            self.methylation_subjects = sorted(set(self.mdata.columns))[2:len(self.mdata.columns)]
+            print('Methylation matrix:', self.mdata.shape)
         # elif methylation_file is None and motif_file is not None:
         #     print('Cannot calculate methylation informed motif: will use generic motif and export to lioness')
         #     self.mdata = pd.read_csv(motif_file, sep='\t', index_col=2,names=['source','target'])
