@@ -6,6 +6,7 @@ import pandas as pd
 from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
+from netZooPy.lioness.lioness import Lioness
 
 class Milipeed(Panda):
     """
@@ -52,26 +53,14 @@ class Milipeed(Panda):
         elif methylation_file is not None and motif_file is None: ## if methylation is already in matrix
             self.mdata=pd.read_csv(methylation_file,sep='\t',names=['source','target'],header='0')
             self.methylation_subjects = sorted(set(self.mdata.columns))
-        elif methylation_file is None and motif_file is not None:
-            print('Cannot calculate methylation informed motif: will use generic motif')
-            self.mdata = pd.read_csv(motif_file, sep='\t', index_col=2,names=['source','target'])
-            self.mdata['weight']=1
-            self.methylation_subjects=None
+        # elif methylation_file is None and motif_file is not None:
+        #     print('Cannot calculate methylation informed motif: will use generic motif and export to lioness')
+        #     self.mdata = pd.read_csv(motif_file, sep='\t', index_col=2,names=['source','target'])
+        #     self.mdata['weight']=1
+            # self.methylation_subjects=None
 
-        if expression_file is None and methylation_file is None and motif_file is not None:
-            
-        if expression_file is None:
-            self.expression_genes=self.methylation_map['target']
-            self.expression_subjects=self.methylation_subjects
-            self.expression_data=None #np.zeros(self.mdata.shape) ##place holder for dim calc below, not run
-            print('No Expression data given: correlation matrix will be an identity matrix of size', len(self.methylation_genes))
-        else:
-            with Timer('Loading expression data ...'):
-                self.expression_data = pd.read_csv(expression_file, sep='\t', header=0, index_col=0)
-                self.expression_genes = self.expression_data.index.tolist()
-                self.expression_subjects = self.expression_data.columns
-                print('Expression matrix:', self.expression_data.shape)
 
+        # if expression_file is None and methylation_file is None and motif_file is not None:
         if ppi_file:
             with Timer('Loading PPI data ...'):
                 self.ppi_data = pd.read_csv(ppi_file, sep='\t', header=None)
@@ -80,6 +69,27 @@ class Milipeed(Panda):
         else:
             print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
             self.ppi_data = None
+
+        if expression_file is None and methylation_file is not None:
+            self.expression_genes=self.methylation_map['target']
+            self.expression_subjects=self.methylation_subjects
+            self.expression_data=None #np.zeros(self.mdata.shape) ##place holder for dim calc below, not run
+            print('No Expression data given: correlation matrix will be an identity matrix of size', len(self.methylation_genes))
+        elif expression_file is not None and methylation_file is None: ##LIONESS
+            self.expression_data = pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
+            self.gene_names = self.expression_data.index.tolist()
+            self.num_genes = len(self.gene_names)
+            panda_obj=Panda(self)
+            Lioness(panda_obj)
+            return 0
+        else:
+            with Timer('Loading expression data ...'):
+                self.expression_data = pd.read_csv(expression_file, sep='\t', header=0, index_col=0)
+                self.expression_genes = self.expression_data.index.tolist()
+                self.expression_subjects = self.expression_data.columns
+                print('Expression matrix:', self.expression_data.shape)
+
+        
 
         self.subjects   = sorted(np.unique( list(set(self.expression_subjects).intersection(set(self.methylation_subjects)) )))
         self.gene_names   = sorted(np.unique( list(set(self.expression_genes).intersection(set(self.methylation_genes))) ))
@@ -110,14 +120,13 @@ class Milipeed(Panda):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
-        if 
         # Run MILIPEED
         self.total_milipeed_network = self.__milipeed_loop()
 
         # # create result data frame
-        # self.export_milipeed_results = pd.DataFrame(self.total_milipeed_network)
+        self.export_milipeed_results = pd.DataFrame(self.total_milipeed_network)
         # pd.DataFrame(self.subjects).to_csv('mili_subj.txt',index=False)
-        
+###
     def __milipeed_loop(self):
         for iii in self.indexes:
             print("Running MILIPEED for subject %d:" % (iii+1))

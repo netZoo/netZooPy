@@ -5,6 +5,7 @@ netZooPy/netZooPy/pypanda/*.pyc
 netZooPy/netZooPy/pypuma/*.pyc
 netZooPy/netZooPy/pypanda/output*
 netZooPy/netZooPy/pypuma/output*
+~/netZooPy/tests/milipeed/ToyData/archive/*
 dist/
 *.egg-info/
 .DS_Store
