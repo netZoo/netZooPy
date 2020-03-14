@@ -43,7 +43,7 @@ class ValidateMilipeed(Milipeed):
         sub.to_csv(('A549_hg19/meta2IDR.txt'),sep='\t',header=False,index=False)
 
     def format_motif(self,motif_path='/udd/rekrg/EpiPANDA/FIMO_results/ScanBedResults/',out_path='/udd/redmo/data//MotifPipeline/hg19_refseq_100kb_tr/'):
-        traces= os.listdir(motif_path)
+        traces= os.listdir(motif_path) ## perhaps use glob.glob
         for j,trace in enumerate(traces):
             filepath = os.path.join(motif_path, trace)
             data=pd.read_csv(filepath,sep='\t',names=['loc','pwma','pval','gene','dist'])
@@ -72,7 +72,7 @@ class ValidateMilipeed(Milipeed):
         table=[]
         val_score = outdir+'/miliVal_outdir';
         pdf = matplotlib.backends.backend_pdf.PdfPages(val_score+"/val_output.pdf")
-        traces= os.listdir(val_score)
+        traces= os.listdir(val_score) ## perhaps use glob.glob
         for j,trace in enumerate(traces):
             filepath = os.path.join(val_score, trace)
             data=pd.read_csv(filepath,sep='\t',names=["chrMotif", "MSS", "MES",'pwm','pval','gene','chrWGBS','WSS','WES',"wgbs",'chrChIP','CSS','CES',"ChIPTF",'idk']) 

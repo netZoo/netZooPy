@@ -18,7 +18,7 @@ import statsmodels.api as sm
 
 class AnalyzeMilipeed(Milipeed):
     '''GLM MILIPEED links discriminated by age, sex, BMI, FEV and PY.'''
-    def __init__(self,input_path,gene_subset,mili_nets='/udd/redmo/analyses/MILIPEED/mili_subj.txt',links_file='/udd/redmo/analyses/MILIPEED/milipeed_links.txt',meta='/udd/redmo/analyses/MILIPEED/subj_metadata.txt',outdir='.'):
+    def __init__(self,input_path,gene_subset,mili_nets='analyses/MILIPEED/mili_subj.txt',links_file='analyses/MILIPEED/milipeed_links.txt',meta='analyses/MILIPEED/subj_metadata.txt',outdir='.'):
     # def __init__(self,input_path,gene_subset,omili_nets,links_file,meta,utdir='.',):
         '''Load variables from Milipeed.'''
         self.metadata = pd.read_csv(meta,sep='\t',header=0,index_col=0)
@@ -37,7 +37,7 @@ class AnalyzeMilipeed(Milipeed):
         # path=self.save_dir
         self.path=input_path
         self.outdir=outdir
-        traces= os.listdir(input_path)
+        traces= glob.glob(input_path+'/*.txt')
         # if traces[1].endswith('npy'):
         #     append_data = pd.DataFrame()
         #     for j,trace in enumerate(traces):
@@ -60,12 +60,12 @@ class AnalyzeMilipeed(Milipeed):
         append_data = pd.DataFrame()
         gene_sub=pd.read_csv(gene_subset,sep='\t',names=['gene'])
         for j,trace in enumerate(traces):
-            filepath = os.path.join(input_path, trace)
-            data=pd.DataFrame(pd.read_csv(filepath,sep='\t',header=None,index_col=None))
+            # filepath = os.path.join(input_path, trace)
+            data=pd.DataFrame(pd.read_csv(trace,sep='\t',header=None,index_col=None))
             data.index=total_links['gene']
             subnet=data.merge(gene_sub,left_on=data.index,right_on='gene')
-
             append_data=pd.concat([append_data,pd.DataFrame(subnet[0])],sort=True,axis=1)
+            del data, subnet
             # self.append_data=self.append_data.T
             # tmp=pd.DataFrame(pd.read_csv(links_file,header=None,index_col=None, skiprows=i*2500, nrows=2500))                
             # tmp=pd.read_csv(links_file,sep='\t',header=None,dtype=str,index_col=None, skiprows=i*2500, nrows=2500)
@@ -76,7 +76,8 @@ class AnalyzeMilipeed(Milipeed):
         append_data.index=self.metadata.index
         append_data.columns=tmp['TF']+"_"+tmp['gene']
         self.population=self.metadata.merge(append_data,left_index=True,right_index=True)
-        self.population=self.population.round({'age':0})
+        # self.population=self.population.round({'age':0})
+        ### remove age as categorical and use as continuous
         # if self.population['age'] is not object: ##convert 
             # self.population['age']=self.population['age'].astype(object)
         self.date="{:%d.%m.%Y}".format(datetime.now())
