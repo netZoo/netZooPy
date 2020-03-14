@@ -18,8 +18,8 @@ import statsmodels.api as sm
 
 class AnalyzeMilipeed(Milipeed):
     '''GLM MILIPEED links discriminated by age, sex, BMI, FEV and PY.'''
-    # def __init__(self,input_path,gene_subset,mili_nets='/udd/redmo/analyses/MILIPEED/mili_subj.txt',links_file='/udd/redmo/analyses/MILIPEED/milipeed_links.txt',meta='/udd/redmo/analyses/MILIPEED/subj_metadata.txt',outdir='.'):
-    def __init__(self,input_path,gene_subset,omili_nets,links_file,meta,utdir='.',):
+    def __init__(self,input_path,gene_subset,mili_nets='/udd/redmo/analyses/MILIPEED/mili_subj.txt',links_file='/udd/redmo/analyses/MILIPEED/milipeed_links.txt',meta='/udd/redmo/analyses/MILIPEED/subj_metadata.txt',outdir='.'):
+    # def __init__(self,input_path,gene_subset,omili_nets,links_file,meta,utdir='.',):
         '''Load variables from Milipeed.'''
         self.metadata = pd.read_csv(meta,sep='\t',header=0,index_col=0)
         subjmeta = pd.read_csv(mili_nets,sep='\t',names=['subj'],index_col=0)
@@ -77,8 +77,8 @@ class AnalyzeMilipeed(Milipeed):
         append_data.columns=tmp['TF']+"_"+tmp['gene']
         self.population=self.metadata.merge(append_data,left_index=True,right_index=True)
         self.population=self.population.round({'age':0})
-        if self.population['age'] is not object: ##convert 
-            self.population['age']=self.population['age'].astype(object)
+        # if self.population['age'] is not object: ##convert 
+            # self.population['age']=self.population['age'].astype(object)
         self.date="{:%d.%m.%Y}".format(datetime.now())
         del append_data, tmp
         # self.milipeed_analysis= runInParallel(self.__analysis_loop(i),)

@@ -18,7 +18,7 @@ import plotly.tools as tls
 from sklearn.preprocessing import label_binarize
 from netZooPy.panda.panda import Panda
 import subprocess
-import matplotlib.backends.backend_pdf
+# import matplotlib.backends.backend_pdf
 
 class ValidateMilipeed(Milipeed):
     '''GLM MILIPEED links discriminated by age, sex, BMI, FEV and PY.'''
@@ -29,6 +29,10 @@ class ValidateMilipeed(Milipeed):
         self.validation=self.run_validation(self.motif)
         self.plots= self.plot_validation(self.validation)
 
+        self.table = self.plot_validation()
+
+        self.plot_heatmap()
+
     def restrict_ChIP(self,chip_meta='/udd/redmo/data/MotifPipeline/ENCODE/A549_hg19/metadata.tsv',selection='optimal IDR thresholded peaks',assembly='hg19'):
         tfdb=pd.read_csv(chip_meta,sep='\t',header=0)#,sep='\t',names=['motif','TF'])
         sub=tfdb[['File accession','Experiment target','Output type','Assembly']]
@@ -38,7 +42,7 @@ class ValidateMilipeed(Milipeed):
         del sub['Experiment target'],sub['Output type'],sub['Assembly']
         sub.to_csv(('A549_hg19/meta2IDR.txt'),sep='\t',header=False,index=False)
 
-    def format_motif(motif_path='/udd/rekrg/EpiPANDA/FIMO_results/ScanBedResults/',out_path='/udd/redmo/data//MotifPipeline/hg19_refseq_100kb_tr/'):
+    def format_motif(self,motif_path='/udd/rekrg/EpiPANDA/FIMO_results/ScanBedResults/',out_path='/udd/redmo/data//MotifPipeline/hg19_refseq_100kb_tr/'):
         traces= os.listdir(motif_path)
         for j,trace in enumerate(traces):
             filepath = os.path.join(motif_path, trace)
@@ -59,12 +63,13 @@ class ValidateMilipeed(Milipeed):
     # def convert_assembly():
     #     ~/tools/liftOver ~/data/MotifPipeline/ENCODE/wgbsin/ENCFF005TID.txt ~/hg38ToHg19.over.chain ~/data/MotifPipeline/ENCODE/wgbsin/ENCFF005TID_hg19.txt unmatched.txt
 
-    def run_validation(outdir,TFdir='/udd/redmo/data/MotifPipeline/ENCODE/A549_hg19',motifdir='/udd/redmo/data/MotifPipeline/hg19_refseq_100kb_tr/',bsfile='/udd/redmo/data/MotifPipeline/ENCODE/wgbsin/ENCFF005TID_hg19.txt'):
+    def run_validation(self,outdir,TFdir='/udd/redmo/data/MotifPipeline/ENCODE/A549_hg19',motifdir='/udd/redmo/data/MotifPipeline/hg19_refseq_100kb_tr/',bsfile='/udd/redmo/data/MotifPipeline/ENCODE/wgbsin/ENCFF005TID_hg19.txt'):
         valoutdir = outdir+'/miliVal_outdir';
         subprocess.check_call(["/udd/redmo/netZooPy/netZooPy/milipeed/validate_milipeed.sh TFdir motifdir bsfile valoutdir"],shell=True)
         return valoutdir
 
-    def plot_validation(outdir):
+    def plot_validation(self):
+        table=[]
         val_score = outdir+'/miliVal_outdir';
         pdf = matplotlib.backends.backend_pdf.PdfPages(val_score+"/val_output.pdf")
         traces= os.listdir(val_score)
@@ -163,10 +168,32 @@ class ValidateMilipeed(Milipeed):
             plt.ylabel('Frequency')
             plt.title('freq wbgs event \n binding in same motif')
             # plt.show()
+            Col=trace.split('/')[6]
+            Col1=Col.split('_')[0]
+            Col2=Col.split('_')[1] 
+            
+            Col3=roc_auc
+            Col4=roc_auc2
+            column = Col1, Col2, Col3, Col4
+            table.append(column)
+            
+            plt.show()
+        return table
+        # for fig in range(1, plt.gcf().number + 1):
+        #     pdf.savefig( fig )
+        # pdf.close()
 
-        for fig in range(1, plt.gcf().number + 1):
-            pdf.savefig( fig )
-        pdf.close()
-
+        def plot_heatmap(self):
+            aurocs=pd.DataFrame(self.table)
+            aurocs.columns=['cell','TF','pwm','wgbs']
+            aurocs['diff']=aurocs['wgbs']-aurocs['pwm']
+            del aurocs['wgbs'], aurocs['pwm']
+            heat=aurocs.pivot_table(index=['TF'], columns='cell')
+            plt.figure(figsize=(12, 20))
+            # plt.imshow(heat, cmap='hot', interpolation='nearest')
+            rdgn = sns.diverging_palette(h_neg=130, h_pos=10, s=99, l=55, sep=3, as_cmap=True)
+            ax= sns.heatmap(heat, center=0,cmap=rdgn)
+            # plt.show
+            plt.savefig(self.outdir,dpi=300)
 
 
