@@ -1,0 +1,8 @@
+cell_line	age	sex	tissue
+A549	58	M	lung
+GM12878		F	blood
+K562	53	F	leukemia
+H1	0		stem_cell
+HELAS3	31	F	cervical
+SKNSH	4	F	brain
+HEPG2	15	M	liver

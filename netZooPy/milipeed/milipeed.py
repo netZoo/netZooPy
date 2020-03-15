@@ -36,7 +36,7 @@ class Milipeed(Panda):
        dcolinmorgan, bmarouen,
     """
 
-    def __init__(self, expression_file, methylation_file, ppi_file, motif_file='tests/milipeed/MotifPrior_CGmap.txt', start=1, end=None,save_dir='milipeed_output', save_fmt='txt'):
+    def __init__(self, expression_file, methylation_file, ppi_file, motif_file='tests/milipeed/MotifPrior_CGmap.txt', start=1, end=None,save_dir='milipeed_output/', save_fmt='txt'):
         # =====================================================================
         # Data loading
         # =====================================================================
@@ -199,14 +199,15 @@ class Milipeed(Panda):
                 else:
                     print("Unknown format %s! Use npy format instead." % self.save_fmt)
                     np.save(path, milipeed_network)
-        #     if self.total_milipeed_network is None: #    iii == 0:
-        #         self.total_milipeed_network = np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)
-        #     else:
-        #         self.total_milipeed_network=np.column_stack((self.total_milipeed_network ,np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)))
+            if self.total_milipeed_network is None: #    iii == 0:
+                self.total_milipeed_network = np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)
+                self.subMtf[['source','target']].to_csv(self.save_dir+'links_names.txt',sep='\t',index=False,header=False)
+            else:
+                self.total_milipeed_network=np.column_stack((self.total_milipeed_network ,np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)))
 
-        # return self.total_milipeed_network
+        return self.total_milipeed_network
 
-    # def save_milipeed_results(self, file='milipeed.txt'):
-    #     '''Write milipeed results to file.'''
-    #     np.savetxt(file, self.total_milipeed_network, delimiter="\t",header="")
-    #     return None
+    def save_milipeed_results(self, file='milipeed.txt'):
+        '''Write milipeed results to file.'''
+        np.savetxt(file, self.total_milipeed_network, delimiter="\t",header="")
+        return None

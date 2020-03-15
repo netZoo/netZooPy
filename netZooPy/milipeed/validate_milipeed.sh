@@ -58,7 +58,7 @@ mergeall=$(find $(< tempTF0.txt) | sort -nr | head -n 1 )
 echo "$counter : TF=$tf"
 counter=$[$counter +1]
 ### restrict WGBS to only motif regions, return both PWM and %Me
-eval "~/../rekrg/Tools/bedtools2/bin/bedtools intersect -wa -wb -a $motifdir$tftag -b $mergeall" > temp0a.txt
+eval "~/bedtools2/bin/bedtools intersect -wa -wb -a $motifdir$tftag -b $mergeall" > temp0a.txt
 cut -f1,2,3,4,17 temp0a.txt >temp0b.txt
 # min=$(eval "cut -f4 temp0b.txt | scale=4 | bc ")
 # min=$(eval "cut -f4 temp0b.txt | sort -n | head -1")
@@ -66,14 +66,14 @@ min=$(cat temp0b.txt | cut -f4 |sort -n | head -1)
 max=$(cat temp0b.txt | cut -f4 |sort -n | tail -1)
 awk '{print $1,$2,$3,$4,$5,($4-m)/(ma-m),1-$5/100,1-$5/100}' m="$min" ma="$max" OFS='\t' temp0b.txt > temp0d.txt ##standardize range of PWM and Methyl
 
-eval "~/../rekrg/Tools/bedtools2/bin/bedtools intersect -v -a $motifdir$tftag -b $mergeall" > temp0c.txt
+eval "~/bedtools2/bin/bedtools intersect -v -a $motifdir$tftag -b $mergeall" > temp0c.txt
 min=$(cat temp0c.txt | cut -f4 |sort -n | head -1)
 max=$(cat temp0c.txt | cut -f4 |sort -n | tail -1)
 awk '{print $1,$2,$3,$4,$5,($4-m)/(ma-m),($4-m)/(ma-m),1}' m="$min" ma="$max" OFS='\t' temp0c.txt >> temp0d.txt ##combine motif with and without CpG
 
 # cat temp0c.txt |awk 'BEGIN {FS="\t"}; {print $1 $2 $3 $4 $4}' > temp0d.txt
 ### restrict that intersection above with hits on WGBS, and if no ChIP peak return zero
-eval "~/../rekrg/Tools/bedtools2/bin/bedtools intersect -wao -a temp0d.txt -b tffile.txt" > $outdir${gtag}_${tf} ##compare entire motif with new methyaltion weights inserted
+eval "~/bedtools2/bin/bedtools intersect -wao -a temp0d.txt -b tffile.txt" > $outdir${gtag}_${tf} ##compare entire motif with new methyaltion weights inserted
 
 rm -i -f -r temp0a.txt
 rm -i -f -r temp0b.txt

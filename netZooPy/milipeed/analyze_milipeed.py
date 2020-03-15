@@ -18,21 +18,22 @@ import statsmodels.api as sm
 
 class AnalyzeMilipeed(Milipeed):
     '''GLM MILIPEED links discriminated by age, sex, BMI, FEV and PY.'''
-    def __init__(self,input_path,gene_subset,mili_nets='analyses/MILIPEED/mili_subj.txt',links_file='analyses/MILIPEED/milipeed_links.txt',meta='analyses/MILIPEED/subj_metadata.txt',outdir='.'):
+    def __init__(self,input_path,gene_subset=None,mili_nets=None,covar=['age','sex','BMI','FEV1','packyears'],links_file='analyses/MILIPEED/milipeed_links.txt',meta='analyses/MILIPEED/subj_metadata.txt',outdir='.'):
     # def __init__(self,input_path,gene_subset,omili_nets,links_file,meta,utdir='.',):
         '''Load variables from Milipeed.'''
         self.metadata = pd.read_csv(meta,sep='\t',header=0,index_col=0)
-        subjmeta = pd.read_csv(mili_nets,sep='\t',names=['subj'],index_col=0)
-        self.metadata=self.metadata.merge(subjmeta,left_on=self.metadata.index,right_on=subjmeta.index)
-        total_links=pd.read_csv(links_file,sep='\t',names=['TF','gene'])
+        if mili_nets:
+            subjmeta = pd.read_csv(mili_nets,sep='\t',names=['subj'],index_col=0)
+            self.metadata=self.metadata.merge(subjmeta,left_on=self.metadata.index,right_on=subjmeta.index)
 
+        total_links=pd.read_csv(links_file,sep='\t',names=['TF','gene'])
+        self.covar=covar
         # metadata.columns=['ID','age','sex','BMI','FEV','PY']
         ##can include categorizations of variables as well, such as defining COPD/not and binning ages, hoever, then you will want to 
         # metadata['COPD'] = np.where(metadata['FEV']>.7, 'COPD', 'NO')
         # metadata['age_range'] = np.where(metadata['age']<50, 'fourties', np.where(metadata['age']<60,'fifties',np.where(metadata['age']<70,'sixties',np.where(metadata['age']<80,'seventies','eighties'))))
         # metadata.set_index('ID', inplace=True)
         # metadata.reindex(subjects) ##if theyve been sorted since extraction
-
         
         # path=self.save_dir
         self.path=input_path
@@ -58,18 +59,30 @@ class AnalyzeMilipeed(Milipeed):
 
         # elif gene_subset is not None:
         append_data = pd.DataFrame()
-        gene_sub=pd.read_csv(gene_subset,sep='\t',names=['gene'])
-        for j,trace in enumerate(traces):
-            # filepath = os.path.join(input_path, trace)
-            data=pd.DataFrame(pd.read_csv(trace,sep='\t',header=None,index_col=None))
-            data.index=total_links['gene']
-            subnet=data.merge(gene_sub,left_on=data.index,right_on='gene')
-            append_data=pd.concat([append_data,pd.DataFrame(subnet[0])],sort=True,axis=1)
-            del data, subnet
-            # self.append_data=self.append_data.T
-            # tmp=pd.DataFrame(pd.read_csv(links_file,header=None,index_col=None, skiprows=i*2500, nrows=2500))                
-            # tmp=pd.read_csv(links_file,sep='\t',header=None,dtype=str,index_col=None, skiprows=i*2500, nrows=2500)
-        tmp=total_links.merge(gene_sub)
+        if gene_subset:
+            gene_sub=pd.read_csv(gene_subset,sep='\t',names=['gene'])
+
+            for j,trace in enumerate(traces):
+                # filepath = os.path.join(input_path, trace)
+                data=pd.DataFrame(pd.read_csv(trace,sep='\t',header=None,index_col=None))
+                data.index=total_links['gene']
+                subnet=data.merge(gene_sub,left_on=data.index,right_on='gene')
+                append_data=pd.concat([append_data,pd.DataFrame(subnet[0])],sort=True,axis=1)
+                del data, subnet
+                # self.append_data=self.append_data.T
+                # tmp=pd.DataFrame(pd.read_csv(links_file,header=None,index_col=None, skiprows=i*2500, nrows=2500))                
+                # tmp=pd.read_csv(links_file,sep='\t',header=None,dtype=str,index_col=None, skiprows=i*2500, nrows=2500)
+            tmp=total_links.merge(gene_sub)
+        else:
+            for j,trace in enumerate(traces):
+                # filepath = os.path.join(input_path, trace)
+                data=pd.DataFrame(pd.read_csv(trace,sep='\t',header=None,index_col=None))
+                data.index=total_links['gene']
+                # subnet=data.merge(gene_sub,left_on=data.index,right_on='gene')
+                append_data=pd.concat([append_data,data],axis=1)
+                del data
+            tmp=total_links
+
         tmp['TF']=tmp['TF'].str.replace('-','')
         tmp['gene']=tmp['gene'].str.replace('-','')
         append_data=append_data.T
@@ -127,10 +140,14 @@ class AnalyzeMilipeed(Milipeed):
     def iLiM(self,gene):
         self.population[gene]=pd.to_numeric(self.population[gene])
         # fmla = (gene+"~ age+ PY+ FEV+sex")
-        fmla = (str(gene) + "~"+self.metadata.columns[1]+"+"+self.metadata.columns[2]+"+"+self.metadata.columns[3]+"+"+self.metadata.columns[4]+"+"+self.metadata.columns[5]) ##restrict metadata input to those for use in GLM
-        ## ^^ make this fill automagically
+                                                                      
+
+        # fmla = (str(gene) + "~"+self.metadata.columns[1]+"+"+self.metadata.columns[2]+"+"+self.metadata.columns[3]+"+"+self.metadata.columns[4]+"+"+self.metadata.columns[5]) ##restrict metadata input to those for use in GLM
+        ## ^^ make this fill automagically (below)
+        fmla = (str(gene)) + "~"+'+'.join(self.covar)
         # model = sm.formula.glm(fmla, family=sm.families.Gaussian(),data=self.population[gene]).fit()
-        model = sm.formula.glm(fmla, family=sm.families.Gaussian(),data=self.population[['age','sex','BMI','FEV1','packyears',gene]]).fit()
+        # model = sm.formula.glm(fmla, family=sm.families.Gaussian(),data=self.population[['age','sex','BMI','FEV1','packyears',gene]]).fit()
+        model = sm.formula.glm(fmla, family=sm.families.Gaussian(),data=self.population[self.covar+[gene]]).fit()
 
         self.results=pd.DataFrame(self.results_summary_to_dataframe(model,gene))  
         return self.results
