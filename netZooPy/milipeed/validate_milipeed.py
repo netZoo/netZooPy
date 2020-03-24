@@ -63,7 +63,7 @@ class ValidateMilipeed(Milipeed):
     # def convert_assembly():
     #     ~/tools/liftOver ~/data/MotifPipeline/ENCODE/wgbsin/ENCFF005TID.txt ~/hg38ToHg19.over.chain ~/data/MotifPipeline/ENCODE/wgbsin/ENCFF005TID_hg19.txt unmatched.txt
 
-    def run_validation(self,outdir,TFdir='/udd/redmo/data/MotifPipeline/ENCODE/A549_hg19',motifdir='/udd/redmo/data/MotifPipeline/hg19_refseq_100kb_tr/',bsfile='/udd/redmo/data/MotifPipeline/ENCODE/wgbsin/ENCFF005TID_hg19.txt'):
+    def run_validation(self,outdir,TFdir='data/MotifPipeline/remap/',motifdir='data/MotifPipeline/hg38_refseq_100kb_tr_fromhg19/',bsfile='data/MotifPipeline/ENCODE/wgbsin/ENCFF005TID_hg19.txt'):
         valoutdir = outdir+'/miliVal_outdir';
         subprocess.check_call(["/udd/redmo/netZooPy/netZooPy/milipeed/validate_milipeed.sh TFdir motifdir bsfile valoutdir"],shell=True)
         return valoutdir

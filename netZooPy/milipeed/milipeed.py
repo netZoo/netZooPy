@@ -201,13 +201,14 @@ class Milipeed(Panda):
                     np.save(path, milipeed_network)
             if self.total_milipeed_network is None: #    iii == 0:
                 self.total_milipeed_network = np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)
-                self.subMtf[['source','target']].to_csv(self.save_dir+'links_names.txt',sep='\t',index=False,header=False)
+                self.subjects[['source','target']].to_csv(self.save_dir+'links_names',sep='_',index=False,header=False)
+                self.subjects.to_csv(self.save_dir+'subjects',sep='\t',index=False,header=False)
             else:
                 self.total_milipeed_network=np.column_stack((self.total_milipeed_network ,np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)))
 
         return self.total_milipeed_network
 
-    def save_milipeed_results(self, file='milipeed.txt'):
+    def save_milipeed_results(self, file='all_milipeed_nets'):
         '''Write milipeed results to file.'''
         np.savetxt(file, self.total_milipeed_network, delimiter="\t",header="")
         return None

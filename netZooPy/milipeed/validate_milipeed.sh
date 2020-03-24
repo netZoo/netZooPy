@@ -4,23 +4,23 @@
 #PARAMETER REGION
 # validate_milipeed ChIPdir motifdir WGBSdir valoutdir {
 # ChIPdir=$1 # %%% location of ChIP bed files
-ChIPdir='/udd/redmo/data/MotifPipeline/remap/' ## chr start end gene-target per cell line name
+ChIPdir='data/MotifPipeline/remap/' ## chr start end gene-target per cell line name
 # tfdb=$ChIPdir/meta2IDR.txt # metadata file including ChIP file name and gene
 TFfiles=$(ls $ChIPdir*.bed)
 
 
 # motifdir=$2
-motifdir='/udd/redmo/data/MotifPipeline/hg38_refseq_100kb_tr_fromhg19/'  ## chr start stop pwm per gene name/
+motifdir='data/MotifPipeline/hg38_refseq_100kb_tr_fromhg19/'  ## chr start stop pwm per gene name/
 # motiffiles=$(ls $motifdir*.txt)
 
 # WGBSdir=$3
-WGBSdir='/udd/redmo/data/MotifPipeline/ENCODE/wgbsin' ## chr start end tmp Me-value, multiple per cell line
+WGBSdir='data/MotifPipeline/ENCODE/wgbsin' ## chr start end tmp Me-value, multiple per cell line
 WGBSfiles=$(ls $WGBSdir/*.bed)
 WGBSmeta=$WGBSdir/cellline_meta.txt
 
 
 # outdir=$4
-outdir='/udd/redmo/data/MotifPipeline/val_mili_plusNONcpg/'
+outdir='data/MotifPipeline/val_mili_plusNONcpg/'
 rm -r -i -f $outdir
 mkdir $outdir
 counter=1 

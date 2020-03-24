@@ -4,33 +4,33 @@
 #PARAMETER REGION
 # validate_milipeed ChIPdir motifdir WGBSdir valoutdir {
 # ChIPdir=$1 # %%% location of ChIP bed files
-ChIPdir='/udd/redmo/data/MotifPipeline/remap/' ## chr start end gene-target per cell line name
+ChIPdir='data/MotifPipeline/remap/' ## chr start end gene-target per cell line name
 # tfdb=$ChIPdir/meta2IDR.txt # metadata file including ChIP file name and gene
 TFfiles=$(ls $ChIPdir*.bed)
 
 
 # motifdir=$2
-motifdir='/udd/redmo/data/MotifPipeline/hg38_refseq_100kb_tr_fromhg19/'  ## chr start stop pwm per gene name/
+motifdir='data/MotifPipeline/hg38_refseq_100kb_tr_fromhg19/'  ## chr start stop pwm per gene name/
 # motiffiles=$(ls $motifdir*.txt)
 
 # WGBSdir=$3
-WGBSdir='/udd/redmo/data/MotifPipeline/ENCODE/wgbsin' ## chr start end tmp Me-value, multiple per cell line
+WGBSdir='data/MotifPipeline/ENCODE/wgbsin' ## chr start end tmp Me-value, multiple per cell line
 WGBSfiles=$(ls $WGBSdir/*.bed)
 WGBSmeta=$WGBSdir/cellline_meta.txt
 
 
 # outdir=$4
-outdir='/udd/redmo/data/MotifPipeline/validate_milipeed/'
+outdir='data/MotifPipeline/validate_milipeed/'
 rm -r -i -f $outdir
 mkdir $outdir
 counter=1 
 # for wfile in $WGBSfiles
 # do
 # echo $wfile
-for tfile in $TFfiles # cell line
-do
-
-TFs=$(eval "cat "$tfile" | cut -f4 | sort | uniq")
+# for tfile in $TFfiles # cell line
+# do
+tfile='A-549.bed'
+TFs=$(eval "cat "$tfile" | cut -f3 | sort | uniq") ##depth of folder location
 
 for tf in $TFs # targeted genes in ChIP cell lines
 do
@@ -58,7 +58,7 @@ mergeall=$(find $(< tempTF0.txt) | sort -nr | head -n 1 )
 echo "$counter : TF=$tf"
 counter=$[$counter +1]
 ### restrict WGBS to only motif regions, return both PWM and %Me
-eval "~/../rekrg/Tools/bedtools2/bin/bedtools intersect -wa -wb -a $motifdir$tftag -b $mergeall" > temp0a.txt
+eval "~/bedtools2/bin/bedtools intersect -wa -wb -a $motifdir$tftag -b $mergeall" > temp0a.txt
 # cut -f1,2,3,4,17 temp0a.txt >temp0b.txt
 # min=$(eval "cut -f4 temp0b.txt | scale=4 | bc ")
 # min=$(eval "cut -f4 temp0b.txt | sort -n | head -1")
@@ -73,7 +73,7 @@ eval "~/../rekrg/Tools/bedtools2/bin/bedtools intersect -wa -wb -a $motifdir$tft
 
 # cat temp0c.txt |awk 'BEGIN {FS="\t"}; {print $1 $2 $3 $4 $4}' > temp0d.txt
 ### restrict that intersection above with hits on WGBS, and if no ChIP peak return zero
-eval "~/../rekrg/Tools/bedtools2/bin/bedtools intersect -wao -a temp0a.txt -b tffile.txt" > $outdir$gtag$tf ##compare entire motif with new methyaltion weights inserted
+eval "~/bedtools2/bin/bedtools intersect -wao -a temp0a.txt -b tffile.txt" > $outdir$gtag$tf ##compare entire motif with new methyaltion weights inserted
 
 rm -i -f -r temp0a.txt
 # rm -i -f -r temp0b.txt
