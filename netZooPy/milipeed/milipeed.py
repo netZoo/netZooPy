@@ -201,8 +201,9 @@ class Milipeed(Panda):
                     np.save(path, milipeed_network)
             if self.total_milipeed_network is None: #    iii == 0:
                 self.total_milipeed_network = np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)
-                self.subjects[['source','target']].to_csv(self.save_dir+'links_names',sep='_',index=False,header=False)
-                self.subjects.to_csv(self.save_dir+'subjects',sep='\t',index=False,header=False)
+                self.export_panda_results[['tf','gene']].to_csv(self.save_dir+'links_names',sep='_',index=False,header=False)
+                pd.DataFrame(self.subjects).to_csv(self.save_dir+'subjects',sep='\t',index=False,header=False)
+                # np.savetxt(self.subjects,self.save_dir+'subjects',delimiter='\t',header=False)
             else:
                 self.total_milipeed_network=np.column_stack((self.total_milipeed_network ,np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)))
 

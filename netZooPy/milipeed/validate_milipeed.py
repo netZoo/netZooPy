@@ -5,7 +5,7 @@ sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
 from .milipeed import Milipeed
 
-import re, netZooPy, graphviz, glob, os, collections 
+import re, netZooPy, glob, os, collections 
 import numpy as np
 from IPython.display import Image
 import networkx as nx
