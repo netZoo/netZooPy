@@ -7,8 +7,9 @@ prefiles=$(ls $pre_inter_dir/*)
 
 mearray='data/MotifPipeline/ENCODE/methyl_array'
 # mefiles=$(ls $mearray/*_MeArray.txt)
+# shufarray='data/MotifPipeline/ENCODE/methyl_array'
 
-outdir='data/MotifPipeline/MeArrayintersect/'
+outdir='data/MotifPipeline/MeArrayintersectFULLshuf/'
 rm -r -i -f $outdir
 mkdir $outdir
 counter=1 
@@ -17,9 +18,18 @@ counter=1
 for tfile in $prefiles
 do
 	sed -i -e $'s/\t\t/\tNaN\t/g' $tfile
+
 	gtag=$(basename "$tfile" |cut -d _ -f1)
 	bbname=$(basename "$tfile" .txt)
-	eval "~/bedtools2/bin/bedtools intersect -wa -wb -a $tfile -b $mearray/$gtag"_"MeArrayHG38.txt" > $outdir$bbname 
-	# eval "~/bedtools2/bin/bedtools intersect -v -a $tfile -b $mearray/$gtag"_"MeArray.txt" > tmp.txt
-	# awk '{print $1,$2,$3,$4,$5,$6,$7,0,0,0,$4}' OFS='\t' tmp.txt >> $outdir$bbname 
+	cut -f4 $tfile|shuf > tmp3.txt
+	cut -f5 $tfile|shuf >tmp4.txt
+	paste $tfile tmp3.txt tmp4.txt | awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$9}' OFS='\t' > tmp2.txt
+	
+	eval "~/bedtools2/bin/bedtools intersect -wa -wb -a tmp2.txt -b $mearray/$gtag"_"shufMeArrayHG38.txt" > $outdir$bbname 
+	eval "~/bedtools2/bin/bedtools intersect -v -a tmp2.txt -b $mearray/$gtag"_"shufMeArrayHG38.txt" > tmp.txt
+	# eval "~/bedtools2/bin/bedtools intersect -wa -wb -a $tfile -b $MeArrayHG38/$gtag"_"MeArrayHG38.txt" > $outdir$bbname 
+	# eval "~/bedtools2/bin/bedtools intersect -v -a $tfile -b $MeArrayHG38/$gtag"_"MeArrayHG38.txt" > tmp.txt
+	awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$9,0,0,0,$4,$4}' OFS='\t' tmp.txt >> $outdir$bbname 
+	rm -rf tmp2.txt
+	rm -rf tmp.txt
 done
