@@ -10,8 +10,8 @@ mearray='data/MotifPipeline/ENCODE/methyl_array'
 # shufarray='data/MotifPipeline/ENCODE/methyl_array'
 
 outdir='data/MotifPipeline/MeArrayintersectFULLshuf/'
-rm -r -i -f $outdir
-mkdir $outdir
+# rm -r -i -f $outdir
+# mkdir $outdir
 counter=1 
 
 
