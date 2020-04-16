@@ -10,7 +10,8 @@ TFfiles=$(ls $ChIPdir*.bed)
 
 
 # motifdir=$2
-motifdir='data/MotifPipeline/hg38_refseq_100kb_tr_fromhg19/'  ## chr start stop pwm per gene name/
+# motifdir='data/MotifPipeline/hg38_refseq_100kb_tr_fromhg19/'  ## chr start stop pwm per gene name/
+motifdir='data/fixxx/test/'
 # motiffiles=$(ls $motifdir*.txt)
 
 # WGBSdir=$3
