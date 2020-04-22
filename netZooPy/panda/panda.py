@@ -4,6 +4,7 @@ import math
 import time
 import pandas as pd
 import numpy as np
+import tensorflow as tf
 from scipy.stats import zscore
 from .timer import Timer
 
