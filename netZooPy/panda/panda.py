@@ -5,7 +5,7 @@ import time
 import pandas as pd
 import numpy as np
 from scipy.stats import zscore
-# from .timer import Timer
+from .timer import Timer
 
 class Panda(object):
     """ 
