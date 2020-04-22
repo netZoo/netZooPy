@@ -7,7 +7,7 @@ import numpy as np
 from scipy.stats import zscore
 # from .timer import Timer
 
-class GPU_Panda(object):
+class Panda(object):
     """ 
     Description:
        Using PANDA to infer gene regulatory network.
