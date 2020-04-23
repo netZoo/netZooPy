@@ -429,13 +429,11 @@ class GPU_Panda(object):
             if y is None:
                 # a_matrix = tf.tensordot(x, tf.transpose(x),axes=1)
                 a_matrix = tf.linalg.matmul(x, tf.transpose(x))#x,transpose_b=True)
-                # a_matrix = np.dot(x, x.T)
                 s = np.square(x).sum(axis=1)
                 a_matrix /= np.sqrt(s + s.reshape(-1, 1) - np.abs(a_matrix.numpy()))
             else:
                 # a_matrix = tf.linalg.matmul(x, y,axes=1)
                 a_matrix = tf.linalg.matmul(x, y)
-                # a_matrix = np.dot(x, y)
                 a_matrix /= np.sqrt(np.square(y).sum(axis=0) + np.square(x).sum(axis=1).reshape(-1, 1) - np.abs(a_matrix.numpy()))
             return a_matrix.numpy()
 
