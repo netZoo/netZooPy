@@ -3,12 +3,17 @@ from __future__ import print_function
 import math
 import time
 import pandas as pd
-import numpy as np
-import tensorflow as tf
 from scipy.stats import zscore
-# from .timer import Timer
+from .timer import Timer
+import numpy as np
+#requires version 7.4.0 and above, via:
+# pip install cupy-cuda101==7.4.0, depending on CUDA version, ie 10.1
+import cupy as cp
+xp = cp.get_array_module(2)
+# if np.__name__=='cupy':
+#     gpu=True
 
-class GPU_Panda(object):
+class Panda(object):
     """ 
     Description:
        Using PANDA to infer gene regulatory network.
@@ -41,7 +46,7 @@ class GPU_Panda(object):
      Authors: 
        cychen, davidvi, alessandromarin
     """
-    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu', save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
+    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
         
         # Read data
         self.processData(modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
@@ -80,13 +85,13 @@ class GPU_Panda(object):
         # =====================================================================
         # Running PANDA algorithm
         # =====================================================================
-        # if computing=='gpu' and self.motif_data is not None:
-        #     print('Running GPU PANDA algorithm ...')
-        #     self.panda_network = self.gpu_panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
-        if computing=='gpu'# and self.motif_data is not None:
+        if computing=='gpu' and self.motif_data is not None:
+            print('Running GPU PANDA algorithm ...')
+            self.panda_network = self.GPU_panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
+        elif computing!='gpu' and self.motif_data is not None:
             print('Running PANDA algorithm ...')
-            self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix,computing)
-        else:
+            self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
+        elif computing!='gpu' and self.motif_data is None:
             self.panda_network = self.correlation_matrix
             self.__pearson_results_data_frame()
 
@@ -403,38 +408,38 @@ class GPU_Panda(object):
                     self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
         return
 
-    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing):
+    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix):
         """Panda algorithm.
         """
         def t_function(x, y=None):
             '''T function.'''
             if y is None:
-                a_matrix = np.dot(x, x.T)
-                s = np.square(x).sum(axis=1)
-                a_matrix /= np.sqrt(s + s.reshape(-1, 1) - np.abs(a_matrix))
+                a_matrix = xp.dot(x, x.T)
+                s = xp.square(x).sum(axis=1)
+                a_matrix /= xp.sqrt(s + s.reshape(-1, 1) - xp.abs(a_matrix))
             else:
-                a_matrix = np.dot(x, y)
-                a_matrix /= np.sqrt(np.square(y).sum(axis=0) + np.square(x).sum(axis=1).reshape(-1, 1) - np.abs(a_matrix))
+                a_matrix = xp.dot(x, y)
+                a_matrix /= xp.sqrt(xp.square(y).sum(axis=0) + xp.square(x).sum(axis=1).reshape(-1, 1) - xp.abs(a_matrix))
             return a_matrix
 
         def update_diagonal(diagonal_matrix, num, alpha, step):
             '''Update diagonal.'''
-            np.fill_diagonal(diagonal_matrix, np.nan)
-            diagonal_std = np.nanstd(diagonal_matrix, 1)
+            xp.fill_diagonal(diagonal_matrix, xp.nan)
+            diagonal_std = xp.nanstd(diagonal_matrix, 1)
             diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
-            np.fill_diagonal(diagonal_matrix, diagonal_fill)
+            xp.fill_diagonal(diagonal_matrix, diagonal_fill)
 
         def gt_function(x, y=None):
             '''T function.''' 
             if y is None:
                 # a_matrix = tf.tensordot(x, tf.transpose(x),axes=1)
                 a_matrix = tf.linalg.matmul(x, tf.transpose(x))#x,transpose_b=True)
-                s = np.square(x).sum(axis=1)
-                a_matrix /= np.sqrt(s + s.reshape(-1, 1) - np.abs(a_matrix.numpy()))
+                s = xp.square(x).sum(axis=1)
+                a_matrix /= xp.sqrt(s + s.reshape(-1, 1) - xp.abs(a_matrix.numpy()))
             else:
                 # a_matrix = tf.linalg.matmul(x, y,axes=1)
                 a_matrix = tf.linalg.matmul(x, y)
-                a_matrix /= np.sqrt(np.square(y).sum(axis=0) + np.square(x).sum(axis=1).reshape(-1, 1) - np.abs(a_matrix.numpy()))
+                a_matrix /= xp.sqrt(xp.square(y).sum(axis=0) + xp.square(x).sum(axis=1).reshape(-1, 1) - xp.abs(a_matrix.numpy()))
             return a_matrix.numpy()
 
         panda_loop_time = time.time()
@@ -442,23 +447,28 @@ class GPU_Panda(object):
         step = 0
         hamming = 1
         alpha = 0.1
+        # if gpu==True:
+        ppi_matrix=xp.array(ppi_matrix)
+        motif_matrix=xp.array(motif_matrix)
+        correlation_matrix=xp.array(correlation_matrix)
+
         while hamming > 0.001:
             # Update motif_matrix
-            if computing=='gpu':
-                W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
-            else:
-                W = 0.5 * (t_function(ppi_matrix, motif_matrix) + t_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
-            hamming = np.abs(motif_matrix - W).mean()
+            # if computing=='gpu':
+            #     W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
+            # else:
+            W = 0.5 * (t_function(ppi_matrix, motif_matrix) + t_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
+            hamming = xp.abs(motif_matrix - W).mean()
             motif_matrix *= (1 - alpha)
             motif_matrix += (alpha * W)
 
             if hamming > 0.001:
-                if computing=='gpu':
-                    ppi = gt_function(motif_matrix)  # t_func(X, X.T)
-                    motif = gt_function(motif_matrix.T)
-                else:
-                    ppi = t_function(motif_matrix)  # t_func(X, X.T)
-                    motif = t_function(motif_matrix.T)
+                # if computing=='gpu':
+                #     ppi = gt_function(motif_matrix)  # t_func(X, X.T)
+                #     motif = gt_function(motif_matrix.T)
+                # else:
+                ppi = t_function(motif_matrix)  # t_func(X, X.T)
+                motif = t_function(motif_matrix.T)
                 # Update ppi_matrix
                 update_diagonal(ppi, num_tfs, alpha, step)
                 ppi_matrix *= (1 - alpha)
@@ -485,59 +495,56 @@ class GPU_Panda(object):
             #self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
 
-    def gpu_panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix):
-        """GPU-based Panda algorithm.
+    def GPU_panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix):
+        """Panda algorithm.
         """
-        def gt_function(x, y=None):
-            '''T function.''' 
+        def t_function(x, y=None):
+            '''T function.'''
             if y is None:
-                # a_matrix = tf.tensordot(x, tf.transpose(x),axes=1)
-                a_matrix = tf.linalg.matmul(x, tf.transpose(x))#x,transpose_b=True)
-                # a_matrix = np.dot(x, x.T)
-                s = np.square(x).sum(axis=1)
-                a_matrix /= np.sqrt(s + s.reshape(-1, 1) - np.abs(a_matrix.numpy()))
+                a_matrix = cp.dot(x, x.T)
+                s = cp.square(x).sum(axis=1)
+                a_matrix /= cp.sqrt(s + s.reshape(-1, 1) - cp.abs(a_matrix))
             else:
-                # a_matrix = tf.linalg.matmul(x, y,axes=1)
-                a_matrix = tf.linalg.matmul(x, y)
-                # a_matrix = np.dot(x, y)
-                a_matrix /= np.sqrt(np.square(y).sum(axis=0) + np.square(x).sum(axis=1).reshape(-1, 1) - np.abs(a_matrix.numpy()))
-            return a_matrix.numpy()
+                a_matrix = cp.dot(x, y)
+                a_matrix /= cp.sqrt(cp.square(y).sum(axis=0) + cp.square(x).sum(axis=1).reshape(-1, 1) - cp.abs(a_matrix))
+            return a_matrix
 
-        def gupdate_diagonal(diagonal_matrix, num, alpha, step):
-            '''TF Update diagonal.'''
-            # diagonal_matrix=tf.linalg.set_diag(diagonal_matrix, np.full(num, np.nan))
-            np.fill_diagonal(diagonal_matrix, np.nan)
-            diagonal_std = np.nanstd(diagonal_matrix.numpy(), 1)
+        def update_diagonal(diagonal_matrix, num, alpha, step):
+            '''Update diagonal.'''
+            cp.fill_diagonal(diagonal_matrix, cp.nan)
+            diagonal_std = cp.nanstd(diagonal_matrix, 1)
             diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
-            # diagonal_matrix=tf.linalg.set_diag(diagonal_matrix, diagonal_fill).numpy()
-            # diagonal_matrix=diagonal_matrix.numpy()
-            np.fill_diagonal(diagonal_matrix, diagonal_fill)
+            cp.fill_diagonal(diagonal_matrix, diagonal_fill)
 
         panda_loop_time = time.time()
         num_tfs, num_genes = motif_matrix.shape
         step = 0
         hamming = 1
         alpha = 0.1
+        ppi_matrix=cp.array(ppi_matrix)
+        motif_matrix=cp.array(motif_matrix)
+        correlation_matrix=cp.array(correlation_matrix)
         while hamming > 0.001:
             # Update motif_matrix
-            W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
-            hamming = np.abs(motif_matrix - W).mean()
+
+            W = 0.5 * (t_function(ppi_matrix, motif_matrix) + t_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
+            hamming = cp.abs(motif_matrix - W).mean()
             motif_matrix *= (1 - alpha)
             motif_matrix += (alpha * W)
 
             if hamming > 0.001:
                 # Update ppi_matrix
-                ppi = gt_function(motif_matrix)  # t_func(X, X.T)
-                gupdate_diagonal(ppi, num_tfs, alpha, step)
+                ppi = t_function(motif_matrix)  # t_func(X, X.T)
+                update_diagonal(ppi, num_tfs, alpha, step)
                 ppi_matrix *= (1 - alpha)
                 ppi_matrix += (alpha * ppi)
 
                 # Update correlation_matrix
-                # motif = gt_function(tf.linalg.matrix_transpose(motif_matrix))  # t_func(X.T, X)
-                motif = gt_function(np.transpose(motif_matrix))
-                gupdate_diagonal(motif, num_genes, alpha, step)
+                motif = t_function(motif_matrix.T)  # t_func(X.T, X)
+                update_diagonal(motif, num_genes, alpha, step)
                 correlation_matrix *= (1 - alpha)
                 correlation_matrix += (alpha * motif)
+
                 del W, ppi, motif  # release memory for next step
 
             print('step: {}, hamming: {}'.format(step, hamming))
@@ -551,7 +558,7 @@ class GPU_Panda(object):
             motif = self.motif_matrix_unnormalized.flatten(order='F')
             force = self.motif_matrix.flatten(order='F')
             self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
-            #self.export_panda_results = np.column_stack((tfs,genes,motif,force))
+            #self.export_panda_results = cp.column_stack((tfs,genes,motif,force))
         return motif_matrix
 
     def __pearson_results_data_frame(self):
