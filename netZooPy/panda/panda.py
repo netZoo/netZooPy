@@ -455,33 +455,36 @@ class Panda(object):
                 hamming = cp.abs(motif_matrix - W).mean()
                 motif_matrix *= (1 - alpha)
                 motif_matrix += (alpha * W)
-                ppi = gt_function(motif_matrix)  # t_func(X, X.T)
-                motif = gt_function(motif_matrix.T)
-                # Update ppi_matrix
-                gupdate_diagonal(ppi, num_tfs, alpha, step)
-                ppi_matrix *= (1 - alpha)
-                ppi_matrix += (alpha * ppi)
-                # Update correlation_matrix
-                gupdate_diagonal(motif, num_genes, alpha, step)
-                correlation_matrix *= (1 - alpha)
-                correlation_matrix += (alpha * motif)
+                if hamming > 0.001:
+                    ppi = gt_function(motif_matrix)  # t_func(X, X.T)
+                    motif = gt_function(motif_matrix.T)
+                    # Update ppi_matrix
+                    gupdate_diagonal(ppi, num_tfs, alpha, step)
+                    ppi_matrix *= (1 - alpha)
+                    ppi_matrix += (alpha * ppi)
+                    # Update correlation_matrix
+                    gupdate_diagonal(motif, num_genes, alpha, step)
+                    correlation_matrix *= (1 - alpha)
+                    correlation_matrix += (alpha * motif)
+                    del W, ppi, motif  # release memory for next step
+
             elif computing=='cpu':
                 W = 0.5 * (t_function(ppi_matrix, motif_matrix) + t_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
                 hamming = np.abs(motif_matrix - W).mean()
                 motif_matrix *= (1 - alpha)
                 motif_matrix += (alpha * W)
-                ppi = t_function(motif_matrix)  # t_func(X, X.T)
-                motif = t_function(motif_matrix.T)
-                # Update ppi_matrix
-                update_diagonal(ppi, num_tfs, alpha, step)
-                ppi_matrix *= (1 - alpha)
-                ppi_matrix += (alpha * ppi)
-                # Update correlation_matrix
-                update_diagonal(motif, num_genes, alpha, step)
-                correlation_matrix *= (1 - alpha)
-                correlation_matrix += (alpha * motif)
-
-            del W, ppi, motif  # release memory for next step
+                if hamming > 0.001:
+                    ppi = t_function(motif_matrix)  # t_func(X, X.T)
+                    motif = t_function(motif_matrix.T)
+                    # Update ppi_matrix
+                    update_diagonal(ppi, num_tfs, alpha, step)
+                    ppi_matrix *= (1 - alpha)
+                    ppi_matrix += (alpha * ppi)
+                    # Update correlation_matrix
+                    update_diagonal(motif, num_genes, alpha, step)
+                    correlation_matrix *= (1 - alpha)
+                    correlation_matrix += (alpha * motif)
+                    del W, ppi, motif  # release memory for next step
 
             print('step: {}, hamming: {}'.format(step, hamming))
             step = step + 1
