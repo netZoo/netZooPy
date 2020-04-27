@@ -449,12 +449,13 @@ class Panda(object):
             if computing=='gpu':
                 import cupy as cp
                 ppi_matrix=cp.array(ppi_matrix)
-                motif_matrix=cp.array(motif_matrix)
                 correlation_matrix=cp.array(correlation_matrix)
                 W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
                 hamming = cp.abs(motif_matrix - W).mean()
+                motif_matrix=cp.array(motif_matrix)
                 motif_matrix *= (1 - alpha)
                 motif_matrix += (alpha * W)
+
                 if hamming > 0.001:
                     ppi = gt_function(motif_matrix)  # t_func(X, X.T)
                     motif = gt_function(motif_matrix.T)
@@ -462,10 +463,12 @@ class Panda(object):
                     gupdate_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
+
                     # Update correlation_matrix
                     gupdate_diagonal(motif, num_genes, alpha, step)
                     correlation_matrix *= (1 - alpha)
                     correlation_matrix += (alpha * motif)
+
                     del W, ppi, motif  # release memory for next step
 
             elif computing=='cpu':
@@ -473,6 +476,7 @@ class Panda(object):
                 hamming = np.abs(motif_matrix - W).mean()
                 motif_matrix *= (1 - alpha)
                 motif_matrix += (alpha * W)
+
                 if hamming > 0.001:
                     ppi = t_function(motif_matrix)  # t_func(X, X.T)
                     motif = t_function(motif_matrix.T)
@@ -480,10 +484,12 @@ class Panda(object):
                     update_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
+
                     # Update correlation_matrix
                     update_diagonal(motif, num_genes, alpha, step)
                     correlation_matrix *= (1 - alpha)
                     correlation_matrix += (alpha * motif)
+
                     del W, ppi, motif  # release memory for next step
 
             print('step: {}, hamming: {}'.format(step, hamming))
