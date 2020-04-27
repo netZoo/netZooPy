@@ -4,7 +4,7 @@ import math
 import time
 import pandas as pd
 from scipy.stats import zscore
-# from .timer import Timer
+from .timer import Timer
 import numpy as np
 
 class Panda(object):
@@ -79,9 +79,6 @@ class Panda(object):
         # =====================================================================
         # Running PANDA algorithm
         # =====================================================================
-        # if computing=='gpu' and self.motif_data is not None:
-        #     print('Running GPU PANDA algorithm ...')
-        #     self.panda_network = self.GPU_panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
         if self.motif_data is not None:
             print('Running PANDA algorithm ...')
             self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix,computing)
@@ -468,7 +465,7 @@ class Panda(object):
                 gupdate_diagonal(motif, num_genes, alpha, step)
                 correlation_matrix *= (1 - alpha)
                 correlation_matrix += (alpha * motif)
-            else:
+            elif computing=='cpu':
                 W = 0.5 * (t_function(ppi_matrix, motif_matrix) + t_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
                 hamming = np.abs(motif_matrix - W).mean()
                 motif_matrix *= (1 - alpha)
