@@ -399,7 +399,7 @@ class Panda(object):
                     self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
         return
 
-    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing):
+    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing='cpu'):
         """Panda algorithm.
         """
         def t_function(x, y=None):
