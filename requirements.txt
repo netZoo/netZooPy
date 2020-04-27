@@ -3,4 +3,4 @@ numpy
 pandas
 matplotlib
 scipy
-python-igraph
+python-igraph == 0.1.11
