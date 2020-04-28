@@ -68,6 +68,7 @@ class Lioness(Panda):
 
             with Timer("Computing coexpression network:"):
                 if self.computing=='gpu':
+                    import cupy as cp
                     correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
                     if cp.isnan(correlation_matrix).any():
                         cp.fill_diagonal(correlation_matrix, 1)
