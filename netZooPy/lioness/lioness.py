@@ -7,7 +7,6 @@ from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
 
-
 class Lioness(Panda):
     """
     Description:

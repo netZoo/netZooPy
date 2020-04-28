@@ -46,10 +46,7 @@ class Panda(object):
         self.processData(modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
         if hasattr(self, 'export_panda_results'):
             return
-        if precision=='single':
-            self.correlation_matrix=np.float32(correlation_matrix)
-            self.motif_matrix=np.float32(motif_matrix)
-            self.ppi_matrix=np.float32(ppi_matrix)
+        
         # =====================================================================
         # Network normalization
         # =====================================================================
@@ -59,7 +56,10 @@ class Panda(object):
             with np.errstate(invalid='ignore'): #silly warning bothering people
                 self.motif_matrix = self._normalize_network(self.motif_matrix_unnormalized)
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
-
+            if precision=='single':
+                self.correlation_matrix=np.float32(self.correlation_matrix)
+                self.motif_matrix=np.float32(self.motif_matrix)
+                self.ppi_matrix=np.float32(self.ppi_matrix)
         # =====================================================================
         # Clean up useless variables to release memory
         # =====================================================================
@@ -462,14 +462,14 @@ class Panda(object):
                 motif_matrix += (alpha * W)
 
                 if hamming > 0.001:
-                    # Update ppi_matrix
                     ppi = gt_function(motif_matrix)  # t_func(X, X.T)
+                    motif = gt_function(motif_matrix.T)
+                    # Update ppi_matrix
                     gupdate_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
 
                     # Update correlation_matrix
-                    motif = gt_function(motif_matrix.T)
                     gupdate_diagonal(motif, num_genes, alpha, step)
                     correlation_matrix *= (1 - alpha)
                     correlation_matrix += (alpha * motif)
@@ -483,14 +483,14 @@ class Panda(object):
                 motif_matrix += (alpha * W)
 
                 if hamming > 0.001:
-                    # Update ppi_matrix
                     ppi = t_function(motif_matrix)  # t_func(X, X.T)
+                    motif = t_function(motif_matrix.T)
+                    # Update ppi_matrix
                     update_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
 
                     # Update correlation_matrix
-                    motif = t_function(motif_matrix.T)
                     update_diagonal(motif, num_genes, alpha, step)
                     correlation_matrix *= (1 - alpha)
                     correlation_matrix += (alpha * motif)
