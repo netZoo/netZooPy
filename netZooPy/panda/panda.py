@@ -40,12 +40,16 @@ class Panda(object):
      Authors: 
        cychen, davidvi, alessandromarin
     """
-    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
+    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
         
         # Read data
         self.processData(modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
         if hasattr(self, 'export_panda_results'):
             return
+        if precision=='single':
+            self.correlation_matrix=np.float32(correlation_matrix)
+            self.motif_matrix=np.float32(motif_matrix)
+            self.ppi_matrix=np.float32(ppi_matrix)
         # =====================================================================
         # Network normalization
         # =====================================================================
@@ -448,6 +452,7 @@ class Panda(object):
             # Update motif_matrix
             if computing=='gpu':
                 import cupy as cp
+                motif_matrix=cp.array(motif_matrix)
                 ppi_matrix=cp.array(ppi_matrix)
                 correlation_matrix=cp.array(correlation_matrix)
                 W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
@@ -497,6 +502,8 @@ class Panda(object):
 
         print('Running panda took: %.2f seconds!' % (time.time() - panda_loop_time))
         #Ale: reintroducing the export_panda_results array if Panda called with save_memory=False
+        if computing=='gpu':
+            motif_matrix=cp.asnumpy(motif_matrix)
         if hasattr(self,'unique_tfs'):
             tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names,self.num_tfs)
