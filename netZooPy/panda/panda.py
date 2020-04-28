@@ -452,8 +452,8 @@ class Panda(object):
             # Update motif_matrix
             if computing=='gpu':
                 import cupy as cp
-                motif_matrix=cp.array(motif_matrix)
                 ppi_matrix=cp.array(ppi_matrix)
+                motif_matrix=cp.array(motif_matrix)
                 correlation_matrix=cp.array(correlation_matrix)
                 W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
                 hamming = cp.abs(motif_matrix - W).mean()
@@ -462,14 +462,14 @@ class Panda(object):
                 motif_matrix += (alpha * W)
 
                 if hamming > 0.001:
-                    ppi = gt_function(motif_matrix)  # t_func(X, X.T)
-                    motif = gt_function(motif_matrix.T)
                     # Update ppi_matrix
+                    ppi = gt_function(motif_matrix)  # t_func(X, X.T)
                     gupdate_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
 
                     # Update correlation_matrix
+                    motif = gt_function(motif_matrix.T)
                     gupdate_diagonal(motif, num_genes, alpha, step)
                     correlation_matrix *= (1 - alpha)
                     correlation_matrix += (alpha * motif)
@@ -483,14 +483,14 @@ class Panda(object):
                 motif_matrix += (alpha * W)
 
                 if hamming > 0.001:
-                    ppi = t_function(motif_matrix)  # t_func(X, X.T)
-                    motif = t_function(motif_matrix.T)
                     # Update ppi_matrix
+                    ppi = t_function(motif_matrix)  # t_func(X, X.T)
                     update_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
-
+                    
                     # Update correlation_matrix
+                    motif = t_function(motif_matrix.T)
                     update_diagonal(motif, num_genes, alpha, step)
                     correlation_matrix *= (1 - alpha)
                     correlation_matrix += (alpha * motif)
