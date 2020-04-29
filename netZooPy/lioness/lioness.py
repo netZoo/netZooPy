@@ -7,7 +7,6 @@ from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
 
-
 class Lioness(Panda):
     """
     Description:
@@ -24,18 +23,21 @@ class Lioness(Panda):
        obj: PANDA object, generated with keep_expression_matrix=True.
        obj.motif_matrix: TF DNA motif binding data in tf-by-gene format.
                          If set to None, Lioness will be performed on gene coexpression network.
+       computing  : 'cpu' uses Central Processing Unit (CPU) to run PANDA
+                    'gpu' use the Graphical Processing Unit (GPU) to run PANDA
 
     Authors: 
        cychen, davidvi
     """
 
-    def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            self.computing=computing
             if hasattr(obj,'panda_network'):
                 self.network = obj.panda_network
             elif hasattr(obj,'puma_network'):
@@ -67,10 +69,18 @@ class Lioness(Panda):
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
 
             with Timer("Computing coexpression network:"):
-                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                if np.isnan(correlation_matrix).any():
-                    np.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = np.nan_to_num(correlation_matrix)
+                if self.computing=='gpu':
+                    import cupy as cp
+                    correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                    if cp.isnan(correlation_matrix).any():
+                        cp.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = cp.nan_to_num(correlation_matrix)
+                    correlation_matrix=cp.asnumpy(correlation_matrix)
+                else:
+                    correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                    if np.isnan(correlation_matrix).any():
+                        np.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = np.nan_to_num(correlation_matrix)
 
             with Timer("Normalizing networks:"):
                 correlation_matrix_orig = correlation_matrix # save matrix before normalization
@@ -79,7 +89,7 @@ class Lioness(Panda):
             with Timer("Inferring LIONESS network:"):
                 if self.motif_matrix is not None:
                     del correlation_matrix_orig
-                    subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix))
+                    subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix),self.computing)
                 else:
                     del correlation_matrix
                     subset_panda_network = correlation_matrix_orig

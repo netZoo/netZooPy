@@ -10,7 +10,7 @@ def test_condor():
     output_file    ='tar_memb.txt'
     gt_file        ='tests/condor/travis_tar_memb.txt'
 
-    #1. Vanilla panda
+    #1. Condor
     condor.condor(network)
     res=pd.read_csv(output_file, sep=' ', header=None)
     gt =pd.read_csv(gt_file, sep=' ', header=None)
