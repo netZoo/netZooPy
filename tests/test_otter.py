@@ -6,13 +6,13 @@ import numpy as np
 
 def test_otter():
     print('Start Otter run ...')
-    W       = 'tests/otter/W.csv'
+    W       = 'tests/otter/w.csv'
     W       = pd.read_csv(W, header=None)
     W       = W.values
-    C       = 'tests/otter/C.csv'
+    C       = 'tests/otter/c.csv'
     C       = pd.read_csv(C, header=None)
     C       = C.values
-    P       = 'tests/otter/P.csv'
+    P       = 'tests/otter/p.csv'
     P       = pd.read_csv(P, header=None)
     P       = P.values
     gt_file = 'tests/otter/test_otter.csv'
