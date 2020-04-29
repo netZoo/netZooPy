@@ -11,7 +11,7 @@ Linux: tests are under construction.
 netZooPy is a Python package of network methods. 
 
 ## Zoo animals
-(gpu)PANDA, (gpu)LIONESS, PUMA, SAMBAR, and CONDOR.
+(gpu)PANDA, (gpu)LIONESS, PUMA, SAMBAR, CONDOR, and OTTER.
 
 ## Quick guide
 `git clone https://github.com/netZoo/netZooPy.git` into your local disk.
