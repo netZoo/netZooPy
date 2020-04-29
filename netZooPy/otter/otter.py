@@ -33,10 +33,10 @@ def otter(W, P, C, lam = 0.0035, gamma = 0.335, Iter = 300, eta = 0.00001, bexp 
     b2t = b2**bexp
 
     nTF, nGenes = W.shape
-    P = P * (-(1-lam)/np.trace(P)) + (1-lam) * 0.0013
+    P = P * (-(1-lam)/np.trace(P)) - (1-lam) * 0.0013
     C = C * (-lam /np.trace(C))
     W = P@W
-    W = W/sqrt(np.trace(W @ W.T))
+    W = W/-sqrt(np.trace(W @ W.T))
     P = P + gamma*np.identity(nTF)
     m = np.zeros((nTF, nGenes))
     v = np.zeros((nTF, nGenes))
