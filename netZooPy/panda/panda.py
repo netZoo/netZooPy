@@ -30,6 +30,11 @@ class Panda(object):
                     (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                     'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
         remove_missing: removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'
+        computing  : 'cpu' uses Central Processing Unit (CPU) to run PANDA
+                     'gpu' use the Graphical Processing Unit (GPU) to run PANDA
+        precision  : 'double' computes the regulatory network in double precision (15 decimal digits)
+                     'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+                      
 
      Methods:
         return_panda_indegree: computes indegree of panda network, only if save_memory = False
@@ -38,14 +43,15 @@ class Panda(object):
     Outputs:
 
      Authors: 
-       cychen, davidvi, alessandromarin
+       cychen, davidvi, alessandromarin, Marouen Ben Guebila, Daniel Morgan
     """
-    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
+    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
         
         # Read data
         self.processData(modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
         if hasattr(self, 'export_panda_results'):
             return
+        
         # =====================================================================
         # Network normalization
         # =====================================================================
@@ -55,7 +61,10 @@ class Panda(object):
             with np.errstate(invalid='ignore'): #silly warning bothering people
                 self.motif_matrix = self._normalize_network(self.motif_matrix_unnormalized)
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
-
+            if precision=='single':
+                self.correlation_matrix=np.float32(self.correlation_matrix)
+                self.motif_matrix=np.float32(self.motif_matrix)
+                self.ppi_matrix=np.float32(self.ppi_matrix)
         # =====================================================================
         # Clean up useless variables to release memory
         # =====================================================================
@@ -449,6 +458,7 @@ class Panda(object):
             if computing=='gpu':
                 import cupy as cp
                 ppi_matrix=cp.array(ppi_matrix)
+                motif_matrix=cp.array(motif_matrix)
                 correlation_matrix=cp.array(correlation_matrix)
                 W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
                 hamming = cp.abs(motif_matrix - W).mean()
@@ -483,7 +493,7 @@ class Panda(object):
                     update_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
-
+                    
                     # Update correlation_matrix
                     motif = t_function(motif_matrix.T)
                     update_diagonal(motif, num_genes, alpha, step)
@@ -497,6 +507,8 @@ class Panda(object):
 
         print('Running panda took: %.2f seconds!' % (time.time() - panda_loop_time))
         #Ale: reintroducing the export_panda_results array if Panda called with save_memory=False
+        if computing=='gpu':
+            motif_matrix=cp.asnumpy(motif_matrix)
         if hasattr(self,'unique_tfs'):
             tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names,self.num_tfs)
