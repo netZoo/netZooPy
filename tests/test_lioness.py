@@ -18,7 +18,7 @@ def test_lioness():
     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
                       keep_expression_matrix=bool(lioness_file), modeProcess='legacy')
     # Set parameters
-    lioness_obj = Lioness(panda_obj)
+    lioness_obj = Lioness(panda_obj, start=1, end=1)
     lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res  = np.load('lioness_output/lioness.1.npy')
@@ -31,7 +31,7 @@ def test_lioness():
     # Make sure to keep epxression matrix for next step
     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
                       keep_expression_matrix=True, modeProcess='legacy')
-    lioness_obj    = Lioness(panda_obj)
+    lioness_obj    = Lioness(panda_obj, start=1, end=1)
     lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res  = np.load('lioness_output/lioness.1.npy')
