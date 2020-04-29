@@ -23,7 +23,7 @@ class Lioness(Panda):
        obj: PANDA object, generated with keep_expression_matrix=True.
        obj.motif_matrix: TF DNA motif binding data in tf-by-gene format.
                          If set to None, Lioness will be performed on gene coexpression network.
-        computing  : 'cpu' uses Central Processing Unit (CPU) to run PANDA
+       computing  : 'cpu' uses Central Processing Unit (CPU) to run PANDA
                      'gpu' use the Graphical Processing Unit (GPU) to run PANDA
 
     Authors: 
