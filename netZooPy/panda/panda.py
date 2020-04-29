@@ -30,6 +30,11 @@ class Panda(object):
                     (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                     'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
         remove_missing: removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'
+        computing  : 'cpu' uses Central Processing Unit (CPU) to run PANDA
+                     'gpu' use the Graphical Processing Unit (GPU) to run PANDA
+        precision  : 'double' computes the regulatory network in double precision (15 decimal digits)
+                     'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+                      
 
      Methods:
         return_panda_indegree: computes indegree of panda network, only if save_memory = False
@@ -38,7 +43,7 @@ class Panda(object):
     Outputs:
 
      Authors: 
-       cychen, davidvi, alessandromarin
+       cychen, davidvi, alessandromarin, Marouen Ben Guebila, Daniel Morgan
     """
     def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
         
