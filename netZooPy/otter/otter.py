@@ -31,8 +31,7 @@ def otter(W, P, C, lam = 0.0035, gamma = 0.335, Iter = 300, eta = 0.00001, bexp 
     eps = 0.00000001
     b1t = b1**bexp
     b2t = b2**bexp
-
-<<<<<<< HEAD
+    
     t, g = W.shape
     P = P * (-(1-lam)/np.trace(P)) - (1-lam) * 0.0013
     C = C * (-lam /np.trace(C))
@@ -41,16 +40,6 @@ def otter(W, P, C, lam = 0.0035, gamma = 0.335, Iter = 300, eta = 0.00001, bexp 
     P = P + gamma*np.identity(t)
     m = np.zeros((t, g))
     v = np.zeros((t, g))
-=======
-    nTF, nGenes = W.shape
-    P = P * (-(1-lam)/np.trace(P)) - (1-lam) * 0.0013
-    C = C * (-lam /np.trace(C))
-    W = P@W
-    W = W/-sqrt(np.trace(W @ W.T))
-    P = P + gamma*np.identity(nTF)
-    m = np.zeros((nTF, nGenes))
-    v = np.zeros((nTF, nGenes))
->>>>>>> 0db864c7bc0ffce0cb3846ed4a880684151d4fab
 
     for i in range(Iter):
         grad = W@W.T@W + P@W + W@C
