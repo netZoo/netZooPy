@@ -18,7 +18,7 @@ def test_otter():
     gt_file = 'tests/otter/test_otter.csv'
 
     #1. Call Otter
-    W  =otter.otter(W,P,C,Iter=10)
+    W  =otter.otter(W,P,C,Iter=1)
     gt =pd.read_csv(gt_file, header=None)
     W  =pd.DataFrame(data=W)
     pd.testing.assert_frame_equal(W,gt,check_less_precise=4,check_exact=False)
