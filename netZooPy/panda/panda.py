@@ -30,11 +30,6 @@ class Panda(object):
                     (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                     'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
         remove_missing: removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'
-        computing  : 'cpu' uses Central Processing Unit (CPU) to run PANDA
-                     'gpu' use the Graphical Processing Unit (GPU) to run PANDA
-        precision  : 'double' computes the regulatory network in double precision (15 decimal digits)
-                     'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
-                      
 
      Methods:
         return_panda_indegree: computes indegree of panda network, only if save_memory = False
@@ -43,7 +38,7 @@ class Panda(object):
     Outputs:
 
      Authors: 
-       cychen, davidvi, alessandromarin, Marouen Ben Guebila, Daniel Morgan
+       cychen, davidvi, alessandromarin
     """
     def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
         
@@ -94,7 +89,6 @@ class Panda(object):
         else:
             self.panda_network = self.correlation_matrix
             self.__pearson_results_data_frame()
-
 
     def __remove_missing(self):
         '''Remove genes and tfs not present in all files.'''
@@ -462,7 +456,7 @@ class Panda(object):
                 correlation_matrix=cp.array(correlation_matrix)
                 W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
                 hamming = cp.abs(motif_matrix - W).mean()
-                motif_matrix=cp.array(motif_matrix)
+
                 motif_matrix *= (1 - alpha)
                 motif_matrix += (alpha * W)
 
@@ -513,7 +507,7 @@ class Panda(object):
             tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names,self.num_tfs)
             motif = self.motif_matrix_unnormalized.flatten(order='F')
-            force = self.motif_matrix.flatten(order='F')
+            force = motif_matrix.flatten(order='F')
             self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
             #self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
