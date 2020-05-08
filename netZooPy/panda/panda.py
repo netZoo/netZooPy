@@ -512,7 +512,7 @@ class Panda(object):
             tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names,self.num_tfs)
             motif = self.motif_matrix_unnormalized.flatten(order='F')
-            force = self.motif_matrix.flatten(order='F')
+            force = motif_matrix.flatten(order='F')
             self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
             #self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
