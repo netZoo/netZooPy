@@ -40,12 +40,13 @@ class Panda(object):
      Authors: 
        cychen, davidvi, alessandromarin
     """
-    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
+    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
         
         # Read data
         self.processData(modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
         if hasattr(self, 'export_panda_results'):
             return
+        
         # =====================================================================
         # Network normalization
         # =====================================================================
@@ -55,7 +56,10 @@ class Panda(object):
             with np.errstate(invalid='ignore'): #silly warning bothering people
                 self.motif_matrix = self._normalize_network(self.motif_matrix_unnormalized)
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
-
+            if precision=='single':
+                self.correlation_matrix=np.float32(self.correlation_matrix)
+                self.motif_matrix=np.float32(self.motif_matrix)
+                self.ppi_matrix=np.float32(self.ppi_matrix)
         # =====================================================================
         # Clean up useless variables to release memory
         # =====================================================================
@@ -453,19 +457,23 @@ class Panda(object):
                 correlation_matrix=cp.array(correlation_matrix)
                 W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix, correlation_matrix))  # W = (R + A) / 2
                 hamming = cp.abs(motif_matrix - W).mean()
+
                 motif_matrix *= (1 - alpha)
                 motif_matrix += (alpha * W)
+
                 if hamming > 0.001:
-                    ppi = gt_function(motif_matrix)  # t_func(X, X.T)
-                    motif = gt_function(motif_matrix.T)
                     # Update ppi_matrix
+                    ppi = gt_function(motif_matrix)  # t_func(X, X.T)
                     gupdate_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
+
                     # Update correlation_matrix
+                    motif = gt_function(motif_matrix.T)
                     gupdate_diagonal(motif, num_genes, alpha, step)
                     correlation_matrix *= (1 - alpha)
                     correlation_matrix += (alpha * motif)
+
                     del W, ppi, motif  # release memory for next step
 
             elif computing=='cpu':
@@ -473,17 +481,20 @@ class Panda(object):
                 hamming = np.abs(motif_matrix - W).mean()
                 motif_matrix *= (1 - alpha)
                 motif_matrix += (alpha * W)
+
                 if hamming > 0.001:
-                    ppi = t_function(motif_matrix)  # t_func(X, X.T)
-                    motif = t_function(motif_matrix.T)
                     # Update ppi_matrix
+                    ppi = t_function(motif_matrix)  # t_func(X, X.T)
                     update_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
+                    
                     # Update correlation_matrix
+                    motif = t_function(motif_matrix.T)
                     update_diagonal(motif, num_genes, alpha, step)
                     correlation_matrix *= (1 - alpha)
                     correlation_matrix += (alpha * motif)
+
                     del W, ppi, motif  # release memory for next step
 
             print('step: {}, hamming: {}'.format(step, hamming))
@@ -491,11 +502,13 @@ class Panda(object):
 
         print('Running panda took: %.2f seconds!' % (time.time() - panda_loop_time))
         #Ale: reintroducing the export_panda_results array if Panda called with save_memory=False
+        if computing=='gpu':
+            motif_matrix=cp.asnumpy(motif_matrix)
         if hasattr(self,'unique_tfs'):
             tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names,self.num_tfs)
             motif = self.motif_matrix_unnormalized.flatten(order='F')
-            force = self.motif_matrix.flatten(order='F')
+            force = motif_matrix.flatten(order='F')
             self.export_panda_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
             #self.export_panda_results = np.column_stack((tfs,genes,motif,force))
         return motif_matrix
