@@ -3,7 +3,9 @@ from __future__ import print_function
 import os, os.path,sys
 import numpy as np
 import pandas as pd
-from .timer import Timer
+# from .timer import Timer
+from netZooPy.panda.timer import Timer
+
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
 
@@ -35,8 +37,10 @@ class Lioness(Panda):
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
             self.expression_matrix = obj.expression_matrix
+            self.correlation_matrix = obj.correlation_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            self.num_subj = self.expression_matrix.shape[1]
             if precision=='single':
                 self.correlation_matrix=np.float32(self.correlation_matrix)
                 self.motif_matrix=np.float32(self.motif_matrix)
@@ -71,10 +75,10 @@ class Lioness(Panda):
         for i in self.indexes:
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
-            
+
             with Timer("Computing coexpression network:"):
-                subj_exp=self.expression_data.values[:, i]
-                correlation_network = self._normalize_network((((self.num_subj-1) * (self.correlation_matrix)) - (np.array([subj_exp]).T * subj_exp)) /(self.num_subj-2))
+                subj_exp=self.expression_matrix[:, i]
+                correlation_matrix = self._normalize_network((((self.num_subj-1) * (self.correlation_matrix)) - (np.array([subj_exp]).T * subj_exp)) /(self.num_subj-2))
                 if np.isnan(correlation_matrix).any():
                     np.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = np.nan_to_num(correlation_matrix)
