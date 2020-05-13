@@ -71,6 +71,7 @@ class Lioness(Panda):
         for i in self.indexes:
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
+            
             with Timer("Computing coexpression network:"):
                 subj_exp=self.expression_data.values[:, i]
                 correlation_network = self._normalize_network((((self.num_subj-1) * (self.correlation_matrix)) - (np.array([subj_exp]).T * subj_exp)) /(self.num_subj-2))
