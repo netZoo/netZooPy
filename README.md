@@ -1,6 +1,6 @@
 # Branch Description
 
-Given the inability for R to use script `panda.py` and script `lioness.py` located in master branch [here](https://github.com/netZoo/netZooPy/blob/master/netZooPy/panda/panda.py) and [here](https://github.com/netZoo/netZooPy/blob/master/netZooPy/lioness/lioness.py) casued by importing module error (i.e. R package reticulate can not process importing modules from other sciprts, like `from .timer import Timer` and `from netZooPy.panda.panda import Panda`), a specific branch created here is used in the R package [netZooR](https://github.com/netZoo/netZooR) to source the Python implementation of PANDA and LIONESS.
+Given the inability for R to use script `panda.py` and script `lioness.py` located in master branch [here](https://github.com/netZoo/netZooPy/blob/master/netZooPy/panda/panda.py) and [here](https://github.com/netZoo/netZooPy/blob/master/netZooPy/lioness/lioness.py) casued by importing module error (i.e. R package reticulate can not process importing modules from other sciprts, like `from .timer import Timer` and `from netZooPy.panda.panda import Panda` will cause an erorr `ValueError: Attempted relative import in non-package`), a specific branch created here is used in the R package [netZooR](https://github.com/netZoo/netZooR) to source the Python implementation of PANDA and LIONESS.
 
 ## Details
 
