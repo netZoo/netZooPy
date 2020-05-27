@@ -1,30 +1,39 @@
-# from __future__ import print_function
 
 import os, os.path
 import numpy as np
-# from .panda import Panda
-# from .timer import Timer
-
-
+import pandas as pd
 
 class Lioness(Panda):
-    """Using LIONESS to infer single-sample gene regulatory networks.
+    """
+    Description:
+       Using LIONESS to infer single-sample gene regulatory networks.
 
-    1. Reading in PANDA network and preprocessed middle data
-    2. Computing coexpression network
-    3. Normalizing coexpression network
-    4. Running PANDA algorithm
-    5. Writing out LIONESS networks
+    Usage:
+       1. Reading in PANDA network and preprocessed middle data
+       2. Computing coexpression network
+       3. Normalizing coexpression network
+       4. Running PANDA algorithm
+       5. Writing out LIONESS networks
 
-    Authors: cychen, davidvi
+    Inputs:
+       obj: PANDA object, generated with keep_expression_matrix=True.
+       obj.motif_matrix: TF DNA motif binding data in tf-by-gene format.
+                         If set to None, Lioness will be performed on gene coexpression network.
+       computing  : 'cpu' uses Central Processing Unit (CPU) to run PANDA
+                    'gpu' use the Graphical Processing Unit (GPU) to run PANDA
+
+    Authors: 
+       cychen, davidvi
     """
 
-    def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
+            self.export_panda_results = obj.export_panda_results
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            self.computing=computing
             if hasattr(obj,'panda_network'):
                 self.network = obj.panda_network
             elif hasattr(obj,'puma_network'):
@@ -48,7 +57,7 @@ class Lioness(Panda):
         self.total_lioness_network = self.__lioness_loop()
 
         # create result data frame
-        #self.export_lioness_results = pd.DataFrame(self.lioness_network)
+        self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
     def __lioness_loop(self):
         for i in self.indexes:
@@ -56,17 +65,32 @@ class Lioness(Panda):
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
 
             with Timer("Computing coexpression network:"):
-                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                if np.isnan(correlation_matrix).any():
-                    np.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = np.nan_to_num(correlation_matrix)
+                if self.computing=='gpu':
+                    import cupy as cp
+                    correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                    if cp.isnan(correlation_matrix).any():
+                        cp.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = cp.nan_to_num(correlation_matrix)
+                    correlation_matrix=cp.asnumpy(correlation_matrix)
+                else:
+                    correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                    if np.isnan(correlation_matrix).any():
+                        np.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = np.nan_to_num(correlation_matrix)
 
             with Timer("Normalizing networks:"):
+                correlation_matrix_orig = correlation_matrix # save matrix before normalization
                 correlation_matrix = self._normalize_network(correlation_matrix)
 
             with Timer("Inferring LIONESS network:"):
-                subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix))
-                lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
+                if self.motif_matrix is not None:
+                    del correlation_matrix_orig
+                    subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix),self.computing)
+                else:
+                    del correlation_matrix
+                    subset_panda_network = correlation_matrix_orig
+
+            lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
 
             with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
                 path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
