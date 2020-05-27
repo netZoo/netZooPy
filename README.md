@@ -8,7 +8,7 @@ This netZoo branch is used in the R package [netZooR](https://github.com/netZoo/
 
 - `lioness.py` script here derived from class `Lioness` and class `Timer` in Python library `netZooPy` is used in function [lioness.py()](https://github.com/netZoo/netZooR/blob/master/R/LIONESS.R) in the netZooR package.
 
-# Development notes
+# Development reminder
 
 Please keep the content of the scirpts in this branch consistent with up-to-date version of netZooPy. 
 
