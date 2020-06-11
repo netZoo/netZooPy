@@ -3,7 +3,9 @@ from __future__ import print_function
 import os, os.path,sys
 import numpy as np
 import pandas as pd
-from .timer import Timer
+# from .timer import Timer
+from netZooPy.panda.timer import Timer
+
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
 
@@ -30,14 +32,19 @@ class Lioness(Panda):
        cychen, davidvi
     """
 
-    def __init__(self, obj, computing='cpu', start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', precision='double',start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
             self.expression_matrix = obj.expression_matrix
+            self.correlation_matrix = obj.correlation_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
-            self.computing=computing
+            if precision=='single':
+                self.correlation_matrix=np.float32(self.correlation_matrix)
+                self.motif_matrix=np.float32(self.motif_matrix)
+                self.ppi_matrix=np.float32(self.ppi_matrix)
+            self.computing=obj.computing
             if hasattr(obj,'panda_network'):
                 self.network = obj.panda_network
             elif hasattr(obj,'puma_network'):
@@ -69,18 +76,11 @@ class Lioness(Panda):
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
 
             with Timer("Computing coexpression network:"):
-                if self.computing=='gpu':
-                    import cupy as cp
-                    correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
-                    if cp.isnan(correlation_matrix).any():
-                        cp.fill_diagonal(correlation_matrix, 1)
-                        correlation_matrix = cp.nan_to_num(correlation_matrix)
-                    correlation_matrix=cp.asnumpy(correlation_matrix)
-                else:
-                    correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                    if np.isnan(correlation_matrix).any():
-                        np.fill_diagonal(correlation_matrix, 1)
-                        correlation_matrix = np.nan_to_num(correlation_matrix)
+                subj_exp=self._normalize_network(self.expression_matrix[:, i])
+                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                np.fill_diagonal(self.correlation_matrix, 1)
+                self.correlation_matrix = self._normalize_network(correlation_matrix)
+                correlation_matrix = ((((self.n_conditions-1) * (self.correlation_matrix)) - (np.array([subj_exp]).T * subj_exp)) /(self.n_conditions-2))
 
             with Timer("Normalizing networks:"):
                 correlation_matrix_orig = correlation_matrix # save matrix before normalization
