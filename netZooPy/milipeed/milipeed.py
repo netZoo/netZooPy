@@ -280,7 +280,7 @@ class Milipeed(Panda):
             # pd.melt(net,id_vars=['index']).to_csv(meta_path,sep='\t',float_format='%1.4f',index=False,header=False)
 
             with Timer("Saving MILIPEED network %s to %s using %s format:" % (iii, self.save_dir, self.save_fmt)):
-                path = os.path.join(self.save_dir, "milipeed.%d.%s" % (iii, self.save_fmt))
+                path = os.path.join(self.save_dir, "milipeed.%s.%s" % (iii, self.save_fmt))
                 if self.save_fmt == 'txt':
                     # np.savetxt(path, pd.melt(milipeed_network),fmt='%1.3f')
                     pd.melt(pd.DataFrame(milipeed_network)).value.to_csv(path,sep='\t',float_format='%1.4f',index=False,header=False)
@@ -295,7 +295,7 @@ class Milipeed(Panda):
             if self.total_milipeed_network is None: #    iii == 0:
                 self.total_milipeed_network = np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)
                 self.export_panda_results[['tf','gene']].to_csv(self.save_dir+'link_names.txt',sep='_',index=False,header=False)
-                pd.DataFrame(self.subjects).to_csv(self.save_dir+'subjects.txt',sep='\t',index=False,header=False)
+                pd.DataFrame(b_subj).to_csv(self.save_dir+str(len(b_subj))+'_subject_IDs.txt',sep='\t',index=False,header=False)
             else:
                 self.total_milipeed_network=np.column_stack((self.total_milipeed_network ,np.fromstring(np.transpose(milipeed_network).tostring(),dtype=milipeed_network.dtype)))
 
