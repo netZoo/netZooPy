@@ -4,7 +4,7 @@ import math
 import time
 import pandas as pd
 from scipy.stats import zscore
-# from .timer import Timer
+from .timer import Timer
 import numpy as np
 
 class Panda(object):
@@ -151,8 +151,8 @@ class Panda(object):
                 # print('Unique TFs:', self.num_tfs)
         elif type(motif_file) is not str:
             self.motif_data = pd.DataFrame(motif_file.values)#pd.read_csv(motif_file, sep='\t', header=None)
-            self.motif_tfs = sorted(set(subMtf['source']))
-            self.motif_genes = sorted(set(subMtf['source']))
+            self.motif_tfs = sorted(set(motif_file['source']))
+            self.motif_genes = sorted(set(motif_file['target']))
             # self.num_tfs = len(self.unique_tfs)
             # print('Unique TFs:', self.num_tfs)
 
