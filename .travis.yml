@@ -1,3 +1,5 @@
+-language: java
+
 matrix:
   include:
   - os: osx
