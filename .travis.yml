@@ -5,7 +5,6 @@ matrix:
   - os: osx
     before_install:
     - brew install python3
-  - os: linux
 
 install:
    - pip3 install -r requirements.txt
