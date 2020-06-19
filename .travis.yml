@@ -6,10 +6,13 @@ matrix:
     before_install:
     - brew install python3
   - os: linux
+    before_install:
     - apt-get install python3.6
   - os: linux
+    before_install:
     - apt-get install python3.7
   - os: linux
+    before_install:
     - apt-get install python3.8
 
 install:
