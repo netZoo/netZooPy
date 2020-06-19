@@ -1,10 +1,14 @@
-language: java
-
 os:
    - osx
-   
-install:
-  - brew install python3
+   language: java
+   install:
+       - brew install python3
+   - linux
+   langauge: python
+   python:
+      - "3.7"
+      - "3.8"
+      - "3.9"
 
 install:
    - pip3 install -r requirements.txt
