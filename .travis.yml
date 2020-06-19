@@ -1,10 +1,10 @@
 os:
    - osx
    language: java
-   install:
+   before_install:
        - brew install python3
    - linux
-   langauge: python
+   language: python
    python:
       - "3.7"
       - "3.8"
