@@ -24,7 +24,7 @@ install:
    - pip3 install pytest-cov
 
 script: 
-   - travis_wait pytest --cov=netZooPy tests
+   - travis_wait python -m pytest --cov=netZooPy tests
 
 branches:
   only:
