@@ -16,6 +16,7 @@ matrix:
     - sudo apt-get install python3.6
 
 install:
+   - pyenv global 3.6
    - pip3.6 install -r requirements.txt
    - pip3.6 install pytest
    - pwd
