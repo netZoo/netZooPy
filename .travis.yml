@@ -8,7 +8,7 @@ matrix:
     - pip3 install pytest
     - pip3 install -e .
     - pip3 install codecov
-    - pip install pytest-cov
+    - pip3 install pytest-cov
     script: 
     - travis_wait pytest --cov=netZooPy tests
   - os: linux
