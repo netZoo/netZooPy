@@ -6,10 +6,9 @@ matrix:
     install:
     - pip3 install -r requirements.txt
     - pip3 install pytest
-    - pwd
     - pip3 install -e .
     - pip3 install codecov
-    - pip install pytest-cov
+    - pip3 install pytest-cov
   - os: linux
     before_install:
     - sudo add-apt-repository ppa:deadsnakes/ppa -y
@@ -22,7 +21,6 @@ matrix:
     - pyenv global 3.6
     - pip3.6 install -r requirements.txt
     - pip3.6 install pytest
-    - pwd
     - pip3.6 install -e .
     - pip3.6 install codecov
     - pip3.6 install pytest-cov
@@ -40,7 +38,6 @@ matrix:
     - pyenv global 3.7
     - pip3.7 install -r requirements.txt
     - pip3.7 install pytest
-    - pwd
     - pip3.7 install -e .
     - pip3.7 install codecov
     - pip3.7 install pytest-cov
@@ -58,7 +55,6 @@ matrix:
     - pyenv global 3.8
     - pip3.8 install -r requirements.txt
     - pip3.8 install pytest
-    - pwd
     - pip3.8 install -e .
     - pip3.8 install codecov
     - pip3.8 install pytest-cov
