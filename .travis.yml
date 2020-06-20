@@ -7,13 +7,13 @@ matrix:
     - brew install python3
   - os: linux
     before_install:
-    - apt-get install python3.6
+    - sudo apt-get install python3.6
   - os: linux
     before_install:
-    - apt-get install python3.7
+    - sudo apt-get install python3.7
   - os: linux
     before_install:
-    - apt-get install python3.8
+    - sudo apt-get install python3.8
 
 install:
    - pip3 install -r requirements.txt
