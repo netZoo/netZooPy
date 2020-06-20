@@ -14,18 +14,15 @@ matrix:
     - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.6
-
-install:
-   - pyenv global 3.6
-   - pip3.6 install -r requirements.txt
-   - pip3.6 install pytest
-   - pwd
-   - pip3.6 install -e .
-   - pip3.6 install codecov
-   - pip3.6 install pytest-cov
-
-script: 
-   - travis_wait python3.6 -m pytest --cov=netZooPy tests
+    - pyenv global 3.6
+    - pip3.6 install -r requirements.txt
+    - pip3.6 install pytest
+    - pwd
+    - pip3.6 install -e .
+    - pip3.6 install codecov
+    - pip3.6 install pytest-cov
+    script: 
+    - travis_wait python3.6 -m pytest --cov=netZooPy tests
 
 branches:
   only:
