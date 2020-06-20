@@ -16,12 +16,12 @@ matrix:
     - sudo apt-get install python3.6
 
 install:
-   - pip3 install -r requirements.txt
-   - pip3 install pytest
+   - pip3.6 install -r requirements.txt
+   - pip3.6 install pytest
    - pwd
-   - pip3 install -e .
-   - pip3 install codecov
-   - pip3 install pytest-cov
+   - pip3.6 install -e .
+   - pip3.6 install codecov
+   - pip3.6 install pytest-cov
 
 script: 
    - travis_wait python3.6 -m pytest --cov=netZooPy tests
