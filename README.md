@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/netZoo/netZooPy.svg?branch=devel)](https://travis-ci.com /netZoo/netZooPy)
+[![Build Status](https://travis-ci.com/netZoo/netZooPy.svg?branch=devel)(https://travis-ci.com /netZoo/netZooPy)
 [![codecov](https://codecov.io/gh/netZoo/netZooPy/branch/devel/graph/badge.svg)](https://codecov.io/gh/netZoo/netZooPy)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Documentation Status](https://readthedocs.org/projects/netzoopy/badge/?version=latest)](https://netzoopy.readthedocs.io/en/latest/?badge=latest)
