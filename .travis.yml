@@ -8,7 +8,7 @@ matrix:
   - os: linux
     before_install:
     - sudo apt-get install python3-pip
-    - pip install --upgrade pip
+    - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
     - travis_wait sudo add-apt-repository ppa:deadsnakes/ppa   
     - sudo apt-get update
@@ -16,7 +16,7 @@ matrix:
   - os: linux
     before_install:
     - sudo apt-get install python3-pip
-    - pip install --upgrade pip
+    - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
     - travis_wait sudo add-apt-repository ppa:deadsnakes/ppa   
     - sudo apt-get update
@@ -24,7 +24,7 @@ matrix:
   - os: linux
     before_install:
     - sudo apt-get install python3-pip
-    - pip install --upgrade pip
+    - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
     - travis_wait sudo add-apt-repository ppa:deadsnakes/ppa   
     - sudo apt-get update
