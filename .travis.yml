@@ -8,6 +8,7 @@ matrix:
   - os: linux
     before_install:
     - sudo apt-get update
+    - sudo apt install software-properties-common
     - sudo apt-get install python3-pip
     - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
@@ -16,6 +17,7 @@ matrix:
   - os: linux
     before_install:
     - sudo apt-get update
+    - sudo apt install software-properties-common
     - sudo apt-get install python3-pip
     - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
@@ -24,6 +26,7 @@ matrix:
   - os: linux
     before_install:
     - sudo apt-get update
+    - sudo apt install software-properties-common
     - sudo apt-get install python3-pip
     - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
