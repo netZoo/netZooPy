@@ -3,8 +3,13 @@ language: java
 matrix:
   include:
   - os: osx
-    before_install:
-    - brew install python3
+    install:
+    - pip3 install -r requirements.txt
+    - pip3 install pytest
+    - pwd
+    - pip3 install -e .
+    - pip3 install codecov
+    - pip install pytest-cov
   - os: linux
     before_install:
     - sudo add-apt-repository ppa:deadsnakes/ppa -y
