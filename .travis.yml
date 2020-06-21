@@ -62,17 +62,6 @@ matrix:
     - pip3.8 install pytest-cov
     script: 
     - travis_wait python3.8 -m pytest --cov=netZooPy tests
-env:
-  - BADGE=linux
-  - BADGE=osx
-
-# hack to get some OS-specific badges
-matrix:
-  exclude:
-    - os: linux
-      env: BADGE=osx
-    - os: osx
-      env: BADGE=linux
 
 branches:
   only:
