@@ -1,19 +1,64 @@
-language: python
-python:
-   - "3.6"
-   - "3.7"
-   - "3.8"
+language: java
 
-install:
-   - pip3 install -r requirements.txt
-   - pip3 install pytest
-   - pwd
-   - pip3 install -e .
-   - pip3 install codecov
-   - pip install pytest-cov
-
-script: 
-   - travis_wait pytest --cov=netZooPy tests
+matrix:
+  include:
+  - os: osx
+    install:
+    - pip3 install -r requirements.txt
+    - pip3 install pytest
+    - pip3 install -e .
+    - pip3 install codecov
+    - pip3 install pytest-cov
+    script: 
+    - travis_wait pytest --cov=netZooPy tests
+  - os: linux
+    before_install:
+    - sudo add-apt-repository ppa:deadsnakes/ppa -y
+    - sudo apt-get update
+    - sudo apt install software-properties-common
+    - sudo apt-get install python3-pip
+    - pip3 install --upgrade pip
+    - sudo apt-get install python3-setuptools
+    - sudo apt-get install python3.6
+    - pip3.6 install -r requirements.txt
+    - pip3.6 install pytest
+    - pip3.6 install -e .
+    - pip3.6 install codecov
+    - pip3.6 install pytest-cov
+    script: 
+    - travis_wait python3.6 -m pytest --cov=netZooPy tests
+  - os: linux
+    before_install:
+    - sudo add-apt-repository ppa:deadsnakes/ppa -y
+    - sudo apt-get update
+    - sudo apt install software-properties-common
+    - sudo apt-get install python3-pip
+    - pip3 install --upgrade pip
+    - sudo apt-get install python3-setuptools
+    - sudo apt-get install python3.7
+    - pip3.7 install -r requirements.txt
+    - pip3.7 install pytest
+    - pip3.7 install -e .
+    - pip3.7 install codecov
+    - pip3.7 install pytest-cov
+    script: 
+    - travis_wait python3.7 -m pytest --cov=netZooPy tests
+  - os: linux
+    before_install:
+    - sudo add-apt-repository ppa:deadsnakes/ppa -y
+    - sudo apt-get update
+    - sudo apt install software-properties-common
+    - sudo apt-get install python3-pip
+    - pip3 install --upgrade pip
+    - sudo apt-get install python3-setuptools
+    - sudo apt-get install python3.8
+    - pip3.8 install -r requirements.txt
+    - pip3.8 install pytest
+    - pip3.8 install -e .
+    - pip3.8 install codecov
+    - pip3.8 install pytest-cov
+    script: 
+    - travis_wait python3.8 -m pytest --cov=netZooPy tests
 
 branches:
   only:
