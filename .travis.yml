@@ -20,7 +20,7 @@ matrix:
     - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.6
-    - pyenv install 3.6
+    - pyenv install 3.6.0
     - pyenv global 3.6
     - pip3.6 install -r requirements.txt
     - pip3.6 install pytest
