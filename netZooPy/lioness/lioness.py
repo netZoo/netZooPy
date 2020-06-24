@@ -77,9 +77,9 @@ class Lioness(Panda):
 
             with Timer("Computing coexpression network:"):
                 subj_exp=self._normalize_network(self.expression_matrix[:, i])
-                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                np.fill_diagonal(self.correlation_matrix, 1)
-                self.correlation_matrix = self._normalize_network(correlation_matrix)
+                # correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                # np.fill_diagonal(self.correlation_matrix, 1)
+                # self.correlation_matrix = self._normalize_network(correlation_matrix)
                 correlation_matrix = ((((self.n_conditions-1) * (self.correlation_matrix)) - (np.array([subj_exp]).T * subj_exp)) /(self.n_conditions-2))
 
             with Timer("Normalizing networks:"):
