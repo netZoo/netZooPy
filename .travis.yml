@@ -29,7 +29,7 @@ matrix:
     - pip3.6 install pytest-cov
     script: 
     - travis_wait python3.6 -m pytest --cov=netZooPy tests
-  - os: linux
+  - dist: bionic
     before_install:
     - sudo add-apt-repository ppa:deadsnakes/ppa -y
     - sudo apt-get update
@@ -37,10 +37,6 @@ matrix:
     - sudo apt-get install python3-setuptools
     - sudo apt-get install -y build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev
     - sudo apt-get install -y libpng-dev libfreetype6-dev  
-    # update git
-    - sudo add-apt-repository ppa:git-core/ppa -y 
-    - sudo apt-get update
-    - sudo apt-get install git -y
     # update pyenv
     - git clone https://github.com/pyenv/pyenv-update.git /opt/pyenv/plugins/pyenv-update
     - pyenv update
