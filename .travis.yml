@@ -11,7 +11,7 @@ matrix:
     - pip3 install pytest-cov
     script: 
     - travis_wait pytest --cov=netZooPy tests
-  - os: xenial
+  - dist: xenial
     before_install:
     - sudo add-apt-repository ppa:deadsnakes/ppa -y
     - sudo apt-get update
