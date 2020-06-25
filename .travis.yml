@@ -21,11 +21,11 @@ matrix:
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.6
     - sudo apt-get install python3-pip
-    - pip3.6 install -r requirements.txt
-    - pip3.6 install pytest
-    - pip3.6 install -e .
-    - pip3.6 install codecov
-    - pip3.6 install pytest-cov
+    - pip3.6.7 install -r requirements.txt
+    - pip3.6.7 install pytest
+    - pip3.6.7 install -e .
+    - pip3.6.7 install codecov
+    - pip3.6.7 install pytest-cov
     script: 
     - travis_wait python3.6 -m pytest --cov=netZooPy tests
   - os: linux
@@ -33,12 +33,11 @@ matrix:
     - sudo add-apt-repository ppa:deadsnakes/ppa -y
     - sudo apt-get update
     - sudo apt install software-properties-common
-    - sudo apt-get install python3-pip
-    - pip3 install --upgrade pip
+    #- sudo apt-get install python3-pip
+    #- pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.7
-    - pyenv install 3.7.0
-    - pyenv global 3.7.0
+    - sudo apt-get install python3-pip
     - pip3.7 install -r requirements.txt
     - pip3.7 install pytest
     - pip3.7 install -e .
