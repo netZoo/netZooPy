@@ -43,12 +43,12 @@ matrix:
     - sudo apt-get install python3-pip
     - pyenv install 3.7.1
     - pyenv global 3.7.1
-    - python3.7 -m pip3 install --upgrade pip
-    - pip install -r requirements.txt
-    - pip install pytest
-    - pip install -e .
-    - pip install codecov
-    - pip install pytest-cov
+    - python3.7.1 -m pip3 install --upgrade pip
+    - pip3.7 install -r requirements.txt
+    - pip3.7 install pytest
+    - pip3.7 install -e .
+    - pip3.7 install codecov
+    - pip.7 install pytest-cov
     script: 
     - travis_wait python3.7 -m pytest --cov=netZooPy tests
   - dist: bionic
