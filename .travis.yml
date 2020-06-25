@@ -21,6 +21,7 @@ matrix:
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.6
     - sudo apt-get install python3-pip
+    - pip3 -v
     - pip3.6.7 install -r requirements.txt
     - pip3.6.7 install pytest
     - pip3.6.7 install -e .
@@ -38,6 +39,7 @@ matrix:
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.7
     - sudo apt-get install python3-pip
+    - pip3 -v
     - pip3.7 install -r requirements.txt
     - pip3.7 install pytest
     - pip3.7 install -e .
