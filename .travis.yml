@@ -39,7 +39,7 @@ matrix:
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.7
     - pyenv install 3.7.0a1
-    - pyenv global 3.7-dev
+    - pyenv global 3.7.0a1
     - pip3.7 install -r requirements.txt
     - pip3.7 install pytest
     - pip3.7 install -e .
