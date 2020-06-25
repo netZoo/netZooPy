@@ -56,8 +56,8 @@ matrix:
     - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.8
-    - pyenv install 3.8
-    - pyenv global 3.8
+    - pyenv install miniconda-3.8.3
+    - pyenv global miniconda-3.8.3
     - pip3.8 install -r requirements.txt
     - pip3.8 install pytest
     - pip3.8 install -e .
