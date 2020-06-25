@@ -38,8 +38,6 @@ matrix:
     - sudo apt-get install -y build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev
     - sudo apt-get install -y libpng-dev libfreetype6-dev  
     # update pyenv
-    - git clone https://github.com/pyenv/pyenv-update.git /opt/pyenv/plugins/pyenv-update
-    - pyenv update
     - pyenv install 3.7.0
     - pyenv global 3.7.0
     - pip3.7 install -r requirements.txt
@@ -49,15 +47,15 @@ matrix:
     - pip3.7 install pytest-cov
     script: 
     - travis_wait python3.7 -m pytest --cov=netZooPy tests
-  - os: linux
+  - dist: bionic
     before_install:
     - sudo add-apt-repository ppa:deadsnakes/ppa -y
     - sudo apt-get update
     - sudo apt install software-properties-common
-    - sudo apt-get install python3-pip
-    - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
-    - sudo apt-get install python3.8
+    - sudo apt-get install -y build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev
+    - sudo apt-get install -y libpng-dev libfreetype6-dev
+    # update pyenv
     - pyenv install 3.8.0
     - pyenv global 3.8.0
     - pip3.8 install -r requirements.txt
