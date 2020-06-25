@@ -16,18 +16,17 @@ matrix:
     - sudo add-apt-repository ppa:deadsnakes/ppa -y
     - sudo apt-get update
     - sudo apt install software-properties-common
-    #- sudo apt-get install python3-pip
-    #- pip3 install --upgrade pip
-    - sudo apt-get install python3-setuptools
-    - sudo apt-get install python3.6
     - sudo apt-get install python3-pip
     - pip3 install --upgrade pip
-    - pip3 -V
-    - pip3.6.7 install -r requirements.txt
-    - pip3.6.7 install pytest
-    - pip3.6.7 install -e .
-    - pip3.6.7 install codecov
-    - pip3.6.7 install pytest-cov
+    - sudo apt-get install python3-setuptools
+    - sudo apt-get install python3.6
+    - pyenv install 3.6.0
+    - pyenv global 3.6.0
+    - pip3.6 install -r requirements.txt
+    - pip3.6 install pytest
+    - pip3.6 install -e .
+    - pip3.6 install codecov
+    - pip3.6 install pytest-cov
     script: 
     - travis_wait python3.6 -m pytest --cov=netZooPy tests
   - os: linux
