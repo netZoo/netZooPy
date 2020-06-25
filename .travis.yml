@@ -37,7 +37,9 @@ matrix:
     - sudo apt-get install -y python3-setuptools
     - sudo apt-get install -y build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev
     - sudo apt-get install -y libpng-dev libfreetype6-dev  
-    - pyenv install --list
+    - git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+    - export PYENV_ROOT="$HOME/.pyenv
+    - export PATH="$PYENV_ROOT/bin:$PATH
     - pyenv install 3.7.1
     - pyenv global 3.7.1
     - pip3.7 install -r requirements.txt
