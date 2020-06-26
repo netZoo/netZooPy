@@ -18,7 +18,7 @@ def otter(W, P, C, lam=0.0035, gamma=0.335, Iter=32, eta=0.00001, bexp=1):
 	              lam   : it should be in [0,1].
 	              gamma : penalization term
 	              Iter  : number of iterations of the algorithm
-	              eta   :
+	              eta   : the learning rate
 
 	Outputs:
 	              W  : Predicted TF-gene complete regulatory network as an adjacency matrix of size (t,g).
