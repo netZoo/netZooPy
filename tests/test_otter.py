@@ -21,4 +21,4 @@ def test_otter():
     W  =otter.otter(W,P,C,Iter=1)
     gt =pd.read_csv(gt_file, header=None)
     W  =pd.DataFrame(data=W)
-    pd.testing.assert_frame_equal(W,gt,check_less_precise=4,check_exact=False)
+    pd.testing.assert_frame_equal(W,gt,check_less_precise=10,check_exact=False)
