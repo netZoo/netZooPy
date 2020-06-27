@@ -30,13 +30,16 @@ def otter(W, P, C, lam=0.0035, gamma=0.335, Iter=32, eta=0.00001, bexp=1):
     b2t = b2 ** bexp
 
     t, g = W.shape
+
+    C = C  / np.trace(C)
     P = P+2.2
-    P = P/np.trace(P)
     W = P @ W
-    P = P * (-(1 - lam))
-    C = C * (-lam / np.trace(C))
     W = W / np.trace(W @ W.T)
-    P = P + gamma * np.identity(t)
+    P = P/np.trace(P)
+
+    P = -P * ((1 - lam)) + gamma * np.identity(t)
+    C = -C * lam
+
     m = np.zeros((t, g))
     v = np.zeros((t, g))
 
