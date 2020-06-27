@@ -31,3 +31,8 @@ files.txt
 *.pyc
 travis_*.txt
 *.npy
+Travis
+clustergroups.csv
+dist_matrix.csv
+mt_out.csv
+pt_out.csv
