@@ -193,8 +193,8 @@ class Panda(object):
             self.__remove_missing()
         
         if modeProcess=="legacy":
-            self.gene_names = expression_genes#sorted( np.unique(self.motif_genes +  self.expression_genes ))
-            self.unique_tfs = motif_tfs#sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
+            self.gene_names = self.expression_genes#sorted( np.unique(self.motif_genes +  self.expression_genes ))
+            self.unique_tfs = self.motif_tfs#sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
 
         elif modeProcess=="union":
             self.gene_names = sorted( np.unique(self.motif_genes +  self.expression_genes ))
@@ -210,6 +210,15 @@ class Panda(object):
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
         tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
+        if modeProcess=="union":
+            # Initialize data
+            self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
+            # Populate gene expression
+            idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
+            print(self.expression.shape)
+            print(self.expression_data.shape)
+            self.expression[idx_geneEx,:] = self.expression_data.values
+            self.expression_data=pd.DataFrame(data=self.expression)
 
         # =====================================================================
         # Network construction
