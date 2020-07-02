@@ -211,13 +211,9 @@ class Panda(object):
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
         tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
         if modeProcess=="union" or modeProcess=="intersection":
-            # Initialize data
+            # Initialize data & Populate gene expression
             self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
-            # Populate gene expression
-            # if modeProcess=="union":
             idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
-            # else:
-            #     idx_geneEx = [gene2idx.get(x, 0) for x in self.gene_names]
             print(self.expression.shape)
             print(self.expression_data.shape)
             self.expression[idx_geneEx,:] = self.expression_data.values
