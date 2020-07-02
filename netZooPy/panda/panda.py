@@ -210,7 +210,7 @@ class Panda(object):
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
         tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
-        if modeProcess=="union":
+        if modeProcess=="union" or modeProcess=="intersection":
             # Initialize data & Populate gene expression
             self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
             idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
