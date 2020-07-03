@@ -37,6 +37,7 @@ class Lioness(Panda):
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            self.correlation_matrix=obj.correlation_matrix
             if precision=='single':
                 self.correlation_matrix=np.float32(self.correlation_matrix)
                 self.motif_matrix=np.float32(self.motif_matrix)
@@ -72,8 +73,8 @@ class Lioness(Panda):
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
             with Timer("Computing coexpression network:"):
-                subj_exp=self.expression_data.values[:, i]
-                correlation_network = self._normalize_network((((self.num_subj-1) * (self.correlation_matrix)) - (np.array([subj_exp]).T * subj_exp)) /(self.num_subj-2))
+                subj_exp=self.expression_matrix[:, i]
+                correlation_matrix = self._normalize_network((((self.n_conditions-1) * (self.correlation_matrix)) - (np.array([subj_exp]).T * subj_exp)) /(self.n_conditions-2))
                 if np.isnan(correlation_matrix).any():
                     np.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = np.nan_to_num(correlation_matrix)
