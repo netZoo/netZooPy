@@ -26,7 +26,7 @@ class Lioness(Panda):
        cychen, davidvi
     """
 
-    def __init__(self, obj, computing='cpu', start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+        def __init__(self, obj, computing='cpu', start=1, end=None, save_single_network=True, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
@@ -34,6 +34,7 @@ class Lioness(Panda):
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
             self.computing=computing
+            self.save_single_network=save_single_network
             if hasattr(obj,'panda_network'):
                 self.network = obj.panda_network
             elif hasattr(obj,'puma_network'):
@@ -47,11 +48,12 @@ class Lioness(Panda):
         self.n_conditions = self.expression_matrix.shape[1]
         self.indexes = range(self.n_conditions)[start-1:end]  # sample indexes to include
 
-        # Create the output folder if not exists
-        self.save_dir = save_dir
-        self.save_fmt = save_fmt
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
+        if self.save_single_network:
+            # Create the output folder if not exists
+            self.save_dir = save_dir
+            self.save_fmt = save_fmt
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
 
         # Run LIONESS
         self.total_lioness_network = self.__lioness_loop()
@@ -91,19 +93,19 @@ class Lioness(Panda):
                     subset_panda_network = correlation_matrix_orig
 
             lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
-
-            with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
-                path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
-                if self.save_fmt == 'txt':
-                    np.savetxt(path, lioness_network)
-                elif self.save_fmt == 'npy':
-                    np.save(path, lioness_network)
-                elif self.save_fmt == 'mat':
-                    from scipy.io import savemat
-                    savemat(path, {'PredNet': lioness_network})
-                else:
-                    print("Unknown format %s! Use npy format instead." % self.save_fmt)
-                    np.save(path, lioness_network)
+            if self.save_single_network:
+                with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
+                    path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
+                    if self.save_fmt == 'txt':
+                        np.savetxt(path, lioness_network)
+                    elif self.save_fmt == 'npy':
+                        np.save(path, lioness_network)
+                    elif self.save_fmt == 'mat':
+                        from scipy.io import savemat
+                        savemat(path, {'PredNet': lioness_network})
+                    else:
+                        print("Unknown format %s! Use npy format instead." % self.save_fmt)
+                        np.save(path, lioness_network)
             if i == 0:
                 self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
             else:
@@ -116,3 +118,4 @@ class Lioness(Panda):
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         np.savetxt(file, self.total_lioness_network, delimiter="\t",header="")
         return None
+
