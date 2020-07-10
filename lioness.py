@@ -26,7 +26,7 @@ class Lioness(Panda):
        cychen, davidvi
     """
 
-    def __init__(self, obj, computing='cpu', start=1, end=None, save_single_network=True, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', start=1, end=None, save_single_network=False, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
