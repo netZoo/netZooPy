@@ -150,14 +150,16 @@ class Panda(object):
                 # self.num_tfs = len(self.unique_tfs)
                 # print('Unique TFs:', self.num_tfs)
         elif type(motif_file) is not str:
-            self.motif_data = pd.DataFrame(motif_file.values)#pd.read_csv(motif_file, sep='\t', header=None)
-            self.motif_tfs = sorted(set(motif_file['source']))
-            self.motif_genes = sorted(set(motif_file['target']))
+            if motif_file is None:
+                self.motif_data = None
+            else:
+                self.motif_data = pd.DataFrame(motif_file.values)#pd.read_csv(motif_file, sep='\t', header=None)
+                self.motif_tfs = sorted(set(motif_file['source']))
+                self.motif_genes = sorted(set(motif_file['target']))
             # self.num_tfs = len(self.unique_tfs)
             # print('Unique TFs:', self.num_tfs)
 
-        else:
-            self.motif_data = None
+        
 
         if type(expression_file) is str:
             with Timer('Loading expression data ...'):
@@ -194,15 +196,24 @@ class Panda(object):
         
         if modeProcess=="legacy":
             self.gene_names = self.expression_genes#sorted( np.unique(self.motif_genes +  self.expression_genes ))
-            self.unique_tfs = self.motif_tfs#sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
+            if motif_file is None:
+                self.unique_tfs = self.ppi_tfs
+            else:
+                self.unique_tfs = self.motif_tfs#sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
 
         elif modeProcess=="union":
             self.gene_names = sorted( np.unique(self.motif_genes +  self.expression_genes ))
-            self.unique_tfs = sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
+            if motif_file is None:
+                self.unique_tfs = sorted( np.unique(self.ppi_tfs))
+            else:
+                self.unique_tfs = sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
 
         elif modeProcess=="intersection":
             self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
-            self.unique_tfs = sorted(np.unique( list(set(self.ppi_tfs).intersection(set(self.motif_tfs)) )))
+            if motif_file is None:
+                self.unique_tfs = sorted( np.unique(self.ppi_tfs))
+            else:
+                self.unique_tfs = sorted(np.unique( list(set(self.ppi_tfs).intersection(set(self.motif_tfs)) )))
         
         self.num_genes  = len(self.gene_names)
         self.num_tfs    = len(self.unique_tfs)
@@ -211,15 +222,14 @@ class Panda(object):
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
         tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
         if modeProcess=="union" or modeProcess=="intersection":
-            # Initialize data
+            # Initialize data & Populate gene expression
             self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
-            # Populate gene expression
+            # print(self.expression.shape)
+            # print(self.expression_data.shape)
             # if modeProcess=="union":
-            #     idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
+            idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
             # else:
-            idx_geneEx = [gene2idx.get(x, 0) for x in self.gene_names]
-            print(self.expression.shape)
-            print(self.expression_data.shape)
+            # idx_geneEx = [gene2idx.get(x, 0) for x in self.gene_names]
             self.expression[idx_geneEx,:] = self.expression_data.values
             self.expression_data=pd.DataFrame(data=self.expression)
 

@@ -74,7 +74,8 @@ class Lioness(Panda):
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
             with Timer("Computing coexpression network:"):
                 subj_exp=self.expression_matrix[:, i]
-                correlation_matrix = ((self.n_conditions-1) * (self.correlation_matrix) - np.array([subj_exp]).T * subj_exp) /(self.n_conditions-2)
+                # correlation_matrix = ((self.n_conditions-1) * (self.correlation_matrix) - np.array([subj_exp]).T * subj_exp) /(self.n_conditions-2)
+                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():
                     np.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = np.nan_to_num(correlation_matrix)
