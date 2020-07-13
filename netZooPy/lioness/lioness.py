@@ -30,13 +30,18 @@ class Lioness(Panda):
        cychen, davidvi
     """
 
-    def __init__(self, obj, computing='cpu', start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', precision='double',start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            self.correlation_matrix=obj.correlation_matrix
+            if precision=='single':
+                self.correlation_matrix=np.float32(self.correlation_matrix)
+                self.motif_matrix=np.float32(self.motif_matrix)
+                self.ppi_matrix=np.float32(self.ppi_matrix)
             self.computing=computing
             if hasattr(obj,'panda_network'):
                 self.network = obj.panda_network
@@ -56,7 +61,6 @@ class Lioness(Panda):
         self.save_fmt = save_fmt
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-
         # Run LIONESS
         self.total_lioness_network = self.__lioness_loop()
 
@@ -67,7 +71,6 @@ class Lioness(Panda):
         for i in self.indexes:
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
-
             with Timer("Computing coexpression network:"):
                 if self.computing=='gpu':
                     import cupy as cp
@@ -120,3 +123,4 @@ class Lioness(Panda):
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         np.savetxt(file, self.total_lioness_network, delimiter="\t",header="")
         return None
+
