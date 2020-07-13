@@ -61,10 +61,6 @@ class Lioness(Panda):
         self.save_fmt = save_fmt
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-        # prepare for onlineCoexpression
-        self.fullmean=np.mean(self.expression_matrix,axis=1,dtype=np.float64)
-        self.fullstd=np.std(self.expression_matrix,axis=1,dtype=np.float64)
-        self.fullcov=np.cov(self.expression_matrix)
         # Run LIONESS
         self.total_lioness_network = self.__lioness_loop()
 
@@ -76,7 +72,6 @@ class Lioness(Panda):
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
             with Timer("Computing coexpression network:"):
-                subj_exp=self.expression_matrix[:, i]
                 if self.computing=='gpu':
                     import cupy as cp
                     correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])

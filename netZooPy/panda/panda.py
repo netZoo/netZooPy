@@ -189,7 +189,7 @@ class Panda(object):
             print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
             self.ppi_data = None
 
-        if remove_missing and motif_file is not None:
+        if modeProcess=="legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
         
         if modeProcess=="legacy":
@@ -222,12 +222,7 @@ class Panda(object):
         if modeProcess=="union" or modeProcess=="intersection":
             # Initialize data & Populate gene expression
             self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
-            # print(self.expression.shape)
-            # print(self.expression_data.shape)
-            # if modeProcess=="union":
             idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
-            # else:
-            # idx_geneEx = [gene2idx.get(x, 0) for x in self.gene_names]
             self.expression[idx_geneEx,:] = self.expression_data.values
             self.expression_data=pd.DataFrame(data=self.expression)
 
