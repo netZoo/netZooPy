@@ -159,8 +159,6 @@ class Panda(object):
             # self.num_tfs = len(self.unique_tfs)
             # print('Unique TFs:', self.num_tfs)
 
-        
-
         if type(expression_file) is str:
             with Timer('Loading expression data ...'):
                 self.expression_data = pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
