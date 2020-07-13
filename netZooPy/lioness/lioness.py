@@ -61,7 +61,10 @@ class Lioness(Panda):
         self.save_fmt = save_fmt
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-
+        # prepare for onlineCoexpression
+        self.fullmean=np.mean(self.expression_matrix,axis=1,dtype=np.float64)
+        self.fullstd=np.std(self.expression_matrix,axis=1,dtype=np.float64)
+        self.fullcov=np.cov(self.expression_matrix)
         # Run LIONESS
         self.total_lioness_network = self.__lioness_loop()
 
@@ -74,16 +77,18 @@ class Lioness(Panda):
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
             with Timer("Computing coexpression network:"):
                 subj_exp=self.expression_matrix[:, i]
-                ##legacy
-                # correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                ## approximation
-                # correlation_matrix = ((self.n_conditions-1) * (self.correlation_matrix) - np.array([subj_exp]).T * subj_exp) /(self.n_conditions-2)
-                correlation_matrix = self.onlineCoexpression(self.expression_matrix[:, i],self.n_conditions,np.mean(self.expression_matrix,axis=1,dtype=np.float64),
-                                                        np.std(self.expression_matrix,axis=1,dtype=np.float64),np.cov(self.expression_matrix))
-
-                if np.isnan(correlation_matrix).any():
-                    np.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = np.nan_to_num(correlation_matrix)
+                if self.computing=='gpu':
+                    import cupy as cp
+                    correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                    if cp.isnan(correlation_matrix).any():
+                        cp.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = cp.nan_to_num(correlation_matrix)
+                    correlation_matrix=cp.asnumpy(correlation_matrix)
+                else:
+                    correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                    if np.isnan(correlation_matrix).any():
+                        np.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = np.nan_to_num(correlation_matrix)
 
             with Timer("Normalizing networks:"):
                 correlation_matrix_orig = correlation_matrix # save matrix before normalization
@@ -124,43 +129,3 @@ class Lioness(Panda):
         np.savetxt(file, self.total_lioness_network, delimiter="\t",header="")
         return None
 
-
-    def onlineCoexpression(self,si,n,mi,std,cov):
-
-        """ 
-        Description:
-            onlineCoexpression computes the correlation matrix of n
-            samples deprived of sample si, using the correlation matrix
-            of n samples. ~4-8x faster when number of genes ~ number of
-            observations and 12x-35x when number of samples is much
-            larger than the variables.
-            Particularly intersting in iterative computation of several
-            coexpression matrix with large samlples or when computing large 
-            matrices that require consequent GPU/CPU memory.
-
-        Inputs:
-            si : k samples to remove as a k by genes vector
-            n  : number of all the samples
-            mi : mean of all the samples
-            std: std of all the samples
-            cov: covariance matrix of all the samples 
-
-        Outputs:
-            onCoex : co-expression matrix deprived of samples si
-
-         Authors: 
-            Marouen Ben Guebila, Daniel Morgan
-        """
-
-        # First we compute the new mean online
-        newm   = (1/(n-1)) * ( (mi*n)- si)
-        # Then we compute the new std online using the orthogonality trick
-        newstd = np.sqrt( (np.square(std) - (1/n) * np.square((si - newm)) ) * (n-1)/(n-2) )
-        # Then we compute the new covariance online
-        onCov= (1/(n-2)) * ( (cov*(n-1)) - ( (n/(n-1)) * ((si-mi).T*(si-mi)) ) )
-        # Finally, we derive the new coexpression online
-        onCoex= onCov / (newstd.T*newstd)
-        # We set the diagonal explicitly to avoid numerical stability
-        np.fill_diagonal(onCoex, 1)
-
-        return onCoex
