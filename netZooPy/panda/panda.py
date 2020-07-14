@@ -191,7 +191,6 @@ class Panda(object):
 
         if modeProcess=="legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
-        
         if modeProcess=="legacy":
             self.gene_names = self.expression_genes#sorted( np.unique(self.motif_genes +  self.expression_genes ))
             if motif_file is None:
