@@ -24,6 +24,18 @@ def test_panda():
     gt =pd.read_csv(gt_file_inter, sep=' ', header=None)
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
+    #0.5 Intersection via DataFrame
+    expression = pd.read_csv(expression_data, sep='\t', header=None, index_col=0)
+    motif_data = pd.read_csv(motif, sep='\t', names=['source','target','w'])
+    ppi_data = pd.read_csv(ppi, sep='\t', header=None)
+    
+    panda_obj      = Panda(expression, motif_data, ppi_data, save_tmp=False, remove_missing=rm_missing,
+                      keep_expression_matrix=bool(lioness_file), modeProcess='intersection')
+    panda_obj.save_panda_results(output_file)
+    res=pd.read_csv(output_file, sep=' ', header=None)
+    gt =pd.read_csv(gt_file_inter, sep=' ', header=None)
+    pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
+
     #1. Union
     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=False, remove_missing=rm_missing,
                       keep_expression_matrix=bool(lioness_file), modeProcess='union')

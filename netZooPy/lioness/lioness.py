@@ -37,6 +37,7 @@ class Lioness(Panda):
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            self.correlation_matrix=obj.correlation_matrix
             if precision=='single':
                 self.correlation_matrix=np.float32(self.correlation_matrix)
                 self.motif_matrix=np.float32(self.motif_matrix)
@@ -60,7 +61,6 @@ class Lioness(Panda):
         self.save_fmt = save_fmt
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-
         # Run LIONESS
         self.total_lioness_network = self.__lioness_loop()
 
@@ -72,11 +72,18 @@ class Lioness(Panda):
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
             with Timer("Computing coexpression network:"):
-                subj_exp=self.expression_data.values[:, i]
-                correlation_network = self._normalize_network((((self.num_subj-1) * (self.correlation_matrix)) - (np.array([subj_exp]).T * subj_exp)) /(self.num_subj-2))
-                if np.isnan(correlation_matrix).any():
-                    np.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = np.nan_to_num(correlation_matrix)
+                if self.computing=='gpu':
+                    import cupy as cp
+                    correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                    if cp.isnan(correlation_matrix).any():
+                        cp.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = cp.nan_to_num(correlation_matrix)
+                    correlation_matrix=cp.asnumpy(correlation_matrix)
+                else:
+                    correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                    if np.isnan(correlation_matrix).any():
+                        np.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = np.nan_to_num(correlation_matrix)
 
             with Timer("Normalizing networks:"):
                 correlation_matrix_orig = correlation_matrix # save matrix before normalization
@@ -116,3 +123,4 @@ class Lioness(Panda):
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         np.savetxt(file, self.total_lioness_network, delimiter="\t",header="")
         return None
+
