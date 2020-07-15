@@ -3,4 +3,4 @@ numpy
 pandas
 matplotlib
 scipy
-python-igraph == 0.7.1.post6
+python-igraph
