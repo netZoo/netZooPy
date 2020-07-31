@@ -133,7 +133,7 @@ class Puma(object):
 
         # Clean up useless variables to release memory
         if keep_expression_matrix:
-            self.expression_matrix = self.expression_data.as_matrix()
+            self.expression_matrix = self.expression_data.values
         del self.expression_data
 
         # =====================================================================

@@ -28,6 +28,12 @@ class LionessPuma(Puma):
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            
+            tfs = np.tile(obj.unique_tfs, (len(obj.gene_names), 1)).flatten()
+            genes = np.repeat(obj.gene_names, obj.num_tfs)
+            motif = obj.motif_matrix_unnormalized.flatten(order='F')
+            self.export_lioness_results = np.column_stack((tfs,genes,motif))
+            
             if hasattr(obj,'puma_network'):
                 self.network = obj.puma_network
             elif hasattr(obj,'puma_network'):
@@ -61,7 +67,9 @@ class LionessPuma(Puma):
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
 
             with Timer("Computing coexpression network:"):
+                print(self.expression_matrix[:, idx].shape)
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                print(correlation_matrix.shape)
                 if np.isnan(correlation_matrix).any():
                     np.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = np.nan_to_num(correlation_matrix)
@@ -72,23 +80,14 @@ class LionessPuma(Puma):
             with Timer("Inferring LIONESS network:"):
                 subset_puma_network = self.puma_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix))
                 lioness_network = self.n_conditions * (self.network - subset_puma_network) + subset_puma_network
-
-            with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
-                path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
-                if self.save_fmt == 'txt':
-                    np.savetxt(path, lioness_network)
-                elif self.save_fmt == 'npy':
-                    np.save(path, lioness_network)
-                elif self.save_fmt == 'mat':
-                    from scipy.io import savemat
-                    savemat(path, {'PredNet': lioness_network})
-                else:
-                    print("Unknown format %s! Use npy format instead." % self.save_fmt)
-                    np.save(path, lioness_network)
-        return lioness_network
+            
+            force = lioness_network.flatten(order='F')
+            self.export_lioness_results = np.column_stack((self.export_lioness_results, force))
+                
+        return 
 
     def save_lioness_results(self, file='lioness.txt'):
         '''Write lioness results to file.'''
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
-        np.savetxt(file, self.lioness_network, delimiter="\t",header="")
+        np.savetxt(file, self.export_lioness_results, fmt='%s', delimiter="\t", header="")
         return None
