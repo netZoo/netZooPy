@@ -394,7 +394,7 @@ class Panda(object):
     def save_panda_results(self, path='panda.npy'):
         with Timer('Saving PANDA network to %s ...' % path):
             #Because there are two modes of operation (save_memory), save to file will be different
-            if not hasattr(self,'export_panda_results'):
+            if not hasattr(self,'unique_tfs'):
                 toexport = self.panda_network
             else:
                 toexport = self.export_panda_results
