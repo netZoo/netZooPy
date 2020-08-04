@@ -26,7 +26,6 @@ class LionessPuma(Puma):
     Authors: 
         cychen, davidvi
     """
-
     def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         """
         Description:

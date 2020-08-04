@@ -36,6 +36,9 @@ class Panda(object):
 
      Authors: 
        cychen, davidvi, alessandromarin, Marouen Ben Guebila, Daniel Morgan
+
+    Reference:
+        Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
     """
     def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = True, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
         """ 

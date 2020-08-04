@@ -14,9 +14,7 @@ def condor_object(net):
 
     Outputs:
         CO: CONDOR initial object.
-
     """
-    
     t = time.time()
         #Error flags.
     assert len(set(net.iloc[:,0]).intersection(net.iloc[:,1]))==0, "The network must be bipartite."
@@ -270,8 +268,10 @@ def condor(filename,c=25,deltaQmin="def"):
         filename : path of file to save community assignment.
         c        : The maximum number of communities.
         deltaQmin: Modularity stopping criterion.
+
+    Reference:
+        Platig, John, et al. "Bipartite community structure of eQTLs." PLoS computational biology 12.9 (2016): e1005033.
     """
-    
     t = time.time()
     net = pd.read_csv(filename,sep=",",index_col=0)
     CO = condor_object(net)

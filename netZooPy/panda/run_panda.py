@@ -20,6 +20,9 @@ def main(argv):
     
     Example:
         python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
+
+    Reference:
+        Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
     """
     #Create variables
     expression_data = None

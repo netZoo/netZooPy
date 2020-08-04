@@ -23,6 +23,9 @@ def main(argv):
     
     Example:
         python3 run_lioness.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o /tmp -f npy 1 2
+
+    Reference:
+        Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
     """
     #Create variables
     expression_data = None
