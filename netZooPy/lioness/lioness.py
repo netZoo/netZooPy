@@ -26,8 +26,10 @@ class Lioness(Panda):
 
     Authors: 
         cychen, davidvi
-    """
 
+    Reference:
+        Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
+    """
     def __init__(self, obj, computing='cpu', precision='double',start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         """
         Description:
