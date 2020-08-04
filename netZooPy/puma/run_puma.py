@@ -1,27 +1,31 @@
 #!/usr/bin/env python
-"""
-Description:
-Run PUMA algorithm from the command line.
 
-Usage:
-run_puma
-  -h, --help: help
-  -e, --expression: expression values
-  -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided
-  -p, --ppi: pair file of PPI edges
-  -i, --mir (required): miR file
-  -o, --out: output file
-  -r, --rm_missing
-  -q, --lioness: output for Lioness single sample networks 
-
-  Example:
-  python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
-"""
 import sys
 import getopt
 from puma import Puma
 
 def main(argv):
+    """
+    Description:
+        Run PUMA algorithm from the command line.
+
+    Inputs:
+        run_puma
+        -h, --help: help
+        -e, --expression: expression values
+        -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided
+        -p, --ppi: pair file of PPI edges
+        -i, --mir (required): miR file
+        -o, --out: output file
+        -r, --rm_missing
+        -q, --lioness: output for Lioness single sample networks 
+
+    Example:
+        python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
+
+    Reference:
+        Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." BioRxiv (2019).
+    """
     #Create variables
     expression_data = None
     motif = None

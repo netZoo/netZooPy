@@ -566,9 +566,9 @@ class Panda(object):
 
         Inputs:
             unique_genes : Unique list of PANDA genes.
-            links        : Edgdes of the subset PANDA network to the top genes.
+            links        : Edges of the subset PANDA network to the top genes.
             file         : File to save the network plot.
-            plot_bipart: Plot the network as a bipartite layout.
+            plot_bipart  : Plot the network as a bipartite layout.
 
         Methods:
             split_label: Splits the plot label over several lines for plotting purposes.
@@ -628,7 +628,7 @@ class Panda(object):
     def return_panda_indegree(self):
         """
         Description:
-            computes indegree of panda network, only if save_memory = False.
+            computes indegree of PANDA network, only if save_memory = False.
         """
         export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
         subset_indegree = export_panda_results_pd.loc[:,['gene','force']]
@@ -638,7 +638,7 @@ class Panda(object):
     def return_panda_outdegree(self):
         """
         Description:
-            computes outdegree of panda network, only if save_memory = False.
+            computes outdegree of PANDA network, only if save_memory = False.
         """
         export_panda_results_pd = pd.DataFrame(self.export_panda_results,columns=['tf','gene','motif','force'])
         subset_outdegree = export_panda_results_pd.loc[:,['tf','force']]
