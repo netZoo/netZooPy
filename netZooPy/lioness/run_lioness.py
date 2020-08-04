@@ -1,28 +1,29 @@
 #!/usr/bin/env python
-"""
-Description:
-  Run LIONESS algorithm from the command line.
 
-Usage:
-  -h, --help: help
-  -e, --expression: expression matrix (.npy)
-  -m, --motif: motif matrix, normalized (.npy)
-  -p, --ppi: ppi matrix, normalized (.npy)
-  -n, --npy: PANDA network (.npy)
-  -o, --out: output folder
-  -f, --format: output format (txt, npy, or mat)
-  start: to start from nth sample (optional)
-  end: to end at nth sample (optional, must with start)
-  
-Example:
-  python3 run_lioness.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o /tmp -f npy 1 2
-"""
 import sys
 import getopt
 from netZooPy.lioness.lioness import Lioness
 from netZooPy.panda.panda import Panda
 
 def main(argv):
+    """
+    Description:
+        Run LIONESS algorithm from the command line.
+
+    Usage:
+        -h, --help: help
+        -e, --expression: expression matrix (.npy)
+        -m, --motif: motif matrix, normalized (.npy)
+        -p, --ppi: ppi matrix, normalized (.npy)
+        -n, --npy: PANDA network (.npy)
+        -o, --out: output folder
+        -f, --format: output format (txt, npy, or mat)
+        start: to start from nth sample (optional)
+        end: to end at nth sample (optional, must with start)
+    
+    Example:
+        python3 run_lioness.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o /tmp -f npy 1 2
+    """
     #Create variables
     expression_data = None
     motif = None
