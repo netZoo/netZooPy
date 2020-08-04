@@ -4,8 +4,17 @@ from igraph import *
 import time
 
 def condor_object(net):
-    """Initialization of the condor object. The function gets a network in edgelist format encoded in a pandas dataframe.
-    Returns a dictionary with an igraph network, names of the targets and regulators, list of edges, modularity, and vertex memberships.    
+    """
+    Description:
+        Initialization of the condor object. The function gets a network in edgelist format encoded in a pandas dataframe.
+        Returns a dictionary with an igraph network, names of the targets and regulators, list of edges, modularity, and vertex memberships.   
+
+    Inputs:
+        net: Input adjacency matrix.
+
+    Outputs:
+        CO: CONDOR initial object.
+
     """
     
     t = time.time()
@@ -34,10 +43,25 @@ def condor_object(net):
     index_dict = {k.index:k["name"] for k in Gr.vs  }
     
     print("Condor object built in",time.time()-t)
-    return {"G":Gr,"tar_names":tar_names,"reg_names":reg_names,"index_dict":index_dict,"edges":edges,"modularity":None,"reg_memb":None,"Qcoms":None}
+    CO = {"G":Gr,"tar_names":tar_names,"reg_names":reg_names,"index_dict":index_dict,"edges":edges,"modularity":None,"reg_memb":None,"Qcoms":None}
+    return CO
 
 def bipartite_modularity(B,m,R,T,CO):  
-    """Computation of the bipartite modularity as described in ""Modularity and community detection in bipartite networks" by Michael J. Barber." """
+    """
+    Description:
+        Computation of the bipartite modularity as described in ""Modularity and community detection in bipartite networks" by Michael J. Barber." 
+        
+    Inputs:
+        B : Adjacency matrix of the network - adjacency matrix of the null model
+        m : Modularity matrix.
+        R : Indices of the target nodes.
+        T : Indices of the source nodes.
+        CO: CONDOR object with initial community.
+
+    Outputs:
+        Q : Modularity.
+        CO: Updated CONDOR object.
+    """
     RtBT = R.transpose().dot(B.dot(T))
     Qcoms = (1/m)*(np.diagonal(RtBT))
     Q = sum(Qcoms)
@@ -46,11 +70,21 @@ def bipartite_modularity(B,m,R,T,CO):
     return Q,CO
 
 def initial_community(CO,method="LCS",project=False):
-    """Computation of the initial community structure based on unipartite methods.
-    The implementation using bipartite projection is not yet available, but project=False performs better modularity-wise (at least with the networks I worked on).
     """
-    
-    
+    Description:
+        Computation of the initial community structure based on unipartite methods.
+        The implementation using bipartite projection is not yet available, but project=False performs better modularity-wise (at least with the networks I worked on).
+
+    Inputs:
+        CO     : CONDOR object.
+        method : Method to determine intial community assignment.
+                 "LCS": Multilevel method.
+                 "LEC": Leading Eigenvector method.
+                 "FG" : Fast Greedy method.
+
+    Outputs:
+        CO: Updated CONDOR object.
+    """
     if project: print("Not yet implemented.")
     
     t = time.time()
@@ -74,14 +108,22 @@ def initial_community(CO,method="LCS",project=False):
     T0.columns = ["index","community"]    
     CO["reg_memb"] = T0
     
-        
     return CO 
 
 def brim(CO,deltaQmin="def",c=25):
-    """Implementation of the BRIM algorithm to iteratively maximize bipartite modularity.
-    Note that c is the maximum number of communities. Dynamic choice of c is not yet implemented.
-    """    
+    """
+    Description:
+        Implementation of the BRIM algorithm to iteratively maximize bipartite modularity.
+        Note that c is the maximum number of communities. Dynamic choice of c is not yet implemented.
 
+    Inputs:
+        CO       : Initial CONDOR Object with initial community assignment.
+        deltaQmin: Modularity stopping criterion.
+        c        : The maximum number of communities.
+
+    Outputs:
+        CO: Updated CONDOR object with community assignment.
+    """    
     #Gets modularity matrix, initial community matrix and index dictionary.
     B,m,T0,R0,gn,rg = matrices(CO,c)
     
@@ -122,12 +164,25 @@ def brim(CO,deltaQmin="def",c=25):
     CO["tar_memb"].columns = ["tar","com"]
     CO["reg_memb"].columns = ["reg","com"]
         
-        
     return CO
 
 def matrices(CO,c):
-    """Computation of modularity matrix and initial community matrix."""
-    
+    """
+    Description:
+        Computation of modularity matrix and initial community matrix.
+
+    Inputs:
+        CO: Initial CONDOR object.
+        c : The maximum number of communities.
+
+    Outputs:
+        B : Adjacency matrix of the network - adjacency matrix of the null model
+        m : Modularity matrix.
+        T0: Indices of the source nodes, for igraph.
+        R0: Indices of the target nodes, for igraph.
+        gn: Indices of the target node labels.
+        rg: Indices of the source node labels.
+    """
     t = time.time()
     
     #Dimensions of the matrix
@@ -169,12 +224,18 @@ def matrices(CO,c):
     print("Matrices computed in",time.time()-t)
     return B,m,T0,R0,gn,rg
 
-
 def qscores(CO):
-    """Computes the qscores (contribution of a vertex to its community modularity)
-    for each vertex in the network."""
-    
-    
+    """
+    Description:
+        Computes the qscores (contribution of a vertex to its community modularity)
+        for each vertex in the network.
+
+    Inputs:
+        CO: Initial CONDOR object.
+
+    Outputs:
+        CO: CONDOR object with qscores field.
+    """
     c = 1 + max(CO["reg_memb"]["com"])
     B,m,T,R,gn,rg = matrices(CO,6)
     CO["Qscores"]={"reg_qscores":None,"tar_qscores":None}
@@ -199,11 +260,17 @@ def qscores(CO):
     
     return CO
 
-
-
 def condor(filename,c=25,deltaQmin="def"):
-    """Default settings run of condor with output of the membership dataframes.
-    Reads a network in csv format and index_col=0."""
+    """
+    Description:
+        Default settings run of condor with output of the membership dataframes.
+        Reads a network in csv format and index_col=0.
+
+    Inputs:
+        filename : path of file to save community assignment.
+        c        : The maximum number of communities.
+        deltaQmin: Modularity stopping criterion.
+    """
     
     t = time.time()
     net = pd.read_csv(filename,sep=",",index_col=0)
