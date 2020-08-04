@@ -40,7 +40,7 @@ class Panda(object):
     def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = True, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
         """ 
         Description:
-            Intialize instance of Panda class.
+            Intialize instance of Panda class and load data.
 
         Inputs:
             expression_file : Path to file containing the gene expression data.

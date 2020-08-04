@@ -1,5 +1,4 @@
 def onlineCoexpression(si,n,mi,std,cov):
-
         """ 
         Description:
             onlineCoexpression computes the correlation matrix of n
