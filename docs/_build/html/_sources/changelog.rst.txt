@@ -72,4 +72,4 @@ Changelog
 
 - transition to python 3
 - Changelog added to the doc
-- pypanda
+- pypanda: original import and NaN values in normalized matrices are replaced with values normalized by the overall z-score. This allows running the Toy Data provided in this repository.  

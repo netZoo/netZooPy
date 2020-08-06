@@ -33,6 +33,11 @@ class Puma(object):
         return_puma_indegree        : computes indegree of puma network, only if save_memory = False.
         return_puma_outdegree       : computes outdegree of puma network, only if save_memory = False.
 
+    Example:
+        Run the PUMA algorithm, leave out motif and PPI data to use Pearson correlation network:
+        from netZooPy.puma.puma import Puma
+        puma_obj = Puma('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt','../../tests/ToyData/ToyMiRList.txt')
+
      Authors: 
        cychen, davidvi, alessandromarin
 
