@@ -278,7 +278,7 @@ class Puma(object):
             elif path.endswith('.csv'):
                 np.savetxt(path, toexport,fmt='%s', delimiter=',')
             elif path.endswith('.tsv'):
-                np.savetxt(path, toexport,fmt='%s', delimiter='/t')
+                np.savetxt(path, toexport,fmt='%s', delimiter='\t')
             else:
                 np.save(path, toexport)
     def top_network_plot(self, top = 100, file = 'puma_top_100.png'):
