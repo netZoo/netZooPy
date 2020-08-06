@@ -23,6 +23,11 @@ class LionessPuma(Puma):
         __lioness_loop       : The LIONESS algorithm.
         save_lioness_results : Saves LIONESS network.
 
+    Example:
+        To run the Lioness algorithm for single sample networks, first run PUMA using the keep_expression_matrix flag, then use Lioness as follows:
+        puma_obj = Puma('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
+        lioness_obj = LionessPuma(puma_obj)
+
     Authors: 
         cychen, davidvi
     """

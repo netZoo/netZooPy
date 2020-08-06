@@ -34,6 +34,30 @@ class Panda(object):
         return_panda_indegree       : computes indegree of panda network, only if save_memory = False.
         return_panda_outdegree      : computes outdegree of panda network, only if save_memory = False.
 
+    Example:
+        Import the classes in the pypanda library:
+        from netZooPy.panda.panda import Panda
+        Run the Panda algorithm, leave out motif and PPI data to use Pearson correlation network:
+        panda_obj = Panda('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False)
+        Save the results:
+        panda_obj.save_panda_results('Toy_Panda.pairs.txt')
+        Return a network plot:
+        panda_obj.top_network_plot(top=70, file='top_genes.png')
+        Calculate in- and outdegrees for further analysis:
+        indegree = panda_obj.return_panda_indegree()
+        outdegree = panda_obj.return_panda_outdegree()
+        Toy data:
+        The example gene expression data that we have available here contains gene expression profiles for different samples in the columns. Of note, this is just a small subset of a larger gene expression dataset. We provided these "toy" data so that the user can test the method. 
+        However, if you plan to model gene regulatory networks on your own dataset, you should use your own expression data as input.
+        Sample PANDA results:
+        TF  Gene  Motif Force
+        ---------------------
+        CEBPA	AACSL	0.0	-0.951416589143
+        CREB1	AACSL	0.0	-0.904241609324
+        DDIT3	AACSL	0.0	-0.956471642313
+        E2F1	AACSL	1.0	3.6853160511
+        EGR1	AACSL	0.0	-0.695698519643
+
      Authors: 
        cychen, davidvi, alessandromarin, Marouen Ben Guebila, Daniel Morgan
 

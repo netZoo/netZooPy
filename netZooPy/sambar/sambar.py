@@ -6,13 +6,44 @@ import networkx as nx
 from scipy.spatial.distance import pdist,cosine,squareform
 from scipy.cluster.hierarchy import linkage,cut_tree
 import pkg_resources
+"""
+Description:
+    Python implementation of the Subtyping Agglomerated Mutations By Annotation Relations (SAMBAR) method as implemented in R https://github.com/mararie/SAMBAR.
+    SAMBAR, or Subtyping Agglomerated Mutations By Annotation Relations, is a method to identify subtypes based on somatic mutation data. SAMBAR was used to identify mutational subtypes in 23 cancer types from The Cancer Genome Atlas (Kuijjer ML, Paulson JN, Salzman P, Ding W, Quackenbush J, *British Journal of Cancer* (May 16, 2018), doi: 10.1038/s41416-018-0109-7, https://www.nature.com/articles/s41416-018-0109-7, BioRxiv, doi: https://doi.org/10.1101/228031).
 
+Usage:
+    To use the package you can import it using: ```import pysambar```. And then access the different functions implemented with ```pysambar.function()```.
+    As an example you can find mutation data of Uterine Corpus Endometrial Carcinoma (UCEC) primary tumpor samples from The Cancer Genome Atlas. This data is in the ToyData folder as well as the MSigDb "Hallmark" gene sets. 
+    The program will compute the pathway mutation scores and clustering for *k*=2-4 (by default) and output the corrected mutation scores, the pathway mutation scores, and the clustering table. 
+
+Example:
+    Run the SAMBAR method with the ToyData from the UCEC mutation data:
+    ``` 
+    import pysambar as sm
+    pathways, groups = sm.sambar("/ToyData/mut.ucec.csv","ToyData/esizef.csv",'ToyData/genes.txt','ToyData/h.all.v6.1.symbols.gmt')
+    ``` 
+    The output of this command will be four files:
+    ``` pt_out.csv```  -> Pathway mutation score matrix.
+    ``` mt_out.csv```  -> Processed gene mutation score matrix.
+    ``` dist_matrix.csv ``` -> Distance matrix with binomial distance in numpy condensed format.
+    ``` clustergroups.csv```  -> Matrix of pertinence to a cluster.
+    The function also returns the pathway matrix dataframe and the cluster group dataframe as python variables.
+
+Notes:
+    Flags by default in the sambar function:
+    ``` normPatient=True```  -> Normalizes the mutation data by number of mutations in a sample.
+    ``` kmin=2,kmax=4```  -> Cut-offs of the cluster tree.
+    ``` gmtMSigDB=True```  -> If the signature file comes from MSigDB the second element of each line is removed to process the format available at the database. This can be toggled off if using a custom signature file.
+    ``` subcangenes=True```  -> Subset to cancer associated genes. By default uses the file provided in ToyData.
+
+Functions:
+            This package includes the functions ```sambar```,```desparsify```,```corgenelength```,```convertgmt```,```clustering``` as well as an implementation of the binomial distance (Millar dissimilarity from the package vegdist from R. To see the full description of each of this functions use ```help(pysambar.function)```.
+"""
 ## Default toydata files
 esize = pkg_resources.resource_filename('netZooPy', 'ToyData/esizef.csv')
 genes = pkg_resources.resource_filename('netZooPy', 'ToyData/genes.txt')
 sign  = pkg_resources.resource_filename('netZooPy', 'ToyData/h.all.v6.1.symbols.gmt')
 mut   = pkg_resources.resource_filename('netZooPy', 'ToyData/mut.ucec.csv')
-
 
 def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
     """
