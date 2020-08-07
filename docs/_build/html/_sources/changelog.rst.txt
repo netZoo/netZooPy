@@ -7,7 +7,7 @@ Changelog
 ------------------
 
 - PANDA reads arguments as dataframes in addition to file paths
-- changed condor ground truth to match output of [python-igraph 0.8.2](https://github.com/netZoo/netZooPy/issues/82). 
+- changed condor ground truth to match output of `python-igraph 0.8.2 <https://github.com/netZoo/netZooPy/issues/82>`_. 
 
 0.7.1 (2020-06-27)
 ------------------
