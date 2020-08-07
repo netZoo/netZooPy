@@ -1,5 +1,4 @@
 from __future__ import print_function
-
 import os, os.path,sys
 import numpy as np
 sys.path.insert(1,'../panda')
@@ -9,20 +8,50 @@ from .timer import Timer
 class LionessPuma(Puma):
     """
     Description:
-         Using LIONESS to infer single-sample gene regulatory networks.
-
-    Usage:
+        Using LIONESS to infer single-sample gene regulatory networks.
         1. Reading in PUMA network and preprocessed middle data
         2. Computing coexpression network
         3. Normalizing coexpression network
         4. Running PUMA algorithm
         5. Writing out LIONESS networks
 
+    Inputs:
+        Puma: PUMA object.
+
+    Methods:
+        __init__             : Initialize instance of Puma class and load data.
+        __lioness_loop       : The LIONESS algorithm.
+        save_lioness_results : Saves LIONESS network.
+
+    Example:
+        To run the Lioness algorithm for single sample networks, first run PUMA using the keep_expression_matrix flag, then use Lioness as follows:
+        puma_obj = Puma('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
+        lioness_obj = LionessPuma(puma_obj)
+
     Authors: 
         cychen, davidvi
     """
-
     def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+        """
+        Description:
+            Initialize instance of LionessPuma class and load data.
+
+        Inputs:
+            obj             : PANDA object, generated with keep_expression_matrix=True.
+            obj.motif_matrix: TF DNA motif binding data in tf-by-gene format.
+                              If set to None, Lioness will be performed on gene coexpression network.
+            computing       : 'cpu' uses Central Processing Unit (CPU) to run PANDA
+                              'gpu' use the Graphical Processing Unit (GPU) to run PANDA
+            precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
+                              'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+            start           : Index of first sample to compute the network.
+            end             : Index of last sample to compute the network.
+            save_dir        : Directory to save the networks.
+            save_fmt        : Save format.
+                              '.npy': (Default) Numpy file.
+                              '.txt': Text file.
+                              '.mat': MATLAB file.
+        """
         # Load data
         with Timer("Loading input data ..."):
             self.expression_matrix = obj.expression_matrix
@@ -62,6 +91,13 @@ class LionessPuma(Puma):
         #self.export_lioness_results = pd.DataFrame(self.lioness_network)
 
     def __lioness_loop(self):
+        """
+        Description:
+            Initialize instance of Lioness class and load data.
+
+        Outputs:
+            self.total_lioness_network: An edge-by-sample matrix containing sample-specific networks.
+        """
         for i in self.indexes:
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
@@ -84,8 +120,14 @@ class LionessPuma(Puma):
                 
         return 
 
-    def save_lioness_results(self, path='lioness.txt'):
-        '''Write lioness results to file.'''
+    def save_lioness_results(self, file='lioness.txt'):
+        """
+        Description:
+            Saves LIONESS network.
+
+        Outputs:
+            file: Path to save the network.
+        """
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         if path.endswith('.txt'):
             np.savetxt(path, self.export_lioness_results, fmt='%s', delimiter=" ", header="")

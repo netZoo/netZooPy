@@ -11,18 +11,56 @@ class Puma(object):
     """ 
     Description:
         Using PUMA to infer gene regulatory network.
-
-    Usage:
         1. Reading in input data (expression data, motif prior, TF PPI data, miR)
         2. Computing coexpression network
         3. Normalizing networks
         4. Running PUMA algorithm
         5. Writing out PUMA network
 
-    Authors: 
-        cychen, davidvi, alessandromarin
+    Inputs:
+        object: Puma object.
+                      
+     Methods:
+        __init__                    : Intialize instance of Puma class.
+        __remove_missing            : Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
+        _normalize_network          : Standardizes the input data matrices.
+        puma_loop                   : The PUMA algorithm.
+        __pearson_results_data_frame: Saves PUMA network in edges format.
+        save_puma_results           : Saves PUMA network.
+        top_network_plot            : Selects top genes to plot.
+        __shape_plot_network        : Creates network plot.
+        __create_plot               : Runs network plot.
+        return_puma_indegree        : computes indegree of puma network, only if save_memory = False.
+        return_puma_outdegree       : computes outdegree of puma network, only if save_memory = False.
+
+    Example:
+        Run the PUMA algorithm, leave out motif and PPI data to use Pearson correlation network:
+        from netZooPy.puma.puma import Puma
+        puma_obj = Puma('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt','../../tests/ToyData/ToyMiRList.txt')
+
+     Authors: 
+       cychen, davidvi, alessandromarin
+
+    Reference:
+        Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." BioRxiv (2019).
     """
     def __init__(self, expression_file, motif_file, ppi_file, mir_file, save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
+        """ 
+        Description:
+            Intialize instance of Puma class and load data.
+
+        Inputs:
+            expression_file : Path to file containing the gene expression data.
+            motif_file      : Path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1).
+                              If set to none, the gene coexpression matrix is returned as a result network.
+            ppi_file        : Path to file containing the PPI data.
+            mir_file        : Path to file containing miRNA data.
+            save_memory     : True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
+                              False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PUMA edge.
+            save_tmp        : Save temporary variables.
+            remove_missing  : Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
+            keep_expression_matrix: Keeps the input expression matrix in the result Puma object.
+        """
         # =====================================================================
         # Data loading
         # =====================================================================
@@ -143,7 +181,10 @@ class Puma(object):
         self.puma_network = self.puma_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
 
     def __remove_missing(self):
-        '''Remove genes and tfs not present in all files.'''
+        """ 
+        Description:
+            Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
+        """
         if self.expression_data is not None:
             print("Remove expression not in motif:")
             motif_unique_genes = set(self.motif_data[1])
@@ -169,6 +210,16 @@ class Puma(object):
         return None
 
     def _normalize_network(self, x):
+        """ 
+        Description:
+            Standardizes the input data matrices.
+
+        Inputs:
+            x     : Input adjacency matrix.
+
+        Outputs:
+            normalized_matrix: Standardized adjacency matrix.
+        """
         norm_col = zscore(x, axis=0)
         if x.shape[0] == x.shape[1]:
             norm_row = norm_col.T
@@ -185,7 +236,20 @@ class Puma(object):
         return normalized_matrix
 
     def puma_loop(self, correlation_matrix, motif_matrix, ppi_matrix):
-        """Puma algorithm.
+        """ 
+        Description:
+            The PUMA algorithm.
+
+        Inputs:
+            correlation_matrix: Input coexpression matrix.
+            motif_matrix      : Input motif regulation prior network.
+            ppi_matrix        : Input PPI matrix.
+
+        Methods:
+            t_function      : Continuous Tanimoto similarity function computed on the CPU.
+            update_diagonal : Updates the diagonal of the input matrix in the message passing computed on the CPU.
+            gt_function     : Continuous Tanimoto similarity function computed on the GPU.
+            gupdate_diagonal: Updates the diagonal of the input matrix in the message passing computed on the GPU.
         """
         def t_function(x, y=None):
             '''T function.'''
@@ -199,7 +263,16 @@ class Puma(object):
             return a_matrix
 
         def update_diagonal(diagonal_matrix, num, alpha, step):
-            '''Update diagonal.'''
+            """ 
+            Description:
+                Updates the diagonal of the input matrix in the message passing computed on the CPU.
+
+            Inputs:
+                diagonal_matrix: Input diagonal matrix.
+                num            : Number of rows/columns.
+                alpha          : Learning rate.
+                step           : The current step in the algorithm.
+            """
             np.fill_diagonal(diagonal_matrix, np.nan)
             diagonal_std = np.nanstd(diagonal_matrix, 1)
             diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
@@ -257,7 +330,10 @@ class Puma(object):
         return motif_matrix
 
     def __pearson_results_data_frame(self):
-        '''Results to data frame.'''
+        """ 
+        Description:
+            Saves PUMA network in edges format.
+        """
         genes_1 = np.tile(self.gene_names, (len(self.gene_names), 1)).flatten()
         genes_2 = np.tile(self.gene_names, (len(self.gene_names), 1)).transpose().flatten()
         self.flat_puma_network = self.puma_network.transpose().flatten()
@@ -266,6 +342,13 @@ class Puma(object):
         return None
 
     def save_puma_results(self, path='puma.npy'):
+        """ 
+        Description:
+            Saves PUMA network.
+
+        Inputs:
+            path: Path to save the network.
+        """
         with Timer('Saving PUMA network to %s ...' % path):
             #Because there are two modes of operation (save_memory), save to file will be different
             if hasattr(self,'export_puma_results'):
@@ -282,7 +365,15 @@ class Puma(object):
             else:
                 np.save(path, toexport)
     def top_network_plot(self, top = 100, file = 'puma_top_100.png'):
-        '''Select top genes.'''
+        """
+        Description:
+            Selects top genes.
+
+        Inputs:
+            top        : Top number of genes to plot.
+            file       : File to save the network plot.
+            plot_bipart: Plot the network as a bipartite layout.
+        """
         if not hasattr(self,'export_puma_results'):
             raise AttributeError("Puma object does not contain the export_puma_results attribute.\n"+
                 "Run Puma with the flag save_memory=False")
@@ -294,7 +385,15 @@ class Puma(object):
         self.__shape_plot_network(subset_puma_results = subset_puma_results, file = file)
         return None
     def __shape_plot_network(self, subset_puma_results, file = 'puma.png'):
-        '''Create plot.'''
+        """
+        Description:
+            Creates plot.
+
+        Inputs:
+            subset_puma_results : Reduced PUMA network to the top genes.
+            file                : File to save the network plot.
+            plot_bipart         : Plot the network as a bipartite layout.
+        """
         #reshape data for networkx
         unique_genes = list(set(list(subset_puma_results['tf'])+list(subset_puma_results['gene'])))
         unique_genes = pd.DataFrame(unique_genes)
@@ -310,7 +409,19 @@ class Puma(object):
         self.__create_plot(unique_genes = unique_genes, links = links, file = file)
         return None
     def __create_plot(self, unique_genes, links, file = 'puma.png'):
-        '''Run plot.'''
+        """
+        Description:
+            Runs the plot.
+
+        Inputs:
+            unique_genes : Unique list of PUMA genes.
+            links        : Edges of the subset PUMA network to the top genes.
+            file         : File to save the network plot.
+            plot_bipart  : Plot the network as a bipartite layout.
+
+        Methods:
+            split_label: Splits the plot label over several lines for plotting purposes.
+        """
         import networkx as nx
         import matplotlib.pyplot as plt
         g = nx.Graph()
@@ -322,11 +433,22 @@ class Puma(object):
             edges = edges + [(links.iloc[i]['tf_index'], links.iloc[i]['gene_index'], float(links.iloc[i]['force'])/200)]
         g.add_weighted_edges_from(edges)
         labels = {}
+
         def split_label(label):
+            """
+            Description: Splits the plot label over several lines for plotting purposes.
+
+            Inputs:    
+                label: Input label text.
+
+            Outputs:
+                label: Output label text divided over several lines.
+            """
             ll = len(label)
             if ll > 6:
                 return label[0:math.ceil(ll/2)] + '\n' + label[math.ceil(ll/2):]
             return label
+
         for i, l in enumerate(unique_genes.iloc[:,0]):
             labels[i] = split_label(l)
         pos = nx.spring_layout(g)
@@ -340,13 +462,19 @@ class Puma(object):
         return None
 
     def return_puma_indegree(self):
-        '''Return Puma indegree.'''
+        """
+        Description:
+            computes indegree of PUMA network, only if save_memory = False.
+        """
         #subset_indegree = self.export_puma_results.loc[:,['gene','force']]
         subset_indegree = self.puma_results.loc[:,['gene','force']]
         self.puma_indegree = subset_indegree.groupby('gene').sum()
         return self.puma_indegree
     def return_puma_outdegree(self):
-        '''Return Puma outdegree.'''
+        """
+        Description:
+            computes outdegree of PUMA network, only if save_memory = False.
+        """
         export_puma_results_pd = pd.DataFrame(self.export_puma_results,columns=['tf','gene','motif','force'])
         subset_outdegree = export_puma_results_pd.loc[:,['tf','force']]
         self.puma_outdegree = subset_outdegree.groupby('tf').sum()

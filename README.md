@@ -1,11 +1,10 @@
-[![Build Status](https://travis-ci.com/netZoo/netZooPy.svg?branch=devel)](https://travis-ci.com/netZoo/netZooPy)
+[![TRAVIS](https://img.shields.io/travis/netZoo/netZooPy/master?label=master)](https://travis-ci.org/netZoo/netZooPy/)
+[![TRAVIS](https://img.shields.io/travis/netZoo/netZooPy/devel?label=devel)](https://travis-ci.org/netZoo/netZooPy/)
 [![codecov](https://codecov.io/gh/netZoo/netZooPy/branch/devel/graph/badge.svg)](https://codecov.io/gh/netZoo/netZooPy)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Documentation Status](https://readthedocs.org/projects/netzoopy/badge/?version=latest)](https://netzoopy.readthedocs.io/en/latest/?badge=latest)
   
-Macos: [![MACOS](https://travis-ci-job-status.herokuapp.com/badge/netZoo/netZooPy/devel/macos)](https://travis-ci.com/netZoo/netZooPy)
-
-Linux: [![Linux](https://travis-ci-job-status.herokuapp.com/badge/netZoo/netZooPy/devel/linux)](https://travis-ci.com/netZoo/netZooPy)
+netZooPy is tested on: (OS: Linux + Macos) X (Language: Python v3.6 + Python v3.7 + Python v3.8)
 
 ## Description
 netZooPy is a Python package of network methods. 
@@ -23,7 +22,7 @@ and install netZooPy through pip `pip3 install -e .`
 Upon completion you can load netZooPy in your python code `import netZooPy`
 
 ## User guide
-Please refer to the [user guide](UserGuide.md) and the [documentation](https://netzoopy.readthedocs.io/en/latest/) website for installation instructions and usage.
+Please refer to the [documentation](https://netzoopy.readthedocs.io/en/latest/) website for installation instructions and usage.
 
 ## License
 The software is free and is licensed under the GNU General License v3.0, see the file [LICENSE](LICENSE) for details.
