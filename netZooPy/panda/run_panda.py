@@ -1,25 +1,29 @@
 #!/usr/bin/env python
-"""
-Description:
-   Run PANDA algorithm from the command line.
 
-Usage:
-  -h, --help: help
-  -e, --expression: expression values
-  -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided
-  -p, --ppi: pair file of PPI edges
-  -o, --out: output file
-  -r, --rm_missing
-  -q, --lioness: output for Lioness single sample networks 
-  
-Example:
-  python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
-"""
 import sys
 import getopt
 from netZooPy.panda.panda import Panda
 
 def main(argv):
+    """
+    Description:
+        Run PANDA algorithm from the command line.
+
+    Inputs:
+        -h, --help: help
+        -e, --expression: expression values
+        -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided
+        -p, --ppi: pair file of PPI edges
+        -o, --out: output file
+        -r, --rm_missing
+        -q, --lioness: output for Lioness single sample networks 
+    
+    Example:
+        python run_panda.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
+
+    Reference:
+        Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
+    """
     #Create variables
     expression_data = None
     motif = None
@@ -79,6 +83,3 @@ def main(argv):
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
-
-
-

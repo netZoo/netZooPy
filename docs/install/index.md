@@ -18,7 +18,7 @@ In addition to the following pip packages:
 
 - scipy
 
-  python-igraph
+- python-igraph
 
 ## Install
 

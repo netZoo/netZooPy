@@ -1,5 +1,4 @@
 def onlineCoexpression(si,n,mi,std,cov):
-
         """ 
         Description:
             onlineCoexpression computes the correlation matrix of n
@@ -24,7 +23,6 @@ def onlineCoexpression(si,n,mi,std,cov):
          Authors: 
             Marouen Ben Guebila, Daniel Morgan
         """
-
         # First we compute the new mean online
         newm   = (1/(n-1)) * ( (mi*n)- si)
         # Then we compute the new std online using the orthogonality trick

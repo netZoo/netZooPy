@@ -1,5 +1,4 @@
 from __future__ import print_function
-
 import os, os.path,sys
 import numpy as np
 sys.path.insert(1,'../panda')
@@ -9,25 +8,61 @@ from .timer import Timer
 class LionessPuma(Puma):
     """
     Description:
-         Using LIONESS to infer single-sample gene regulatory networks.
-
-    Usage:
+        Using LIONESS to infer single-sample gene regulatory networks.
         1. Reading in PUMA network and preprocessed middle data
         2. Computing coexpression network
         3. Normalizing coexpression network
         4. Running PUMA algorithm
         5. Writing out LIONESS networks
 
+    Inputs:
+        Puma: PUMA object.
+
+    Methods:
+        __init__             : Initialize instance of Puma class and load data.
+        __lioness_loop       : The LIONESS algorithm.
+        save_lioness_results : Saves LIONESS network.
+
+    Example:
+        To run the Lioness algorithm for single sample networks, first run PUMA using the keep_expression_matrix flag, then use Lioness as follows:
+        puma_obj = Puma('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
+        lioness_obj = LionessPuma(puma_obj)
+
     Authors: 
         cychen, davidvi
     """
-
     def __init__(self, obj, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+        """
+        Description:
+            Initialize instance of LionessPuma class and load data.
+
+        Inputs:
+            obj             : PANDA object, generated with keep_expression_matrix=True.
+            obj.motif_matrix: TF DNA motif binding data in tf-by-gene format.
+                              If set to None, Lioness will be performed on gene coexpression network.
+            computing       : 'cpu' uses Central Processing Unit (CPU) to run PANDA
+                              'gpu' use the Graphical Processing Unit (GPU) to run PANDA
+            precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
+                              'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+            start           : Index of first sample to compute the network.
+            end             : Index of last sample to compute the network.
+            save_dir        : Directory to save the networks.
+            save_fmt        : Save format.
+                              '.npy': (Default) Numpy file.
+                              '.txt': Text file.
+                              '.mat': MATLAB file.
+        """
         # Load data
         with Timer("Loading input data ..."):
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            
+            tfs = np.tile(obj.unique_tfs, (len(obj.gene_names), 1)).flatten()
+            genes = np.repeat(obj.gene_names, obj.num_tfs)
+            motif = obj.motif_matrix_unnormalized.flatten(order='F')
+            self.export_lioness_results = np.column_stack((tfs,genes,motif))
+            
             if hasattr(obj,'puma_network'):
                 self.network = obj.puma_network
             elif hasattr(obj,'puma_network'):
@@ -50,12 +85,19 @@ class LionessPuma(Puma):
             os.makedirs(save_dir)
 
         # Run LIONESS
-        self.lioness_network = self.__lioness_loop()
+        self.__lioness_loop()
 
         # create result data frame
         #self.export_lioness_results = pd.DataFrame(self.lioness_network)
 
     def __lioness_loop(self):
+        """
+        Description:
+            Initialize instance of Lioness class and load data.
+
+        Outputs:
+            self.total_lioness_network: An edge-by-sample matrix containing sample-specific networks.
+        """
         for i in self.indexes:
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
@@ -72,23 +114,27 @@ class LionessPuma(Puma):
             with Timer("Inferring LIONESS network:"):
                 subset_puma_network = self.puma_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix))
                 lioness_network = self.n_conditions * (self.network - subset_puma_network) + subset_puma_network
-
-            with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
-                path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
-                if self.save_fmt == 'txt':
-                    np.savetxt(path, lioness_network)
-                elif self.save_fmt == 'npy':
-                    np.save(path, lioness_network)
-                elif self.save_fmt == 'mat':
-                    from scipy.io import savemat
-                    savemat(path, {'PredNet': lioness_network})
-                else:
-                    print("Unknown format %s! Use npy format instead." % self.save_fmt)
-                    np.save(path, lioness_network)
-        return lioness_network
+            
+            force = lioness_network.flatten(order='F')
+            self.export_lioness_results = np.column_stack((self.export_lioness_results, force))
+                
+        return 
 
     def save_lioness_results(self, file='lioness.txt'):
-        '''Write lioness results to file.'''
+        """
+        Description:
+            Saves LIONESS network.
+
+        Outputs:
+            file: Path to save the network.
+        """
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
-        np.savetxt(file, self.lioness_network, delimiter="\t",header="")
+        if path.endswith('.txt'):
+            np.savetxt(path, self.export_lioness_results, fmt='%s', delimiter=" ", header="")
+        elif path.endswith('.csv'):
+            np.savetxt(path, self.export_lioness_results, fmt='%s', delimiter=",", header="")
+        elif path.endswith('.tsv'):
+            np.savetxt(path, self.export_lioness_results, fmt='%s', delimiter="\t", header="")
+        else:
+            np.save(path, self.export_lioness_results)
         return None

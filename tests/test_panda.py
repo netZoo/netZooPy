@@ -45,6 +45,8 @@ def test_panda():
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
     #2. In-degree and out-degree
+    panda_obj      = Panda(expression_data, motif, ppi, save_tmp=False, remove_missing=rm_missing,
+                       keep_expression_matrix=bool(lioness_file), modeProcess='union', save_memory=False)
     panda_obj.return_panda_indegree()
     panda_obj.return_panda_outdegree()
     # Lazy test
