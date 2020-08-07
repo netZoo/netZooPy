@@ -120,24 +120,6 @@ class LionessPuma(Puma):
                 
         return 
 
-<<<<<<< HEAD
-    def save_lioness_results(self, path='lioness.txt'):
-        '''Write lioness results to file.'''
-=======
-            with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
-                path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
-                if self.save_fmt == 'txt':
-                    np.savetxt(path, lioness_network)
-                elif self.save_fmt == 'npy':
-                    np.save(path, lioness_network)
-                elif self.save_fmt == 'mat':
-                    from scipy.io import savemat
-                    savemat(path, {'PredNet': lioness_network})
-                else:
-                    print("Unknown format %s! Use npy format instead." % self.save_fmt)
-                    np.save(path, lioness_network)
-        return lioness_network
-
     def save_lioness_results(self, file='lioness.txt'):
         """
         Description:
@@ -146,7 +128,6 @@ class LionessPuma(Puma):
         Outputs:
             file: Path to save the network.
         """
->>>>>>> lioness docs
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         if path.endswith('.txt'):
             np.savetxt(path, self.export_lioness_results, fmt='%s', delimiter=" ", header="")

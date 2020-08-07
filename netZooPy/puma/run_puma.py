@@ -2,7 +2,7 @@
 
 import sys
 import getopt
-from puma import Puma
+from netZooPy.puma import Puma
 
 def main(argv):
     """
@@ -21,7 +21,7 @@ def main(argv):
         -q, --lioness: output for Lioness single sample networks 
 
     Example:
-  python run_puma.py -e ../../tests/puma/ToyData/ToyExpressionData.txt -m ../../tests/puma/ToyData/ToyMotifData.txt -p ../../tests/puma/ToyData/ToyPPIData.txt -i ../../tests/puma/ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
+        python run_puma.py -e ../../tests/puma/ToyData/ToyExpressionData.txt -m ../../tests/puma/ToyData/ToyMotifData.txt -p ../../tests/puma/ToyData/ToyPPIData.txt -i ../../tests/puma/ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
         To reconstruct a single sample Lioness Pearson correlation network using pypuma (this can take some time):
         python3 run_puma.py -e ../../tests/puma/ToyData/ToyExpressionData.txt -m ../../tests/puma/ToyData/ToyMotifData.txt -p ../../tests/puma/ToyData/ToyPPIData.txt -i ../../tests/puma/ToyData/ToyMiRList.txt -o output_puma.txt -q output_lioness.txt
 
