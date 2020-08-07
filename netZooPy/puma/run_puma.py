@@ -15,11 +15,11 @@ run_puma
   -q, --lioness: output for Lioness single sample networks 
 
   Example:
-  python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
+  python run_puma.py -e ../../tests/puma/ToyData/ToyExpressionData.txt -m ../../tests/puma/ToyData/ToyMotifData.txt -p ../../tests/puma/ToyData/ToyPPIData.txt -i ../../tests/puma/ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
 """
 import sys
 import getopt
-from puma import Puma
+from netZooPy.puma import Puma
 
 def main(argv):
     #Create variables
@@ -74,8 +74,8 @@ def main(argv):
     #outdegree = puma_obj.return_panda_outdegree()
 
     if lioness_file:
-        from lioness_for_puma import Lioness
-        lioness_obj = Lioness(puma_obj)
+        from netZooPy.lioness.lioness_for_puma import LionessPuma
+        lioness_obj = LionessPuma(puma_obj)
         lioness_obj.save_lioness_results(lioness_file)
     print('All done!')
 

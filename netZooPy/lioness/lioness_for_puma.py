@@ -28,6 +28,12 @@ class LionessPuma(Puma):
             self.expression_matrix = obj.expression_matrix
             self.motif_matrix = obj.motif_matrix
             self.ppi_matrix = obj.ppi_matrix
+            
+            tfs = np.tile(obj.unique_tfs, (len(obj.gene_names), 1)).flatten()
+            genes = np.repeat(obj.gene_names, obj.num_tfs)
+            motif = obj.motif_matrix_unnormalized.flatten(order='F')
+            self.export_lioness_results = np.column_stack((tfs,genes,motif))
+            
             if hasattr(obj,'puma_network'):
                 self.network = obj.puma_network
             elif hasattr(obj,'puma_network'):
@@ -50,7 +56,7 @@ class LionessPuma(Puma):
             os.makedirs(save_dir)
 
         # Run LIONESS
-        self.lioness_network = self.__lioness_loop()
+        self.__lioness_loop()
 
         # create result data frame
         #self.export_lioness_results = pd.DataFrame(self.lioness_network)
@@ -72,23 +78,21 @@ class LionessPuma(Puma):
             with Timer("Inferring LIONESS network:"):
                 subset_puma_network = self.puma_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix))
                 lioness_network = self.n_conditions * (self.network - subset_puma_network) + subset_puma_network
+            
+            force = lioness_network.flatten(order='F')
+            self.export_lioness_results = np.column_stack((self.export_lioness_results, force))
+                
+        return 
 
-            with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
-                path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
-                if self.save_fmt == 'txt':
-                    np.savetxt(path, lioness_network)
-                elif self.save_fmt == 'npy':
-                    np.save(path, lioness_network)
-                elif self.save_fmt == 'mat':
-                    from scipy.io import savemat
-                    savemat(path, {'PredNet': lioness_network})
-                else:
-                    print("Unknown format %s! Use npy format instead." % self.save_fmt)
-                    np.save(path, lioness_network)
-        return lioness_network
-
-    def save_lioness_results(self, file='lioness.txt'):
+    def save_lioness_results(self, path='lioness.txt'):
         '''Write lioness results to file.'''
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
-        np.savetxt(file, self.lioness_network, delimiter="\t",header="")
+        if path.endswith('.txt'):
+            np.savetxt(path, self.export_lioness_results, fmt='%s', delimiter=" ", header="")
+        elif path.endswith('.csv'):
+            np.savetxt(path, self.export_lioness_results, fmt='%s', delimiter=",", header="")
+        elif path.endswith('.tsv'):
+            np.savetxt(path, self.export_lioness_results, fmt='%s', delimiter="\t", header="")
+        else:
+            np.save(path, self.export_lioness_results)
         return None
