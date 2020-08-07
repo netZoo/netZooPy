@@ -19,7 +19,7 @@ def main(argv):
         -q, --lioness: output for Lioness single sample networks 
     
     Example:
-        python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
+        python run_panda.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
 
     Reference:
         Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
