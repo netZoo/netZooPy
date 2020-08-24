@@ -73,7 +73,7 @@ class Panda(object):
             expression_file : Path to file containing the gene expression data.
             motif_file      : Path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1).
                               If set to none, the gene coexpression matrix is returned as a result network.
-            ppi_file        : Path to file containing the PPI data.
+            ppi_file        : Path to file containing the PPI data. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
             computing       : 'cpu' uses Central Processing Unit (CPU) to run PANDA.
                               'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
             precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
@@ -246,11 +246,11 @@ class Panda(object):
         if type(ppi_file) is str:
             with Timer('Loading PPI data ...'):
                 self.ppi_data = pd.read_csv(ppi_file, sep='\t', header=None)
-                self.ppi_tfs  = sorted(set(self.ppi_data[0]))
+                self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
                 print('Number of PPIs:', self.ppi_data.shape[0])
         elif type(ppi_file) is not str:
-            self.ppi_data = ppi_file#pd.read_csv(ppi_file, sep='\t', header=None)
-            self.ppi_tfs  = sorted(set(self.ppi_data[0]))
+            self.ppi_data = ppi_file #pd.read_csv(ppi_file, sep='\t', header=None)
+            self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
             print('Number of PPIs:', self.ppi_data.shape[0])
         else:
             print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
