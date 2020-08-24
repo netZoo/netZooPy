@@ -24,12 +24,23 @@ def test_panda():
     gt =pd.read_csv(gt_file_inter, sep=' ', header=None)
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
 
-    #0.5 Intersection via DataFrame
+    #0.1 Intersection via DataFrame
     expression = pd.read_csv(expression_data, sep='\t', header=None, index_col=0)
     motif_data = pd.read_csv(motif, sep='\t', names=['source','target','w'])
     ppi_data = pd.read_csv(ppi, sep='\t', header=None)
-    
+	    
     panda_obj      = Panda(expression, motif_data, ppi_data, save_tmp=False, remove_missing=rm_missing,
+                      keep_expression_matrix=bool(lioness_file), modeProcess='intersection')
+    panda_obj.save_panda_results(output_file)
+    res=pd.read_csv(output_file, sep=' ', header=None)
+    gt =pd.read_csv(gt_file_inter, sep=' ', header=None)
+    pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
+
+    #0.2 Intersection with symmetric PPI
+    ppi_data = pd.read_csv(ppi, sep='\t', header=None)
+    new_df   = pd.DataFrame(data={0:ppi_data[0],1:ppi_data[1],2:ppi_data[2]})
+    ppi_data_symm  = pd.concat([ppi_data,new_df])
+    panda_obj      = Panda(expression, motif_data, ppi_data_symm, save_tmp=False, remove_missing=rm_missing,
                       keep_expression_matrix=bool(lioness_file), modeProcess='intersection')
     panda_obj.save_panda_results(output_file)
     res=pd.read_csv(output_file, sep=' ', header=None)
