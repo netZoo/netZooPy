@@ -15,7 +15,7 @@ def test_lioness():
     rm_missing     =False
     output_file    ='panda.npy'
     gt_file        ='tests/panda/test_panda.txt'
-    panda_obj      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
+    panda_obj      =Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
                       keep_expression_matrix=bool(lioness_file), modeProcess='legacy', save_memory=False)
     # Set parameters
     lioness_obj = Lioness(panda_obj, start=1, end=1)
