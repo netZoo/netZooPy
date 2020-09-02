@@ -5,6 +5,7 @@ import pandas as pd
 from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
+import multiprocessing
 
 class Lioness(Panda):
     """
@@ -53,7 +54,7 @@ class Lioness(Panda):
     Reference:
         Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
     """
-    def __init__(self, obj, computing='cpu', precision='double',start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', precision='double',ncores=1,start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         """
         Description:
             Initialize instance of Lioness class and load data.
@@ -86,6 +87,7 @@ class Lioness(Panda):
                 self.motif_matrix=np.float32(self.motif_matrix)
                 self.ppi_matrix=np.float32(self.ppi_matrix)
             self.computing=computing
+            self.ncores=ncores
             if hasattr(obj,'panda_network'):
                 self.network = obj.panda_network
             elif hasattr(obj,'puma_network'):
@@ -105,8 +107,21 @@ class Lioness(Panda):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         # Run LIONESS
-        self.total_lioness_network = self.__lioness_loop()
+        jobs = []
+        for i in range(0, self.ncores):                
+            out_list = list()
+            subset=np.linspace(0,self.n_conditions,(self.ncores+1))
+            subset=np.round(subset, 0)
+            self.indexes = range(np.int(subset[0+1]))
+            process = multiprocessing.Process(target=self.__lioness_loop())
+            jobs.append(process)
 
+        for j in jobs:
+            j.start()
+
+        for j in jobs:
+            j.join()
+        # self.total_lioness_network=j
         # create result data frame
         self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
