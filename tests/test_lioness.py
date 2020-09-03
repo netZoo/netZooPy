@@ -44,15 +44,17 @@ def test_lioness():
     # lioness_obj = Lioness(panda_obj, ncores=4)
     # lioness_obj.save_lioness_results(lioness_file)
     
-    traces=glob.glob('lioness_output/*.npy')
-    res = pd.DataFrame()
-    for i,trace in enumerate(traces):
-        data=np.load(trace)
-        res=pd.concat([res,pd.DataFrame(data.flatten())],axis=1)
-    res=res.dropna().to_numpy()
+    # traces=glob.glob('lioness_output/*.npy')
+    # res = pd.DataFrame()
+    # for i,trace in enumerate(traces):
+    #     data=np.load(trace)
+    #     res=pd.concat([res,pd.DataFrame(data.flatten())],axis=1)
+    # res=res.dropna().to_numpy()
+
     # np.save('lioness_output/lioness.all.npy',res)
     # Read first lioness network
-    # res  = np.load('lioness_output/lioness.all.npy')
-    gt = np.load('tests/lioness/lioness.all.npy')
+    res  = np.load('lioness_output/lioness.'+str(np.randn(0,50))+'.npy')
+    gt = np.load('tests/lioness/lioness.'+str(np.randn(0,50))+'.npy')
     # Compare to ground truth
     assert(np.allclose(gt,res))
+
