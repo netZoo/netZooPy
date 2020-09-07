@@ -41,8 +41,9 @@ def test_lioness():
     assert(np.allclose(gt,res))
 
     #2. Testing Lioness in parallel
-    # lioness_obj = Lioness(panda_obj, ncores=4)
-    # lioness_obj.save_lioness_results(lioness_file)
+    c=np.randn(0,46)
+    lioness_obj = Lioness(panda_obj, ncores=4,start=c,end=c+3)
+    lioness_obj.save_lioness_results(lioness_file)
     
     # traces=glob.glob('lioness_output/*.npy')
     # res = pd.DataFrame()
@@ -53,8 +54,8 @@ def test_lioness():
 
     # np.save('lioness_output/lioness.all.npy',res)
     # Read first lioness network
-    res  = np.load('lioness_output/lioness.'+str(np.randn(0,50))+'.npy')
-    gt = np.load('tests/lioness/lioness.'+str(np.randn(0,50))+'.npy')
+    res  = np.load('lioness_output/lioness.'+str(c)+'.npy')
+    gt = np.load('tests/lioness/lioness.'+str(c)+'.npy')
     # Compare to ground truth
     assert(np.allclose(gt,res))
 

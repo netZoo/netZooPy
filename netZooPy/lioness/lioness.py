@@ -100,6 +100,10 @@ class Lioness(Panda):
         # Get sample range to iterate
         self.n_conditions = self.expression_matrix.shape[1]
         self.indexes = range(self.n_conditions)[start-1:end]  # sample indexes to include
+        if self.n_conditions < self.ncores:
+            print('samples must be > ncores')
+            raise AttributeError('samples must be > ncores')
+
 
         # Create the output folder if not exists
         self.save_dir = save_dir
@@ -112,7 +116,7 @@ class Lioness(Panda):
             out_list = list()
             subset=np.linspace(0,self.n_conditions,(self.ncores+1))
             subset=np.round(subset, 0)
-            self.indexes = range(np.int(subset[0+1]))
+            self.indexes = range(0,np.int(subset[0+1]))
             process = multiprocessing.Process(target=self.__lioness_loop())
             jobs.append(process)
 
