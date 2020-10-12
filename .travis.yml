@@ -73,11 +73,11 @@ matrix:
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.9
     - pyenv global 3.9
-    - pip3.8 install -r requirements.txt
-    - pip3.8 install pytest
-    - pip3.8 install -e .
-    - pip3.8 install codecov
-    - pip3.8 install pytest-cov
+    - pip3.9 install -r requirements.txt
+    - pip3.9 install pytest
+    - pip3.9 install -e .
+    - pip3.9 install codecov
+    - pip3.9 install pytest-cov
     script:
     - travis_wait python3.9 -m pytest --cov=netZooPy tests
 
