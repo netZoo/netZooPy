@@ -63,7 +63,7 @@ matrix:
     - pip3.8 install pytest-cov
     script: 
     - travis_wait python3.8 -m pytest --cov=netZooPy tests
-  - dist: bionic
+  - dist: focal
     before_install:
     - sudo add-apt-repository ppa:deadsnakes/ppa -y
     - sudo apt-get update
