@@ -72,7 +72,7 @@ matrix:
     - pip3 install --upgrade pip
     - sudo apt-get install python3-setuptools
     - sudo apt-get install python3.9
-    - pyenv global 3.9
+    - pyenv global 3.9-minimal
     - pip3.9 install -r requirements.txt
     - pip3.9 install pytest
     - pip3.9 install -e .
