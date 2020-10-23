@@ -3,7 +3,9 @@
 [![codecov](https://codecov.io/gh/netZoo/netZooPy/branch/devel/graph/badge.svg)](https://codecov.io/gh/netZoo/netZooPy)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Documentation Status](https://readthedocs.org/projects/netzoopy/badge/?version=latest)](https://netzoopy.readthedocs.io/en/latest/?badge=latest)
-  
+[![tutorials](https://img.shields.io/badge/netZooPy-tutorials-9cf)](https://github.com/netZoo/netZooPy/tree/master/tutorials)
+[![netBooks](https://img.shields.io/badge/netZooPy-netBooks-ff69b4)](http://netbooks.networkmedicine.org/user/marouenbg/notebooks/Welcome_to_netBooks.ipynb?)
+
 netZooPy is tested on: (OS: Linux + Macos) X (Language: Python v3.6 + Python v3.7 + Python v3.8)
 
 ## Description
