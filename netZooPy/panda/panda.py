@@ -275,10 +275,10 @@ class Panda(object):
 
         elif modeProcess=="intersection":
             if motif_file is None:
-                self.gene_names = sorted( np.unique(self.expression_genes ))
+                self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
                 self.unique_tfs = sorted( np.unique(self.ppi_tfs))
             else:
-                self.gene_names = sorted( np.unique(self.motif_genes +  self.expression_genes ))
+                self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
                 self.unique_tfs = sorted(np.unique( list(set(self.ppi_tfs).intersection(set(self.motif_tfs)) )))
         
         self.num_genes  = len(self.gene_names)
