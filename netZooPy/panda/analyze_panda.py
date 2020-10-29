@@ -101,7 +101,7 @@ class AnalyzePanda(Panda):
         pos = nx.spring_layout(g)
         nx.draw_networkx(g, pos, labels=labels,
                  node_size=20, font_size=3,
-                 alpha=0.3, linewidth = 0.5, width =0.5)
+                 alpha=0.3, width = 0.5, width =0.5)
         plt.axis('off')
         plt.savefig(file, dpi=300)
         return None
