@@ -455,7 +455,7 @@ class Puma(object):
         #nx.draw_networkx(g, pos, labels=labels, node_size=40, font_size=3, alpha=0.3, linewidth = 0.5, width =0.5)
         colors=range(len(edges))
         options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
-                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'ewidth': 20}
+                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidths': 20}
         nx.draw_spring(g, k=0.25, iterations=50, **options)
         plt.axis('off')
         plt.savefig(file, dpi=300)

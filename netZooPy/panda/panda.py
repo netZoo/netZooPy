@@ -644,7 +644,7 @@ class Panda(object):
             colors=list(zip(*edges))[-1]
                                                      
         options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
-                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'width': 20}
+                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidths': 20}
         
         nx.draw_networkx(g, k=0.25, iterations=50, pos=pos,**options)
         plt.axis('off')
