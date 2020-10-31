@@ -266,17 +266,19 @@ class Panda(object):
                 self.unique_tfs = self.motif_tfs#sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
 
         elif modeProcess=="union":
-            self.gene_names = sorted( np.unique(self.motif_genes +  self.expression_genes ))
             if motif_file is None:
+                self.gene_names = sorted( np.unique(self.expression_genes ))
                 self.unique_tfs = sorted( np.unique(self.ppi_tfs))
             else:
+                self.gene_names = sorted( np.unique(self.motif_genes +  self.expression_genes ))
                 self.unique_tfs = sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
 
         elif modeProcess=="intersection":
-            self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
             if motif_file is None:
+                self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
                 self.unique_tfs = sorted( np.unique(self.ppi_tfs))
             else:
+                self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
                 self.unique_tfs = sorted(np.unique( list(set(self.ppi_tfs).intersection(set(self.motif_tfs)) )))
         
         self.num_genes  = len(self.gene_names)
@@ -642,7 +644,7 @@ class Panda(object):
             colors=list(zip(*edges))[-1]
                                                      
         options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
-                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidth': 20}
+                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidths': 20}
         
         nx.draw_networkx(g, k=0.25, iterations=50, pos=pos,**options)
         plt.axis('off')
