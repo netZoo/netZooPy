@@ -119,7 +119,7 @@ class Lioness(Panda):
         # create result data frame
         self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
     
-     def __lioness_loop(self):
+    def __lioness_loop(self):
         """
         Description:
             Initialize instance of Lioness class and load data.
