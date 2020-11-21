@@ -53,7 +53,7 @@ class Lioness(Panda):
     Reference:
         Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
     """
-    def __init__(self, obj, computing='cpu', precision='double',ncores=1,start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', precision='double', ncores=1, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         """
         Description:
             Initialize instance of Lioness class and load data.
@@ -127,6 +127,7 @@ class Lioness(Panda):
         Outputs:
             self.total_lioness_network: An edge-by-sample matrix containing sample-specific networks.
         """
+        a=0
         for i in self.indexes:
             print("Running LIONESS for sample %d:" % (i+1))
             idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
@@ -170,11 +171,11 @@ class Lioness(Panda):
                 else:
                     print("Unknown format %s! Use npy format instead." % self.save_fmt)
                     np.save(path, lioness_network)
-            if i == 0:
+            if a == 0:
                 self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
             else:
                 self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
-
+            a=a+1
         return self.total_lioness_network
 
     def save_lioness_results(self, file='lioness.txt'):
