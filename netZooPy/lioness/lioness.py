@@ -87,7 +87,7 @@ class Lioness(Panda):
                 self.motif_matrix=np.float32(self.motif_matrix)
                 self.ppi_matrix=np.float32(self.ppi_matrix)
             self.computing=computing
-            self.ncores=ncores
+            self.n_cores=ncores
             if hasattr(obj,'panda_network'):
                 self.network = obj.panda_network
             elif hasattr(obj,'puma_network'):
@@ -109,7 +109,7 @@ class Lioness(Panda):
         # Run LIONESS
         if self.n_cores!=1 and self.n_conditions >= self.n_cores and self.computing=='cpu':
             from multiprocessing import Process
-            total_lioness_network = Process(target=self.__lioness_loop(), args=('self.ncores',))
+            total_lioness_network = Process(target=self.__lioness_loop(), args=('self.n_cores',))
             total_lioness_network.start()
             total_lioness_network.join
             self.total_lioness_network=total_lioness_network
