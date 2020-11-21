@@ -5,7 +5,6 @@ import pandas as pd
 from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
-import multiprocessing
 
 class Lioness(Panda):
     """
@@ -40,16 +39,16 @@ class Lioness(Panda):
         Example lioness output:
         Sample1 Sample2 Sample3 Sample4
         -------------------------------
-        -0.667452814003	-1.70433776179	-0.158129613892	-0.655795512803
-        -0.843366539284	-0.733709815256	-0.84849895139	-0.915217389738
-        3.23445386464	2.68888472802	3.35809757371	3.05297381396
-        2.39500370135	1.84608635425	2.80179804094	2.67540878165
-        -0.117475863987	0.494923925853	0.0518448588965	-0.0584810456421
+        -0.667452814003 -1.70433776179  -0.158129613892 -0.655795512803
+        -0.843366539284 -0.733709815256 -0.84849895139  -0.915217389738
+        3.23445386464   2.68888472802   3.35809757371   3.05297381396
+        2.39500370135   1.84608635425   2.80179804094   2.67540878165
+        -0.117475863987 0.494923925853  0.0518448588965 -0.0584810456421
 
         TF, Gene and Motif order is identical to the panda output file.
 
-    Authors: 
-        cychen, davidvi
+    Authors:
+        cychen, davidvi, dcolinmorgan
 
     Reference:
         Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
@@ -67,6 +66,7 @@ class Lioness(Panda):
                               'gpu' use the Graphical Processing Unit (GPU) to run PANDA
             precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
                               'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+            ncores:         : integer to specify the number of cores used to run LIONESS in parallel on ncores CPUs.
             start           : Index of first sample to compute the network.
             end             : Index of last sample to compute the network.
             save_dir        : Directory to save the networks.
@@ -100,10 +100,6 @@ class Lioness(Panda):
         # Get sample range to iterate
         self.n_conditions = self.expression_matrix.shape[1]
         self.indexes = range(self.n_conditions)[start-1:end]  # sample indexes to include
-        if self.n_conditions < self.ncores:
-            print('samples must be > ncores')
-            raise AttributeError('samples must be > ncores')
-
 
         # Create the output folder if not exists
         self.save_dir = save_dir
@@ -111,21 +107,15 @@ class Lioness(Panda):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         # Run LIONESS
-        jobs = []
-        for i in range(0, self.ncores):                
-            out_list = list()
-            subset=np.linspace(0,self.n_conditions,(self.ncores+1))
-            subset=np.round(subset, 0)
-            self.indexes = range(0,np.int(subset[0+1]))
-            process = multiprocessing.Process(target=self.__lioness_loop())
-            jobs.append(process)
+        if self.n_cores!=1 and self.n_conditions >= self.n_cores and self.computing=='cpu':
+            from multiprocessing import Process
+            total_lioness_network = Process(target=self.__lioness_loop(), args=('self.ncores',))
+            total_lioness_network.start()
+            total_lioness_network.join
+            self.total_lioness_network=total_lioness_network
+         else:
+            self.total_lioness_network = self.__lioness_loop()
 
-        for j in jobs:
-            j.start()
-
-        for j in jobs:
-            j.join()
-        # self.total_lioness_network=j
         # create result data frame
         self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
