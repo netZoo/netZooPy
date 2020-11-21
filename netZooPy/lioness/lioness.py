@@ -39,21 +39,21 @@ class Lioness(Panda):
         Example lioness output:
         Sample1 Sample2 Sample3 Sample4
         -------------------------------
-        -0.667452814003 -1.70433776179  -0.158129613892 -0.655795512803
-        -0.843366539284 -0.733709815256 -0.84849895139  -0.915217389738
-        3.23445386464   2.68888472802   3.35809757371   3.05297381396
-        2.39500370135   1.84608635425   2.80179804094   2.67540878165
-        -0.117475863987 0.494923925853  0.0518448588965 -0.0584810456421
+        -0.667452814003	-1.70433776179	-0.158129613892	-0.655795512803
+        -0.843366539284	-0.733709815256	-0.84849895139	-0.915217389738
+        3.23445386464	2.68888472802	3.35809757371	3.05297381396
+        2.39500370135	1.84608635425	2.80179804094	2.67540878165
+        -0.117475863987	0.494923925853	0.0518448588965	-0.0584810456421
 
         TF, Gene and Motif order is identical to the panda output file.
 
-    Authors:
+    Authors: 
         cychen, davidvi, dcolinmorgan
 
     Reference:
         Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
     """
-    def __init__(self, obj, computing='cpu', precision='double', ncores=1, start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', precision='double',ncores=1,start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
         """
         Description:
             Initialize instance of Lioness class and load data.
@@ -66,7 +66,6 @@ class Lioness(Panda):
                               'gpu' use the Graphical Processing Unit (GPU) to run PANDA
             precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
                               'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
-            ncores:         : integer to specify the number of cores used to run LIONESS in parallel on ncores CPUs.
             start           : Index of first sample to compute the network.
             end             : Index of last sample to compute the network.
             save_dir        : Directory to save the networks.
@@ -108,18 +107,30 @@ class Lioness(Panda):
             os.makedirs(save_dir)
         # Run LIONESS
         if self.n_cores!=1 and self.n_conditions >= self.n_cores and self.computing=='cpu':
-            from multiprocessing import Process
-            total_lioness_network = Process(target=self.__lioness_loop(), args=('self.n_conditions',))
-            total_lioness_network.start()
-            total_lioness_network.join
-            self.total_lioness_network=total_lioness_network
+            from concurrent.futures import ProcessPoolExecutor
+            class TotalNet:
+                def __init__(self):
+                    self.value = pd.DataFrame()
+
+                def __call__(self, r):
+                    self.value += r.result()
+
+            total_net = TotalNet()
+            with ProcessPoolExecutor(max_workers=self.n_cores) as pool:
+                # for total_lioness_network in pool.map(self.__lioness_loop,self.indexes):
+                  for i in range(self.n_conditions):
+                      future_results = pool.submit(self.__lioness_loop,self.indexes)
+                      future_results.add_done_callback(total_net)
+                  self.total_lioness_network=total_net.value
         else:
-            self.total_lioness_network = self.__lioness_loop()
+            for i in self.indexes:
+                self.total_lioness_network = self.__lioness_loop(i)
+                self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
         # create result data frame
-        self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
-    
-    def __lioness_loop(self):
+        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+
+    def __lioness_loop(self,i):
         """
         Description:
             Initialize instance of Lioness class and load data.
@@ -127,55 +138,54 @@ class Lioness(Panda):
         Outputs:
             self.total_lioness_network: An edge-by-sample matrix containing sample-specific networks.
         """
-        a=0
-        for i in self.indexes:
-            print("Running LIONESS for sample %d:" % (i+1))
-            idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
-            with Timer("Computing coexpression network:"):
-                if self.computing=='gpu':
-                    import cupy as cp
-                    correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
-                    if cp.isnan(correlation_matrix).any():
-                        cp.fill_diagonal(correlation_matrix, 1)
-                        correlation_matrix = cp.nan_to_num(correlation_matrix)
-                    correlation_matrix=cp.asnumpy(correlation_matrix)
-                else:
-                    correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                    if np.isnan(correlation_matrix).any():
-                        np.fill_diagonal(correlation_matrix, 1)
-                        correlation_matrix = np.nan_to_num(correlation_matrix)
-
-            with Timer("Normalizing networks:"):
-                correlation_matrix_orig = correlation_matrix # save matrix before normalization
-                correlation_matrix = self._normalize_network(correlation_matrix)
-
-            with Timer("Inferring LIONESS network:"):
-                if self.motif_matrix is not None:
-                    del correlation_matrix_orig
-                    subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix),self.computing)
-                else:
-                    del correlation_matrix
-                    subset_panda_network = correlation_matrix_orig
-
-            lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
-
-            with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
-                path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
-                if self.save_fmt == 'txt':
-                    np.savetxt(path, lioness_network)
-                elif self.save_fmt == 'npy':
-                    np.save(path, lioness_network)
-                elif self.save_fmt == 'mat':
-                    from scipy.io import savemat
-                    savemat(path, {'PredNet': lioness_network})
-                else:
-                    print("Unknown format %s! Use npy format instead." % self.save_fmt)
-                    np.save(path, lioness_network)
-            if a == 0:
-                self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+        # for i in self.indexes:
+        print("Running LIONESS for sample %d:" % (i+1))
+        idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
+        with Timer("Computing coexpression network:"):
+            if self.computing=='gpu':
+                import cupy as cp
+                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                if cp.isnan(correlation_matrix).any():
+                    cp.fill_diagonal(correlation_matrix, 1)
+                    correlation_matrix = cp.nan_to_num(correlation_matrix)
+                correlation_matrix=cp.asnumpy(correlation_matrix)
             else:
-                self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
-            a=a+1
+                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                if np.isnan(correlation_matrix).any():
+                    np.fill_diagonal(correlation_matrix, 1)
+                    correlation_matrix = np.nan_to_num(correlation_matrix)
+
+        with Timer("Normalizing networks:"):
+            correlation_matrix_orig = correlation_matrix # save matrix before normalization
+            correlation_matrix = self._normalize_network(correlation_matrix)
+
+        with Timer("Inferring LIONESS network:"):
+            if self.motif_matrix is not None:
+                del correlation_matrix_orig
+                subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix),self.computing)
+            else:
+                del correlation_matrix
+                subset_panda_network = correlation_matrix_orig
+
+        lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
+
+        with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
+            path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
+            if self.save_fmt == 'txt':
+                np.savetxt(path, lioness_network)
+            elif self.save_fmt == 'npy':
+                np.save(path, lioness_network)
+            elif self.save_fmt == 'mat':
+                from scipy.io import savemat
+                savemat(path, {'PredNet': lioness_network})
+            else:
+                print("Unknown format %s! Use npy format instead." % self.save_fmt)
+                np.save(path, lioness_network)
+        # if i == 0:
+        self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+        # else:
+            # self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
+
         return self.total_lioness_network
 
     def save_lioness_results(self, file='lioness.txt'):
@@ -189,4 +199,5 @@ class Lioness(Panda):
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         np.savetxt(file, self.total_lioness_network, delimiter="\t",header="")
         return None
+
 
