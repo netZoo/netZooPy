@@ -113,7 +113,7 @@ class Lioness(Panda):
             total_lioness_network.start()
             total_lioness_network.join
             self.total_lioness_network=total_lioness_network
-         else:
+        else:
             self.total_lioness_network = self.__lioness_loop()
 
         # create result data frame
