@@ -117,8 +117,10 @@ class Lioness(Panda):
             self.total_lioness_network = self.__lioness_loop()
 
         # create result data frame
-        self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
-
+        if self.n_cores=1:
+            self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+        else:
+            self.export_lioness_results = self.total_lioness_network
     def __lioness_loop(self):
         """
         Description:
