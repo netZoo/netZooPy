@@ -2,9 +2,14 @@ from __future__ import print_function
 import os, os.path,sys
 import numpy as np
 import pandas as pd
-# from .timer import Timer
+from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
+import traceback
+from joblib.externals.loky import set_loky_pickler
+from joblib import parallel_backend
+from joblib import Parallel, delayed
+from joblib import wrap_non_picklable_objects
 
 class Lioness(Panda):
     """
@@ -86,7 +91,7 @@ class Lioness(Panda):
                 self.motif_matrix=np.float32(self.motif_matrix)
                 self.ppi_matrix=np.float32(self.ppi_matrix)
             self.computing=computing
-            self.n_cores=ncores
+            self.n_cores=int(ncores)
             if hasattr(obj,'panda_network'):
                 self.network = obj.panda_network
             elif hasattr(obj,'puma_network'):
@@ -106,33 +111,9 @@ class Lioness(Panda):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         # Run LIONESS
-        if self.n_cores!=1 and self.n_conditions >= self.n_cores and self.computing=='cpu':
-            from joblib import Parallel, delayed
-            self.total_lioness_network=Parallel(n_jobs=self.n_cores)(delayed(self.__lioness_loop)(i) for i in (self.indexes))
+        if self.n_cores!=1 and int(self.n_conditions) >= int(self.n_cores) and self.computing=='cpu':
+            self.total_lioness_network=Parallel(n_jobs=self.n_cores)(self.__lioness_loop(i) for i in (self.indexes))
             
-            # pool = Pool() 
-            # chunksize = 20 
-            # for ind, res in enumerate(pool.imap(Fun, product(xrange(N), xrange(N))), chunksize):
-            #     output.flat[ind] = res
-
-            # from concurrent import futures
-            # class TotalNet:
-            #     def __init__(self):
-            #         self.value = pd.DataFrame()
-
-            #     def __call__(self, r):
-            #         self.value += r.result()
-
-            # total_net = 0#TotalNet()
-            # with futures.ProcessPoolExecutor(max_workers=self.n_cores) as pool:
-            #     for total_lioness_network in pool.map(self.__lioness_loop,self.indexes):
-            #         total_net += total_lioness_network
-            #       # for i in range(self.n_conditions):
-            #       #     future_results = pool.submit(self.__lioness_loop,self.indexes)
-            #       #     future_results.add_done_callback(total_net)
-            #       # self.total_lioness_network=total_net.value
-            #     self.export_lioness_results = pd.DataFrame(total_net)
-
         else:
             for i in self.indexes:
                 self.total_lioness_network = self.__lioness_loop(i)
@@ -140,7 +121,8 @@ class Lioness(Panda):
 
         # create result data frame
         self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
-
+    @delayed
+    @wrap_non_picklable_objects
     def __lioness_loop(self,i):
         """
         Description:
@@ -160,7 +142,7 @@ class Lioness(Panda):
                     cp.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = cp.nan_to_num(correlation_matrix)
                 correlation_matrix=cp.asnumpy(correlation_matrix)
-            if self.n_cores==1:
+            else:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():
                     np.fill_diagonal(correlation_matrix, 1)
