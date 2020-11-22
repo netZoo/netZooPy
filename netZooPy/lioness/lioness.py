@@ -2,7 +2,7 @@ from __future__ import print_function
 import os, os.path,sys
 import numpy as np
 import pandas as pd
-from .timer import Timer
+# from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
 
@@ -107,28 +107,39 @@ class Lioness(Panda):
             os.makedirs(save_dir)
         # Run LIONESS
         if self.n_cores!=1 and self.n_conditions >= self.n_cores and self.computing=='cpu':
-            from concurrent.futures import ProcessPoolExecutor
-            class TotalNet:
-                def __init__(self):
-                    self.value = pd.DataFrame()
+            from joblib import Parallel, delayed
+            self.total_lioness_network=Parallel(n_jobs=self.n_cores)(delayed(self.__lioness_loop)(i) for i in (self.indexes))
+            
+            # pool = Pool() 
+            # chunksize = 20 
+            # for ind, res in enumerate(pool.imap(Fun, product(xrange(N), xrange(N))), chunksize):
+            #     output.flat[ind] = res
 
-                def __call__(self, r):
-                    self.value += r.result()
+            # from concurrent import futures
+            # class TotalNet:
+            #     def __init__(self):
+            #         self.value = pd.DataFrame()
 
-            total_net = TotalNet()
-            with ProcessPoolExecutor(max_workers=self.n_cores) as pool:
-                # for total_lioness_network in pool.map(self.__lioness_loop,self.indexes):
-                  for i in range(self.n_conditions):
-                      future_results = pool.submit(self.__lioness_loop,self.indexes)
-                      future_results.add_done_callback(total_net)
-                  self.total_lioness_network=total_net.value
+            #     def __call__(self, r):
+            #         self.value += r.result()
+
+            # total_net = 0#TotalNet()
+            # with futures.ProcessPoolExecutor(max_workers=self.n_cores) as pool:
+            #     for total_lioness_network in pool.map(self.__lioness_loop,self.indexes):
+            #         total_net += total_lioness_network
+            #       # for i in range(self.n_conditions):
+            #       #     future_results = pool.submit(self.__lioness_loop,self.indexes)
+            #       #     future_results.add_done_callback(total_net)
+            #       # self.total_lioness_network=total_net.value
+            #     self.export_lioness_results = pd.DataFrame(total_net)
+
         else:
             for i in self.indexes:
                 self.total_lioness_network = self.__lioness_loop(i)
-                self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+                # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
         # create result data frame
-        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+        self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
     def __lioness_loop(self,i):
         """
@@ -149,7 +160,7 @@ class Lioness(Panda):
                     cp.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = cp.nan_to_num(correlation_matrix)
                 correlation_matrix=cp.asnumpy(correlation_matrix)
-            else:
+            if self.n_cores==1:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():
                     np.fill_diagonal(correlation_matrix, 1)
@@ -199,5 +210,6 @@ class Lioness(Panda):
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         np.savetxt(file, self.total_lioness_network, delimiter="\t",header="")
         return None
+
 
 
