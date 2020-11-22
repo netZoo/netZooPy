@@ -15,6 +15,9 @@ def main(argv):
         -e, --expression: expression matrix (.npy)
         -m, --motif: motif matrix, normalized (.npy)
         -p, --ppi: ppi matrix, normalized (.npy)
+        -g, --comp: use cpu (default) or gpu
+        -pr,--pre: number of digits to calcluate
+        -c, --ncores: number cores
         -n, --npy: PANDA network (.npy)
         -o, --out: output folder
         -f, --format: output format (txt, npy, or mat)
@@ -31,6 +34,9 @@ def main(argv):
     expression_data = None
     motif = None
     ppi = None
+    comp = None
+    pre = None
+    ncores = None
     save_dir = None
     save_fmt = None
     try:
@@ -50,6 +56,12 @@ def main(argv):
             motif = arg
         elif opt in ('-p', '--ppi'):
             ppi = arg
+        elif opt in ('-g', '--comp'):
+            comp = arg
+        elif opt in ('-pr', '--pre'):
+            pre = arg
+        elif opt in ('-c', '--ncores'):
+            ncroes = arg
         elif opt in ('-n'):
             panda_net = arg
         elif opt in ('-o', '--out'):
@@ -75,6 +87,9 @@ def main(argv):
         print('Expression:   ', expression_data)
         print('Motif matrix: ', motif)
         print('PPI matrix:   ', ppi)
+        print('compute core: ', comp)
+        print('precision:    ', pre)
+        print('n cores:      ', ncores)        
         print('Output folder:', save_dir)
         print('Output format:', save_fmt)
         print('Sample range: ', start, '-', end)
@@ -82,7 +97,7 @@ def main(argv):
     # Run panda
     print('Start LIONESS run ...')
     obj = Panda(expression_data, motif, ppi, keep_expression_matrix=True)
-    L   = Lioness(obj, start=start, end=end, save_dir=save_dir, save_fmt=save_fmt)
+    L   = Lioness(obj, computing='cpu', precision='double',ncores=1,start=start, end=end, save_dir=save_dir, save_fmt=save_fmt)
     print('All done!')
 
 if __name__ == '__main__':
