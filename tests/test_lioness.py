@@ -4,6 +4,7 @@ from netZooPy.lioness.lioness import Lioness
 from netZooPy.panda.panda import Panda
 import pandas as pd
 import numpy as np
+import glob
 
 def test_lioness():
     print('Start lioness test!')
@@ -38,3 +39,23 @@ def test_lioness():
     gt   = np.load('tests/lioness/lionessCoexpression.1.npy')
     # Compare to ground truth
     assert(np.allclose(gt,res))
+
+    #2. Testing Lioness in parallel
+    c=np.randn(0,46)
+    lioness_obj = Lioness(panda_obj, ncores=2,start=c,end=c+3)
+    lioness_obj.save_lioness_results(lioness_file)
+    
+    # traces=glob.glob('lioness_output/*.npy')
+    # res = pd.DataFrame()
+    # for i,trace in enumerate(traces):
+    #     data=np.load(trace)
+    #     res=pd.concat([res,pd.DataFrame(data.flatten())],axis=1)
+    # res=res.dropna().to_numpy()
+
+    # np.save('lioness_output/lioness.all.npy',res)
+    # Read first lioness network
+    res  = np.load('lioness_output/lioness.'+str(c)+'.npy')
+    gt = np.load('tests/lioness/lioness.'+str(c)+'.npy')
+    # Compare to ground truth
+    assert(np.allclose(gt,res))
+
