@@ -40,7 +40,7 @@ def main(argv):
     save_dir = None
     save_fmt = None
     try:
-        opts, args = getopt.getopt(argv, 'he:m:p:n:o:f:', ['help', 'expression=', 'motif=', 'ppi=', 'out=', 'format='])
+        opts, args = getopt.getopt(argv, 'he:m:p:g:pr:c:n:o:f:', ['help', 'expression=', 'motif=','comp=','pre=','ncores=', 'ppi=', 'out=', 'format='])
     except getopt.GetoptError as err:
         print(str(err))  # will print something like "option -a not recognized"
         print(__doc__)
