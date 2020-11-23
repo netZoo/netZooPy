@@ -121,6 +121,8 @@ class Lioness(Panda):
 
         # create result data frame
         self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+        self.save_lioness_results()
+
     @delayed
     @wrap_non_picklable_objects
     def __lioness_loop(self,i):
@@ -177,7 +179,7 @@ class Lioness(Panda):
         # if i == 0:
         self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         # else:
-            # self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
+        #    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
 
         return self.total_lioness_network
 
