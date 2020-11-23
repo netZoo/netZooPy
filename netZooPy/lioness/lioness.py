@@ -192,7 +192,7 @@ class Lioness(Panda):
             file: Path to save the network.
         """
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
-        np.savetxt(file, self.total_lioness_network, delimiter="\t",header="")
+        np.savetxt(file, np.transpose(self.total_lioness_network), delimiter="\t",header="")
         return None
 
 
