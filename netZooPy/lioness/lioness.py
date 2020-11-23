@@ -111,13 +111,13 @@ class Lioness(Panda):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         # Run LIONESS
-        if self.n_cores!=1 and int(self.n_conditions) >= int(self.n_cores) and self.computing=='cpu':
+        if int(self.n_conditions) >= int(self.n_cores) and self.computing=='cpu':
             self.total_lioness_network=Parallel(n_jobs=self.n_cores)(self.__lioness_loop(i) for i in (self.indexes))
             
-        else:
+        elif self.computing=='gpu':
             for i in self.indexes:
                 self.total_lioness_network = self.__lioness_loop(i)
-                # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+        #        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
         # create result data frame
         self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
