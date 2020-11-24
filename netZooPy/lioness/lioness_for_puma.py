@@ -1,5 +1,6 @@
 from __future__ import print_function
-import os, os.path,sys
+import os.path as path
+import os,sys
 import numpy as np
 sys.path.insert(1,'../panda')
 from netZooPy.puma.puma import Puma
