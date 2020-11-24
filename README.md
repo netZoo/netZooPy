@@ -1,5 +1,5 @@
-[![TRAVIS](https://img.shields.io/travis/netZoo/netZooPy/master?label=master)](https://travis-ci.org/netZoo/netZooPy/)
-[![TRAVIS](https://img.shields.io/travis/netZoo/netZooPy/devel?label=devel)](https://travis-ci.org/netZoo/netZooPy/)
+![master](https://github.com/actions/netZooPy/workflows/master/badge.svg?branch=master)
+![devel](https://github.com/actions/netZooPy/workflows/devel/badge.svg?branch=devel)
 [![codecov](https://codecov.io/gh/netZoo/netZooPy/branch/devel/graph/badge.svg)](https://codecov.io/gh/netZoo/netZooPy)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Documentation Status](https://readthedocs.org/projects/netzoopy/badge/?version=latest)](https://netzoopy.readthedocs.io/en/latest/?badge=latest)
