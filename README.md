@@ -1,5 +1,5 @@
-![master](https://github.com/actions/netZooPy/workflows/master/badge.svg?branch=master)
-![devel](https://github.com/actions/netZooPy/workflows/devel/badge.svg?branch=devel)
+![master](https://github.com/netZoo/netZooPy/workflows/master/badge.svg?branch=master)
+![devel](https://github.com/netZoo/netZooPy/workflows/devel/badge.svg?branch=devel)
 [![codecov](https://codecov.io/gh/netZoo/netZooPy/branch/devel/graph/badge.svg)](https://codecov.io/gh/netZoo/netZooPy)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Documentation Status](https://readthedocs.org/projects/netzoopy/badge/?version=latest)](https://netzoopy.readthedocs.io/en/latest/?badge=latest)
