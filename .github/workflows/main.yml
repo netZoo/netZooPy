@@ -1,6 +1,10 @@
 name: Python package
 
 on: [push]
+  branches:    
+    # Push events on main branch
+    - main
+    - devel
 
 jobs:
   build:
