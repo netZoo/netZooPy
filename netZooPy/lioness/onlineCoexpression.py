@@ -1,3 +1,4 @@
+import numpy as np
 def onlineCoexpression(si,n,mi,std,cov):
         """ 
         Description:
