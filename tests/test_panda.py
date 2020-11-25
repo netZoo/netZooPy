@@ -75,16 +75,27 @@ def test_panda():
     print('Test panda passed was successful!')
 
     #4. None Types
-    #Motif
-    panda_obj = Panda(expression_data, None, ppi, save_tmp=True, remove_missing=rm_missing,
-                      keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
-    #PPI
-    panda_obj = Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing,
-                      keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
-    #Expression
-    panda_obj = Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing,
-                      keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
-
-    #Expression and PPI
-    panda_obj = Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing,
-                      keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
+    i=0
+    travis_test_panda = 'travis_test'
+    for modeProcess in ['legacy','union','intersection']:
+        print(modeProcess)
+        #Motif
+        i=i+1
+        panda_obj = Panda(expression_data, None, ppi, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
+        panda_obj.save_panda_results(output_file + str(i) + '.txt')
+        #PPI
+        i=i+1
+        panda_obj = Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
+        panda_obj.save_panda_results(output_file + str(i) + '.txt')
+        #Expression
+        i=i+1
+        panda_obj = Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
+        panda_obj.save_panda_results(output_file + str(i) + '.txt')
+        #Expression and PPI
+        i=i+1
+        panda_obj = Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
+        panda_obj.save_panda_results(output_file + str(i) + '.txt')
