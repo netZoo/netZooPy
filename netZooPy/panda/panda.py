@@ -646,7 +646,7 @@ class Panda(object):
         options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
                    'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidths': 20}
         
-        nx.draw_networkx(g, k=0.25, iterations=50, pos=pos,**options)
+        nx.draw_networkx(g, k=0.25, pos=pos,**options)
         plt.axis('off')
         plt.savefig(file, dpi=300)
         return None
