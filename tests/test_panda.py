@@ -74,5 +74,17 @@ def test_panda():
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
     print('Test panda passed was successful!')
 
+    #4. None Types
+    #Motif
+    panda_obj = Panda(expression_data, None, ppi, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
+    #PPI
+    panda_obj = Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
+    #Expression
+    panda_obj = Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
 
-
+    #Expression and PPI
+    panda_obj = Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess='legacy')
