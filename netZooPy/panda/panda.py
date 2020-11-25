@@ -233,15 +233,17 @@ class Panda(object):
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
-            self.expression_data = expression_file #pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
-            self.expression_genes = self.expression_data.index.tolist()
-            # self.num_genes = len(self.gene_names)
-            # print('Expression matrix:', self.expression_data.shape)
-        else:
-            self.gene_names = list(set(self.motif_data[1]))
-            self.num_genes = len(self.gene_names)
-            self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
-            print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
+            if expression_file is not None:
+                self.expression_data = expression_file #pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
+                self.expression_genes = self.expression_data.index.tolist()
+                # self.num_genes = len(self.gene_names)
+                # print('Expression matrix:', self.expression_data.shape)
+            else:
+                self.gene_names = list(set(self.motif_data[1]))
+                self.expression_genes = self.gene_names
+                self.num_genes = len(self.gene_names)
+                self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
+                print('No Expression data given: correlation matrix will be an identity matrix of size', len(self.motif_genes))
 
         if type(ppi_file) is str:
             with Timer('Loading PPI data ...'):
@@ -249,17 +251,18 @@ class Panda(object):
                 self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
                 print('Number of PPIs:', self.ppi_data.shape[0])
         elif type(ppi_file) is not str:
-            self.ppi_data = ppi_file #pd.read_csv(ppi_file, sep='\t', header=None)
-            self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
-            print('Number of PPIs:', self.ppi_data.shape[0])
-        else:
-            print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
-            self.ppi_data = None
+            if ppi_file is not None:
+                self.ppi_data = ppi_file #pd.read_csv(ppi_file, sep='\t', header=None)
+                self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
+                print('Number of PPIs:', self.ppi_data.shape[0])
+            else:
+                print('No PPI data given: ppi matrix will be an identity matrix of size', len(self.motif_tfs))
+                self.ppi_data = None
 
         if modeProcess=="legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
         if modeProcess=="legacy":
-            self.gene_names = self.expression_genes#sorted( np.unique(self.motif_genes +  self.expression_genes ))
+            self.gene_names = self.expression_genes #sorted( np.unique(self.motif_genes +  self.expression_genes ))
             if motif_file is None:
                 self.unique_tfs = self.ppi_tfs
             else:
@@ -308,7 +311,10 @@ class Panda(object):
 
         # Clean up useless variables to release memory
         if keep_expression_matrix:
-            self.expression_matrix = self.expression_data.values
+            if self.expression_data is not None:
+                self.expression_matrix = self.expression_data.values
+            else:
+                self.expression_matrix = None
 
         if self.motif_data is None:
             print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
