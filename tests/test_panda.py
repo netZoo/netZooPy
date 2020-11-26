@@ -86,7 +86,7 @@ def test_panda():
                       keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
         panda_obj.save_panda_results(test_panda + str(i) + '.txt')
         res = pd.read_csv(test_panda + str(i) + '.txt', sep=' ', header=None)
-        os.system('curl -O '+gt_test_panda + str(i) + '.txt')
+        os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/'+gt_test_panda + str(i) + '.txt')
         gt = pd.read_csv(gt_test_panda + str(i) + '.txt', sep=' ', header=None)
         pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
         #PPI
@@ -95,7 +95,7 @@ def test_panda():
                       keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
         panda_obj.save_panda_results(test_panda + str(i) + '.txt')
         res = pd.read_csv(test_panda + str(i) + '.txt', sep=' ', header=None)
-        os.system('curl -O '+gt_test_panda + str(i) + '.txt')
+        os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/'+gt_test_panda + str(i) + '.txt')
         gt = pd.read_csv(gt_test_panda + str(i) + '.txt', sep=' ', header=None)
         pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
         #Expression
@@ -104,7 +104,7 @@ def test_panda():
                       keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
         panda_obj.save_panda_results(test_panda + str(i) + '.txt')
         res = pd.read_csv(test_panda + str(i) + '.txt', sep=' ', header=None)
-        os.system('curl -O '+gt_test_panda + str(i) + '.txt')
+        os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/'+gt_test_panda + str(i) + '.txt')
         gt = pd.read_csv(gt_test_panda + str(i) + '.txt', sep=' ', header=None)
         pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
         #Expression and PPI
@@ -113,6 +113,6 @@ def test_panda():
                       keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
         panda_obj.save_panda_results(test_panda + str(i) + '.txt')
         res = pd.read_csv(test_panda + str(i) + '.txt', sep=' ', header=None)
-        os.system('curl -O '+gt_test_panda + str(i) + '.txt')
+        os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/'+gt_test_panda + str(i) + '.txt')
         gt = pd.read_csv(gt_test_panda + str(i) + '.txt', sep=' ', header=None)
         pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
