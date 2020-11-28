@@ -5,13 +5,18 @@ on:
     branches: 
       - master
       - devel
+  pull_request:
+    branches: 
+      - master
+      - devel
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest]
         python-version: [3.6, 3.7, 3.8]
 
     steps:

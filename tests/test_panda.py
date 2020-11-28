@@ -74,5 +74,45 @@ def test_panda():
     pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
     print('Test panda passed was successful!')
 
-
-
+    #4. None Types
+    i=0
+    gt_test_panda = 'gt_panda'
+    test_panda = 'test_panda'
+    for modeProcess in ['legacy','union','intersection']:
+        print(modeProcess)
+        #Motif
+        i=i+1
+        panda_obj = Panda(expression_data, None, ppi, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
+        panda_obj.save_panda_results(test_panda + str(i) + '.txt')
+        res = pd.read_csv(test_panda + str(i) + '.txt', sep=' ', header=None)
+        os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/'+gt_test_panda + str(i) + '.txt')
+        gt = pd.read_csv(gt_test_panda + str(i) + '.txt', sep=' ', header=None)
+        pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
+        #PPI
+        i=i+1
+        panda_obj = Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
+        panda_obj.save_panda_results(test_panda + str(i) + '.txt')
+        res = pd.read_csv(test_panda + str(i) + '.txt', sep=' ', header=None)
+        os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/'+gt_test_panda + str(i) + '.txt')
+        gt = pd.read_csv(gt_test_panda + str(i) + '.txt', sep=' ', header=None)
+        pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
+        #Expression
+        i=i+1
+        panda_obj = Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
+        panda_obj.save_panda_results(test_panda + str(i) + '.txt')
+        res = pd.read_csv(test_panda + str(i) + '.txt', sep=' ', header=None)
+        os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/'+gt_test_panda + str(i) + '.txt')
+        gt = pd.read_csv(gt_test_panda + str(i) + '.txt', sep=' ', header=None)
+        pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)
+        #Expression and PPI
+        i=i+1
+        panda_obj = Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing,
+                      keep_expression_matrix=True, save_memory=True, modeProcess=modeProcess)
+        panda_obj.save_panda_results(test_panda + str(i) + '.txt')
+        res = pd.read_csv(test_panda + str(i) + '.txt', sep=' ', header=None)
+        os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/'+gt_test_panda + str(i) + '.txt')
+        gt = pd.read_csv(gt_test_panda + str(i) + '.txt', sep=' ', header=None)
+        pd.testing.assert_frame_equal(res,gt,check_less_precise=False,check_exact=False)

@@ -218,10 +218,12 @@ class Panda(object):
                 # print('Unique TFs:', self.num_tfs)
         elif type(motif_file) is not str:
             if motif_file is None:
-                self.motif_data = None
+                self.motif_data  = None
+                self.motif_genes = []
+                self.motif_tfs   = []
             else:
-                self.motif_data = pd.DataFrame(motif_file.values)#pd.read_csv(motif_file, sep='\t', header=None)
-                self.motif_tfs = sorted(set(motif_file['source']))
+                self.motif_data = pd.DataFrame(motif_file.values) #pd.read_csv(motif_file, sep='\t', header=None)
+                self.motif_tfs  = sorted(set(motif_file['source']))
                 self.motif_genes = sorted(set(motif_file['target']))
             # self.num_tfs = len(self.unique_tfs)
             # print('Unique TFs:', self.num_tfs)
@@ -233,15 +235,17 @@ class Panda(object):
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
-            self.expression_data = expression_file #pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
-            self.expression_genes = self.expression_data.index.tolist()
-            # self.num_genes = len(self.gene_names)
-            # print('Expression matrix:', self.expression_data.shape)
-        else:
-            self.gene_names = list(set(self.motif_data[1]))
-            self.num_genes = len(self.gene_names)
-            self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
-            print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
+            if expression_file is not None:
+                self.expression_data = expression_file #pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
+                self.expression_genes = self.expression_data.index.tolist()
+                # self.num_genes = len(self.gene_names)
+                # print('Expression matrix:', self.expression_data.shape)
+            else:
+                self.gene_names       = self.motif_genes      
+                self.expression_genes = self.motif_genes
+                self.num_genes = len(self.gene_names)
+                self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
+                print('No Expression data given: correlation matrix will be an identity matrix of size', len(self.motif_genes))
 
         if type(ppi_file) is str:
             with Timer('Loading PPI data ...'):
@@ -249,34 +253,33 @@ class Panda(object):
                 self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
                 print('Number of PPIs:', self.ppi_data.shape[0])
         elif type(ppi_file) is not str:
-            self.ppi_data = ppi_file #pd.read_csv(ppi_file, sep='\t', header=None)
-            self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
-            print('Number of PPIs:', self.ppi_data.shape[0])
-        else:
-            print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
-            self.ppi_data = None
+            if ppi_file is not None:
+                self.ppi_data = ppi_file #pd.read_csv(ppi_file, sep='\t', header=None)
+                self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
+                print('Number of PPIs:', self.ppi_data.shape[0])
+            else:
+                print('No PPI data given: ppi matrix will be an identity matrix of size', len(self.motif_tfs))
+                self.ppi_data = None
+                self.ppi_tfs  = self.motif_tfs
 
         if modeProcess=="legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
         if modeProcess=="legacy":
-            self.gene_names = self.expression_genes#sorted( np.unique(self.motif_genes +  self.expression_genes ))
+            if expression_file is not None:
+                self.gene_names = self.expression_genes #sorted( np.unique(self.motif_genes +  self.expression_genes ))
             if motif_file is None:
                 self.unique_tfs = self.ppi_tfs
             else:
                 self.unique_tfs = self.motif_tfs#sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
 
         elif modeProcess=="union":
-            if motif_file is None:
-                self.gene_names = sorted( np.unique(self.expression_genes ))
-                self.unique_tfs = sorted( np.unique(self.ppi_tfs))
-            else:
-                self.gene_names = sorted( np.unique(self.motif_genes +  self.expression_genes ))
-                self.unique_tfs = sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
+            self.gene_names = sorted( np.unique(self.motif_genes +  self.expression_genes ))
+            self.unique_tfs = sorted( np.unique(self.ppi_tfs     +  self.motif_tfs ))
 
         elif modeProcess=="intersection":
             if motif_file is None:
-                self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
-                self.unique_tfs = sorted( np.unique(self.ppi_tfs))
+                self.gene_names = sorted( np.unique(self.expression_genes ))
+                self.unique_tfs = sorted( np.unique(self.ppi_tfs ))
             else:
                 self.gene_names = sorted(np.unique( list(set(self.motif_genes).intersection(set(self.expression_genes))) ))
                 self.unique_tfs = sorted(np.unique( list(set(self.ppi_tfs).intersection(set(self.motif_tfs)) )))
@@ -287,7 +290,7 @@ class Panda(object):
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
         tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
-        if modeProcess=="union" or modeProcess=="intersection":
+        if (modeProcess=="union" or modeProcess=="intersection") and (self.expression_data is not None) and (self.num_genes!=0):
             # Initialize data & Populate gene expression
             self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
             idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
@@ -308,7 +311,10 @@ class Panda(object):
 
         # Clean up useless variables to release memory
         if keep_expression_matrix:
-            self.expression_matrix = self.expression_data.values
+            if self.expression_data is not None:
+                self.expression_matrix = self.expression_data.values
+            else:
+                self.expression_matrix = None
 
         if self.motif_data is None:
             print('Returning the correlation matrix of expression data in <Panda_obj>.correlation_matrix')
@@ -511,6 +517,9 @@ class Panda(object):
         genes_1 = np.tile(self.gene_names, (len(self.gene_names), 1)).flatten()
         genes_2 = np.tile(self.gene_names, (len(self.gene_names), 1)).transpose().flatten()
         self.flat_panda_network = self.panda_network.transpose().flatten()
+        print(genes_1)
+        print(genes_2)
+        print((self.flat_panda_network).shape)
         self.export_panda_results = pd.DataFrame({'tf':genes_1, 'gene':genes_2, 'force':self.flat_panda_network})
         self.export_panda_results = self.export_panda_results[['tf', 'gene', 'force']]
         return None
@@ -646,7 +655,7 @@ class Panda(object):
         options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
                    'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidths': 20}
         
-        nx.draw_networkx(g, k=0.25, iterations=50, pos=pos,**options)
+        nx.draw_networkx(g, pos=pos,**options)
         plt.axis('off')
         plt.savefig(file, dpi=300)
         return None
