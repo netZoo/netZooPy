@@ -15,13 +15,25 @@ netZooPy is a Python package of network methods.
 (gpu)PANDA, (gpu)LIONESS, PUMA, SAMBAR, CONDOR, and OTTER.
 
 ## Quick guide
-`git clone https://github.com/netZoo/netZooPy.git` into your local disk.
 
-Then `cd netZooPy`
+Clone the repository into your local disk:
 
-and install netZooPy through pip `pip3 install -e .`
+```bash
+git clone https://github.com/netZoo/netZooPy.git
+```
 
-Upon completion you can load netZooPy in your python code `import netZooPy`
+Then install netZooPy through pip:
+
+```bash
+cd netZooPy
+pip3 install -e .
+ ```
+
+Upon completion you can load netZooPy in your python code through
+
+```python
+import netZooPy
+```
 
 ## User guide
 Please refer to the [documentation](https://netzoopy.readthedocs.io/en/latest/) website for installation instructions and usage.
