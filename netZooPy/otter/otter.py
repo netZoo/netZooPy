@@ -2,7 +2,7 @@ import numpy as np
 from math import sqrt
 
 
-def otter(W, P, C, lam=0.0035, gamma=0.335, Iter=32, eta=0.00001, bexp=1):
+def otter(W, P, C, lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
     """
 	Description:
 	    OTTER infers gene regulatory networks using TF DNA binding
@@ -10,7 +10,6 @@ def otter(W, P, C, lam=0.0035, gamma=0.335, Iter=32, eta=0.00001, bexp=1):
 	    minimzing the following objective:
 	        min f(W)
 	    with f(W) = (1-lam)/4*||WW' - P||^2 + (lam/4)*||W'W - C||^2 + (gamma/2)*||W||^2
-
 	Inputs:
 	    W     : TF-gene regulatory network based on TF motifs as a
 	            matrix of size (t,g), g=number of genes, t=number of TFs
@@ -20,10 +19,8 @@ def otter(W, P, C, lam=0.0035, gamma=0.335, Iter=32, eta=0.00001, bexp=1):
 	    gamma : penalization term
 	    Iter  : number of iterations of the algorithm
 	    eta   : the learning rate
-
 	Outputs:
 	    W     : Predicted TF-gene complete regulatory network as an adjacency matrix of size (t,g).
-
     Reference:
         Weighill, Deborah, et al. "Gene Regulatory Network Inference as Relaxed Graph Matching." BioRxiv (2020).
     """
@@ -36,13 +33,11 @@ def otter(W, P, C, lam=0.0035, gamma=0.335, Iter=32, eta=0.00001, bexp=1):
     t, g = W.shape
 
     C = C  / np.trace(C)
-    P = P+2.2
-    W = P @ W
-    W = W / np.trace(W @ W.T)
-    P = P/np.trace(P)
+    W = W / np.sqrt(np.trace(W @ W.T))
+    P = P / np.trace(P)
 
-    P = -P * ((1 - lam)) + gamma * np.identity(t)
-    C = -C * lam
+    P = P * (-(1 - lam)) + gamma * np.identity(t)
+    C = C * (-lam)
 
     m = np.zeros((t, g))
     v = np.zeros((t, g))
