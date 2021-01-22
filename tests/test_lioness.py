@@ -43,8 +43,8 @@ def test_lioness():
 
     #3. Testing Lioness in parallel
     # c=np.random.randn(0,46)
-    c=5
-    lioness_obj = Lioness(panda_obj, ncores=2,start=c,end=c+3)
+    c=1
+    lioness_obj = Lioness(panda_obj, ncores=2,start=c,end=c)
     lioness_obj.save_lioness_results(lioness_file)
     
     # traces=glob.glob('lioness_output/*.npy')
