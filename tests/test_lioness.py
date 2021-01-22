@@ -41,8 +41,9 @@ def test_lioness():
     # Compare to ground truth
     assert(np.allclose(gt,res))
 
-    #2. Testing Lioness in parallel
-    c=np.random.randn(0,46)
+    #3. Testing Lioness in parallel
+    # c=np.random.randn(0,46)
+    c=5
     lioness_obj = Lioness(panda_obj, ncores=2,start=c,end=c+3)
     lioness_obj.save_lioness_results(lioness_file)
     
