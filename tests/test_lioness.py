@@ -1,10 +1,11 @@
-import pytest
+# import pytest
 import os
 from netZooPy.lioness.lioness import Lioness
 from netZooPy.panda.panda import Panda
 import pandas as pd
 import numpy as np
 import glob
+# import more_itertools
 
 def test_lioness():
     print('Start lioness test!')
