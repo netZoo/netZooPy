@@ -112,7 +112,7 @@ class Lioness(Panda):
             os.makedirs(save_dir)
         # Run LIONESS
         if int(self.n_conditions) >= int(self.n_cores) and self.computing=='cpu':
-            self.total_lioness_network=Parallel(n_jobs=self.n_cores)(self.__lioness_loop(i) for i in (self.indexes))
+            self.total_lioness_network=Parallel(n_jobs=self.n_cores)(self.__par_lioness_loop(i) for i in (self.indexes))
             
         elif self.computing=='gpu':
             for i in self.indexes:
@@ -123,11 +123,71 @@ class Lioness(Panda):
         self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
         self.save_lioness_results()
     
-    if int(self.n_conditions) >= int(self.n_cores) and self.computing=='cpu':
-        @delayed
-        @wrap_non_picklable_objects
+    # if int(self.n_conditions) >= int(self.n_cores) and self.computing=='cpu':  #### tried to make this function robust but seems it cannot be done
+    #     @delayed
+    #     @wrap_non_picklable_objects
         
     def __lioness_loop(self,i):
+        """
+        Description:
+            Initialize instance of Lioness class and load data.
+
+        Outputs:
+            self.total_lioness_network: An edge-by-sample matrix containing sample-specific networks.
+        """
+        # for i in self.indexes:
+        print("Running LIONESS for sample %d:" % (i+1))
+        idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
+        with Timer("Computing coexpression network:"):
+            if self.computing=='gpu':
+                import cupy as cp
+                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                if cp.isnan(correlation_matrix).any():
+                    cp.fill_diagonal(correlation_matrix, 1)
+                    correlation_matrix = cp.nan_to_num(correlation_matrix)
+                correlation_matrix=cp.asnumpy(correlation_matrix)
+            else:
+                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                if np.isnan(correlation_matrix).any():
+                    np.fill_diagonal(correlation_matrix, 1)
+                    correlation_matrix = np.nan_to_num(correlation_matrix)
+
+        with Timer("Normalizing networks:"):
+            correlation_matrix_orig = correlation_matrix # save matrix before normalization
+            correlation_matrix = self._normalize_network(correlation_matrix)
+
+        with Timer("Inferring LIONESS network:"):
+            if self.motif_matrix is not None:
+                del correlation_matrix_orig
+                subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix),self.computing)
+            else:
+                del correlation_matrix
+                subset_panda_network = correlation_matrix_orig
+
+        lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
+
+        with Timer("Saving LIONESS network %d to %s using %s format:" % (i+1, self.save_dir, self.save_fmt)):
+            path = os.path.join(self.save_dir, "lioness.%d.%s" % (i+1, self.save_fmt))
+            if self.save_fmt == 'txt':
+                np.savetxt(path, lioness_network)
+            elif self.save_fmt == 'npy':
+                np.save(path, lioness_network)
+            elif self.save_fmt == 'mat':
+                from scipy.io import savemat
+                savemat(path, {'PredNet': lioness_network})
+            else:
+                print("Unknown format %s! Use npy format instead." % self.save_fmt)
+                np.save(path, lioness_network)
+        # if i == 0:
+        self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+        # else:
+        #    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
+
+        return self.total_lioness_network
+    
+    @delayed
+    @wrap_non_picklable_objects
+    def __par_lioness_loop(self,i):
         """
         Description:
             Initialize instance of Lioness class and load data.
