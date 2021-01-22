@@ -57,7 +57,8 @@ def test_lioness():
     # np.save('lioness_output/lioness.all.npy',res)
     # Read first lioness network
     res  = np.load('lioness_output/lioness.'+str(c)+'.npy')
-    gt = np.load('lioness/lioness.'+str(c)+'.npy')
+    gt = np.load(lioness_file)#'lioness/lioness.'+str(c)+'.npy')
+    # lioness_obj.save_lioness_results(lioness_file)
     # Compare to ground truth
     assert(np.allclose(gt,res))
 
