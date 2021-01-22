@@ -238,10 +238,15 @@ class Lioness(Panda):
                 print("Unknown format %s! Use npy format instead." % self.save_fmt)
                 np.save(path, lioness_network)
         # if i == 0:
-        self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+            # self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         # else:
         #    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
-
+        if self.computing=='gpu' and i == 0:
+            self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+        elif self.computing=='gpu' and i!=0:
+            self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
+        else:
+            self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         return self.total_lioness_network
 
     def save_lioness_results(self, file='lioness'):
