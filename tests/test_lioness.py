@@ -42,7 +42,7 @@ def test_lioness():
     assert(np.allclose(gt,res))
 
     #2. Testing Lioness in parallel
-    c=np.randn(0,46)
+    c=np.random.randn(0,46)
     lioness_obj = Lioness(panda_obj, ncores=2,start=c,end=c+3)
     lioness_obj.save_lioness_results(lioness_file)
     
