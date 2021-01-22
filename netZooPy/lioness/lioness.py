@@ -5,7 +5,6 @@ import pandas as pd
 from .timer import Timer
 sys.path.insert(1,'../panda')
 from netZooPy.panda.panda import Panda
-import traceback
 from joblib.externals.loky import set_loky_pickler
 from joblib import parallel_backend
 from joblib import Parallel, delayed

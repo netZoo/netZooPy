@@ -4,5 +4,4 @@ pandas
 matplotlib
 scipy
 python-igraph
-traceback
 joblib
