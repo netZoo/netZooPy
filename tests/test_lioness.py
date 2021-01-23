@@ -21,7 +21,7 @@ def test_lioness():
                       keep_expression_matrix=bool(lioness_file), modeProcess='legacy', save_memory=False)
     # Set parameters
     lioness_obj = Lioness(panda_obj, start=1, end=1)
-    lioness_obj.save_lioness_results(lioness_file)
+    # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res  = np.load('lioness_output/lioness.1.npy')
     gt = np.load('tests/lioness/lioness.1.npy')
@@ -34,7 +34,7 @@ def test_lioness():
     panda_obj      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
                       keep_expression_matrix=True, modeProcess='legacy')
     lioness_obj    = Lioness(panda_obj, start=1, end=1)
-    lioness_obj.save_lioness_results(lioness_file)
+    # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res  = np.load('lioness_output/lioness.1.npy')
     gt   = np.load('tests/lioness/lionessCoexpression.1.npy')
@@ -56,8 +56,8 @@ def test_lioness():
 
     # np.save('lioness_output/lioness.all.npy',res)
     # Read first lioness network
-    res  = np.load('lioness_output/lioness.'+str(c)+'.npy')
-    gt = np.load('tests/lioness/lioness.'+str(c)+'.npy')
+    res  = np.load('lioness_output/lioness.1.npy')
+    gt = np.load('tests/lioness/lioness.1.npy')
     # lioness_obj.save_lioness_results(lioness_file)
     # Compare to ground truth
     assert(np.allclose(gt,res))
