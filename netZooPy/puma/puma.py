@@ -346,6 +346,11 @@ class Puma(object):
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
 
+                    # Alessandro
+                    TFCoopDiag = ppi_matrix.diagonal()
+                    ppi_matrix[self.s1] = TFCoopInit[self.s1]
+                    ppi_matrix[:, self.s1] = TFCoopInit[:, self.s1]
+
                     # Update correlation_matrix
                     motif = gt_function(motif_matrix.T)
                     gupdate_diagonal(motif, num_genes, alpha, step)
