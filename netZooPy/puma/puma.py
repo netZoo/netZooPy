@@ -345,11 +345,12 @@ class Puma(object):
                     gupdate_diagonal(ppi, num_tfs, alpha, step)
                     ppi_matrix *= (1 - alpha)
                     ppi_matrix += (alpha * ppi)
-
+                    
                     # Alessandro
                     TFCoopDiag = ppi_matrix.diagonal()
                     ppi_matrix[self.s1] = TFCoopInit[self.s1]
                     ppi_matrix[:, self.s1] = TFCoopInit[:, self.s1]
+                    np.fill_diagonal(ppi_matrix, TFCoopDiag)
 
                     # Update correlation_matrix
                     motif = gt_function(motif_matrix.T)
