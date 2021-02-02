@@ -44,7 +44,7 @@ class Puma(object):
     Reference:
         Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." BioRxiv (2019).
     """
-    def __init__(self, expression_file, motif_file, ppi_file, mir_file,computing='cpu',precision='double', save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
+    def __init__(self, expression_file, motif_file, ppi_file, mir_file,computing='cpu', precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
         """ 
         Description:
             Intialize instance of Puma class and load data.
@@ -55,6 +55,11 @@ class Puma(object):
                               If set to none, the gene coexpression matrix is returned as a result network.
             ppi_file        : Path to file containing the PPI data.
             mir_file        : Path to file containing miRNA data.
+            computing       : 'cpu' uses Central Processing Unit (CPU) to run PANDA.
+                              'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
+            precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
+                              'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+    
             save_memory     : True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
                               False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PUMA edge.
             save_tmp        : Save temporary variables.
@@ -151,6 +156,10 @@ class Puma(object):
             with np.errstate(invalid='ignore'):  # silly warning bothering people
                 self.motif_matrix = self._normalize_network(self.motif_matrix_unnormalized)
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
+            if precision=='single':
+                self.correlation_matrix=np.float32(self.correlation_matrix)
+                self.motif_matrix=np.float32(self.motif_matrix)
+                self.ppi_matrix=np.float32(self.ppi_matrix)
         
         # =====================================================================
         # Clean up useless variables to release memory
@@ -524,10 +533,10 @@ class Puma(object):
         for i, l in enumerate(unique_genes.iloc[:,0]):
             labels[i] = split_label(l)
         pos = nx.spring_layout(g)
-        #nx.draw_networkx(g, pos, labels=labels, node_size=40, font_size=3, alpha=0.3, linewidth = 0.5, width =0.5)
+        #nx.draw_networkx(g, pos, labels=labels, node_size=40, font_size=3, alpha=0.3, linewidths = 0.5, width =0.5)
         colors=range(len(edges))
         options = {'alpha': 0.7, 'edge_color': colors, 'edge_cmap': plt.cm.Blues, 'node_size' :110, 'vmin': -100,
-                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidth': 20}
+                   'width': 2, 'labels': labels, 'font_weight': 'regular', 'font_size': 3, 'linewidths': 20}
         nx.draw_spring(g, k=0.25, iterations=50, **options)
         plt.axis('off')
         plt.savefig(file, dpi=300)
