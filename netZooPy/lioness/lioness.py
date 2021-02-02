@@ -121,10 +121,6 @@ class Lioness(Panda):
         # create result data frame
         self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
         self.save_lioness_results()
-    
-    # if int(self.n_conditions) >= int(self.n_cores) and self.computing=='cpu':  #### tried to make this function robust but seems it cannot be done
-    #     @delayed
-    #     @wrap_non_picklable_objects
         
     def __lioness_loop(self,i):
         """

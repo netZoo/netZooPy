@@ -42,12 +42,8 @@ def test_lioness():
     assert(np.allclose(gt,res))
 
     #3. Testing Lioness in parallel
-    # c=np.random.randn(0,46)
-    # c=1
-    # panda_obj      =Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
-    #                   keep_expression_matrix=bool(lioness_file), modeProcess='legacy', save_memory=False)
     # Set parameters
-    lioness_obj = Lioness(panda_obj, ncores=2, start=1, end=1)
+    lioness_obj = Lioness(panda_obj, ncores=2, start=1, end=2)
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res  = np.load('lioness_output/lioness.1.npy')
