@@ -250,12 +250,14 @@ class Lioness(Panda):
             file: Path to save the network.
         """
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
-        if self.save_fmt=='npy':
-           fullpath = os.path.join(self.save_dir, "lioness.%s" % (self.save_fmt))
-           np.save(fullpath,np.transpose(self.total_lioness_network))
-        else:
-            fullpath = os.path.join(self.save_dir, "lioness.%s" % (".txt"))
-            self.np.savetxt(fullpath, np.transpose(self.total_lioness_network), delimiter="\t")
+        fullpath = os.path.join(self.save_dir, "lioness.%s" % (self.save_fmt))
+        if self.save_fmt == 'txt':
+            np.savetxt(fullpath, np.transpose(self.total_lioness_network), delimiter="\t",header="")
+        elif self.save_fmt=='npy':
+            np.save(fullpath,np.transpose(self.total_lioness_network))
+        elif self.save_fmt == 'mat':
+            from scipy.io import savemat 
+            savemat(fullpath, np.transpose(self.total_lioness_network))
         return None
 
 
