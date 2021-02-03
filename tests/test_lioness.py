@@ -43,7 +43,7 @@ def test_lioness():
 
     #3. Testing Lioness in parallel
     # Set parameters
-    remove('lioness_output/lioness.1.npy')
+    os.remove('lioness_output/lioness.1.npy')
     lioness_obj = Lioness(panda_obj, ncores=2, start=1, end=2)
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
