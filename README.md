@@ -12,7 +12,7 @@ netZooPy is tested on: (OS: Linux + Macos) X (Language: Python v3.6 + Python v3.
 netZooPy is a Python package of network methods. 
 
 ## Zoo animals
-(gpu)PANDA, (gpu)LIONESS, PUMA, SAMBAR, CONDOR, and OTTER.
+(gpu)PANDA, (gpu)LIONESS, (gpu)PUMA, SAMBAR, CONDOR, and OTTER.
 
 ## Quick guide
 
