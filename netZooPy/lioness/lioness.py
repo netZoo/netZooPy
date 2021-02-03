@@ -251,9 +251,11 @@ class Lioness(Panda):
         """
         #self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         if self.save_fmt=='npy':
-            np.save(file,np.transpose(self.total_lioness_network))
+           fullpath = os.path.join(self.save_dir, "lioness.%s" % (self.save_fmt))
+           np.save(fullpath,np.transpose(self.total_lioness_network))
         else:
-            self.np.savetxt(file+'.txt', np.transpose(self.total_lioness_network), delimiter="\t",header="")
+            fullpath = os.path.join(self.save_dir, "lioness.%s" % (".txt"))
+            self.np.savetxt(fullpath, np.transpose(self.total_lioness_network), delimiter="\t")
         return None
 
 
