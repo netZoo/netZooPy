@@ -15,6 +15,9 @@ def main(argv):
         -e, --expression: expression matrix (.npy)
         -m, --motif: motif matrix, normalized (.npy)
         -p, --ppi: ppi matrix, normalized (.npy)
+        -g, --comp: use cpu (default) or gpu
+        -r, --pre: number of digits to calcluate
+        -c, --ncores: number cores
         -n, --npy: PANDA network (.npy)
         -o, --out: output folder
         -f, --format: output format (txt, npy, or mat)
@@ -22,7 +25,7 @@ def main(argv):
         end: to end at nth sample (optional, must with start)
     
     Example:
-        python3 run_lioness.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o /tmp -f npy 1 2
+        python3 run_lioness.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -g cpu -r single -c 2 -o /tmp -f npy 1 2
 
     Reference:
         Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
@@ -31,10 +34,13 @@ def main(argv):
     expression_data = None
     motif = None
     ppi = None
+    comp = None
+    pre = None
+    ncores = None
     save_dir = None
     save_fmt = None
     try:
-        opts, args = getopt.getopt(argv, 'he:m:p:n:o:f:', ['help', 'expression=', 'motif=', 'ppi=', 'out=', 'format='])
+        opts, args = getopt.getopt(argv, 'he:m:p:g:r:c:n:o:f:', ['help', 'expression=', 'motif=','ppi=','comp=','pre=','ncores=', 'out=', 'format='])
     except getopt.GetoptError as err:
         print(str(err))  # will print something like "option -a not recognized"
         print(__doc__)
@@ -50,6 +56,12 @@ def main(argv):
             motif = arg
         elif opt in ('-p', '--ppi'):
             ppi = arg
+        elif opt in ('-g', '--comp'):
+            comp = arg
+        elif opt in ('-r', '--pre'):
+            pre = arg
+        elif opt in ('-c', '--ncores'):
+            ncores = arg
         elif opt in ('-n'):
             panda_net = arg
         elif opt in ('-o', '--out'):
@@ -75,14 +87,17 @@ def main(argv):
         print('Expression:   ', expression_data)
         print('Motif matrix: ', motif)
         print('PPI matrix:   ', ppi)
+        print('compute core: ', comp)
+        print('precision:    ', pre)
+        print('n cores:      ', ncores)        
         print('Output folder:', save_dir)
         print('Output format:', save_fmt)
         print('Sample range: ', start, '-', end)
 
     # Run panda
     print('Start LIONESS run ...')
-    obj = Panda(expression_data, motif, ppi, keep_expression_matrix=True)
-    L   = Lioness(obj, start=start, end=end, save_dir=save_dir, save_fmt=save_fmt)
+    obj = Panda(expression_data, motif, ppi, keep_expression_matrix=True,save_memory=False)
+    L   = Lioness(obj, computing=comp, precision=pre,ncores=ncores,start=start, end=end, save_dir=save_dir, save_fmt=save_fmt)
     print('All done!')
 
 if __name__ == '__main__':

@@ -4,6 +4,8 @@ from netZooPy.lioness.lioness import Lioness
 from netZooPy.panda.panda import Panda
 import pandas as pd
 import numpy as np
+import glob
+
 
 def test_lioness():
     print('Start lioness test!')
@@ -19,7 +21,7 @@ def test_lioness():
                       keep_expression_matrix=bool(lioness_file), modeProcess='legacy', save_memory=False)
     # Set parameters
     lioness_obj = Lioness(panda_obj, start=1, end=1)
-    lioness_obj.save_lioness_results(lioness_file)
+    # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res  = np.load('lioness_output/lioness.1.npy')
     gt = np.load('tests/lioness/lioness.1.npy')
@@ -29,12 +31,24 @@ def test_lioness():
     #2. Testing Lioness with motif set to None to compute Lioness on coexpression networks
     motif          = None
     # Make sure to keep epxression matrix for next step
-    panda_obj      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
+    panda_obj_2      = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing,
                       keep_expression_matrix=True, modeProcess='legacy')
-    lioness_obj    = Lioness(panda_obj, start=1, end=1)
-    lioness_obj.save_lioness_results(lioness_file)
+    lioness_obj_2    = Lioness(panda_obj_2, start=1, end=1)
+    # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res  = np.load('lioness_output/lioness.1.npy')
     gt   = np.load('tests/lioness/lionessCoexpression.1.npy')
     # Compare to ground truth
     assert(np.allclose(gt,res))
+
+    #3. Testing Lioness in parallel
+    # Set parameters
+    os.remove('lioness_output/lioness.1.npy')
+    lioness_obj = Lioness(panda_obj, ncores=2, start=1, end=2)
+    # lioness_obj.save_lioness_results(lioness_file)
+    # Read first lioness network
+    res  = np.load('lioness_output/lioness.1.npy')
+    gt = np.load('tests/lioness/lioness.1.npy')
+    # Compare to ground truth
+    assert(np.allclose(gt,res))
+

@@ -4,3 +4,4 @@ pandas
 matplotlib
 scipy
 python-igraph
+joblib
