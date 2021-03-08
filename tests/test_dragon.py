@@ -13,7 +13,7 @@ def test_dragon():
                                             n=n, seed=123)
     lambdas, lambdas_landscape = dragon.estimate_penalty_parameters_dragon(X1, X2)
     lambdas=tuple([int(1000*x)/1000 for x in lambdas]) # 3 digit precision
-    alamb=int(lambdas_landscape[1,1]*100000)/100000
+    alamb=int(lambdas_landscape[1,1]*10)/10
     assert(lambdas == (0.907, 0.913))
     assert(alamb == 398.7)
 
