@@ -16,6 +16,8 @@ def test_dragon():
     alamb=lambdas_landscape[1,1]
     assert(lambdasSingle == (0.9, 0.9))
     assert((alamb < 398.7*1.002) & (alamb > 398.7*0.998)) #0.2% of error
+    assert(int(X1[1,1]*1000)/1000 ==0.880)
+    assert(int(X2[1,1]*1000)/1000 ==0.664)
     
     #2. test2
     r = dragon.get_partial_correlation_dragon(X1, X2, lambdas)
