@@ -20,9 +20,9 @@ def test_dragon():
     #2. test2
     r = dragon.get_partial_correlation_dragon(X1, X2, lambdas)
     adj_p_vals, p_vals = dragon.estimate_p_values_dragon(r, n, p1, p2, lambdas)
-    p_vals=int(p_vals[2,1]*100)/100
-    adj_p_vals=int(adj_p_vals[2,1]*10)/10 # 3 digit precision
-    assert(p_vals == 0.96)
-    assert(adj_p_vals == 0.9)
+    p_valstest=int(p_vals[2,1]*100)/100
+    adj_p_valstest=int(adj_p_vals[2,1]*10)/10 # 3 digit precision
+    assert(p_valstest == 0.96)
+    assert(adj_p_valstest == 0.9)
 
      
