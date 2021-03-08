@@ -12,9 +12,9 @@ def test_dragon():
                                             p1=100, p2=500, epsilon=[0.1,0.1],
                                             n=n, seed=123)
     lambdas, lambdas_landscape = dragon.estimate_penalty_parameters_dragon(X1, X2)
-    lambdas=tuple([int(10*x)/10 for x in lambdas]) # 3 digit precision
+    lambdasSingle=tuple([int(10*x)/10 for x in lambdas]) # 3 digit precision
     alamb=lambdas_landscape[1,1]
-    assert(lambdas == (0.9, 0.9))
+    assert(lambdasSingle == (0.9, 0.9))
     assert((alamb < 398.7*1.002) & (alamb > 398.7*0.998)) #0.2% of error
 
     #2. test2
@@ -22,7 +22,7 @@ def test_dragon():
     adj_p_vals, p_vals = dragon.estimate_p_values_dragon(r, n, p1, p2, lambdas)
     p_vals=int(p_vals[2,1]*100)/100
     adj_p_vals=int(adj_p_vals[2,1]*10)/10 # 3 digit precision
-    #assert(p_vals == 0.96)
+    assert(p_vals == 0.96)
     assert(adj_p_vals == 0.9)
 
      
