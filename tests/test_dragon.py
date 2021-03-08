@@ -1,5 +1,5 @@
 import pytest
-import os
+import numpy as np
 from netZooPy import dragon
 
 def test_dragon():
@@ -16,7 +16,7 @@ def test_dragon():
     alamb=lambdas_landscape[1,1]
     assert(lambdasSingle == (0.9, 0.9))
     assert((alamb < 398.7*1.002) & (alamb > 398.7*0.998)) #0.2% of error
-
+    
     #2. test2
     r = dragon.get_partial_correlation_dragon(X1, X2, lambdas)
     adj_p_vals, p_vals = dragon.estimate_p_values_dragon(r, n, p1, p2, lambdas)
@@ -24,5 +24,6 @@ def test_dragon():
     adj_p_valstest=int(adj_p_vals[2,1]*10)/10 # 3 digit precision
     assert(p_valstest == 0.96)
     assert(adj_p_valstest == 0.9)
+    assert(int(np.max(r)*1000)/1000 == 0.034)
 
      
