@@ -12,9 +12,9 @@ def test_dragon():
                                             p1=100, p2=500, epsilon=[0.1,0.1],
                                             n=n, seed=123)
     lambdas, lambdas_landscape = dragon.estimate_penalty_parameters_dragon(X1, X2)
-    lambdas=tuple([int(1000*x)/1000 for x in lambdas]) # 3 digit precision
+    lambdas=tuple([int(10*x)/10 for x in lambdas]) # 3 digit precision
     alamb=int(lambdas_landscape[1,1]*10)/10
-    assert(lambdas == (0.907, 0.913))
+    assert(lambdas == (0.9, 0.9))
     assert(alamb == 398.7)
 
     #2. test2
