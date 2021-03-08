@@ -7,6 +7,12 @@ import scipy.special as sc
 import scipy.integrate as integrate
 import statsmodels.stats.multitest as multi
 
+def Scale(X):
+    X_temp = X
+    X_std = np.std(X_temp, axis=0)
+    X_mean = np.std(X_temp, axis=0)
+    return (X_temp - X_mean) / X_std
+
 def VarS(X):
     xbar = np.mean(X, 0)
     n = X.shape[0]
