@@ -22,7 +22,7 @@ def test_dragon():
     adj_p_vals, p_vals = dragon.estimate_p_values_dragon(r, n, p1, p2, lambdas)
     p_valstest=int(p_vals[2,1]*100)/100
     adj_p_valstest=int(adj_p_vals[2,1]*10)/10 # 3 digit precision
-    assert(int(np.max(r)*1000)/1000 == 0.034)
+    assert(int(np.max(r)*100)/100 == 0.03)
     assert(int(r[1,2]*100000)/100000 == 0.00012)
     assert(p_valstest == 0.96)
     assert(adj_p_valstest == 0.9)
