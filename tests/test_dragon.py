@@ -13,9 +13,9 @@ def test_dragon():
                                             n=n, seed=123)
     lambdas, lambdas_landscape = dragon.estimate_penalty_parameters_dragon(X1, X2)
     lambdas=tuple([int(10*x)/10 for x in lambdas]) # 3 digit precision
-    alamb=int(lambdas_landscape[1,1]*10)/10
+    #alamb=int(lambdas_landscape[1,1]*10)/10
     assert(lambdas == (0.9, 0.9))
-    assert(alamb == 398.7)
+    assert((alamb < 398.7*1.002) & (alamb > 398.7*0.998)) #0.2% of error
 
     #2. test2
     r = dragon.get_partial_correlation_dragon(X1, X2, lambdas)
