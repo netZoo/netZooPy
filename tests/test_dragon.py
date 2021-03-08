@@ -1,18 +1,21 @@
 import pytest
 import numpy as np
+import os
 from netZooPy import dragon
 
 def test_dragon():
     #1. test1
     print('Start Dragon run ...')
-    seed=123
-    np.random.seed(seed)
     n = 1000
     p1 = 500
     p2 = 100
     X1, X2, Theta, _ = dragon.simulate_dragon_data(eta11=0.005, eta12=0.005, eta22=0.05,
                                             p1=100, p2=500, epsilon=[0.1,0.1],
                                             n=n, seed=123)
+    os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/unittest_datasets/dragonx1.npy')
+    os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/unittest_datasets/dragonx2.npy')
+    X1=np.load('dragonx1.npy')
+    X2=np.load('dragonx2.npy')
     lambdas, lambdas_landscape = dragon.estimate_penalty_parameters_dragon(X1, X2)
     lambdasSingle=tuple([int(10*x)/10 for x in lambdas]) # 3 digit precision
     alamb=lambdas_landscape[1,1]
