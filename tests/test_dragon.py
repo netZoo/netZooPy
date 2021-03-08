@@ -5,6 +5,8 @@ from netZooPy import dragon
 def test_dragon():
     #1. test1
     print('Start Dragon run ...')
+    seed=123
+    np.random.seed(seed)
     n = 1000
     p1 = 500
     p2 = 100
