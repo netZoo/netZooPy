@@ -10,7 +10,7 @@ import statsmodels.stats.multitest as multi
 def Scale(X):
     X_temp = X
     X_std = np.std(X_temp, axis=0)
-    X_mean = np.std(X_temp, axis=0)
+    X_mean = np.mean(X_temp, axis=0)
     return (X_temp - X_mean) / X_std
 
 def VarS(X):
