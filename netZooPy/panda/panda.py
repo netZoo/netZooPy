@@ -64,7 +64,7 @@ class Panda(object):
     Reference:
         Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
     """
-    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = True, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
+    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = True, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union', alpha = 0.1):
         """ 
         Description:
             Intialize instance of Panda class and load data.
@@ -87,6 +87,7 @@ class Panda(object):
                               'legacy': refers to the processing mode in netZooPy<=0.5
                               (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                               'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
+            alpha           : Learning rate (default: 0.1)
         """
         # Read data
         self.processData(modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
@@ -346,7 +347,7 @@ class Panda(object):
         
         return
 
-    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing='cpu'):
+    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing='cpu', alpha = 0.1):
         """ 
         Description:
             The PANDA algorithm.
@@ -442,7 +443,6 @@ class Panda(object):
         num_tfs, num_genes = motif_matrix.shape
         step = 0
         hamming = 1
-        alpha = 0.1
         
         while hamming > 0.001:
             # Update motif_matrix
