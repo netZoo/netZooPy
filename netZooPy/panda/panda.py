@@ -70,10 +70,10 @@ class Panda(object):
             Intialize instance of Panda class and load data.
 
         Inputs:
-            expression_file : Path to file containing the gene expression data.
-            motif_file      : Path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1).
+            expression_file : Path to file containing the gene expression data or pandas dataframe.
+            motif_file      : Path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1) or pandas dataframe.
                               If set to none, the gene coexpression matrix is returned as a result network.
-            ppi_file        : Path to file containing the PPI data. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
+            ppi_file        : Path to file containing the PPI data. or pandas dataframe. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
             computing       : 'cpu' uses Central Processing Unit (CPU) to run PANDA.
                               'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
             precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
@@ -223,7 +223,12 @@ class Panda(object):
                 self.motif_genes = []
                 self.motif_tfs   = []
             else:
-                self.motif_data = pd.DataFrame(motif_file.values) #pd.read_csv(motif_file, sep='\t', header=None)
+                if not isinstance(motif_file, pd.DataFrame):
+                    raise Exception("Please provide a pandas dataframe for motif data with column names as 'source', 'target', and 'weight'.")
+                if ('source' not in motif_file.columns) or ('target' not in motif_file.columns):
+                    print('renaming motif columns to "source", "target" and "weight" ')
+                    motif_file.columns = ['source','target','weight']
+                self.motif_data = pd.DataFrame(motif_file.values) 
                 self.motif_tfs  = sorted(set(motif_file['source']))
                 self.motif_genes = sorted(set(motif_file['target']))
             # self.num_tfs = len(self.unique_tfs)
@@ -237,6 +242,8 @@ class Panda(object):
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
             if expression_file is not None:
+                if not isinstance(expression_file, pd.DataFrame):
+                    raise Exception("Please provide a pandas dataframe for expression data.")
                 self.expression_data = expression_file #pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
                 self.expression_genes = self.expression_data.index.tolist()
                 # self.num_genes = len(self.gene_names)
@@ -255,6 +262,8 @@ class Panda(object):
                 print('Number of PPIs:', self.ppi_data.shape[0])
         elif type(ppi_file) is not str:
             if ppi_file is not None:
+                if not isinstance(ppi_file, pd.DataFrame):
+                    raise Exception("Please provide a pandas dataframe for PPI data.")
                 self.ppi_data = ppi_file #pd.read_csv(ppi_file, sep='\t', header=None)
                 self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
                 print('Number of PPIs:', self.ppi_data.shape[0])
