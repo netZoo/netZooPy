@@ -241,7 +241,7 @@ class Lioness(Panda):
         self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         return self.total_lioness_network
 
-    def save_lioness_results(self, file='lioness'):
+    def save_lioness_results(self):
         """
         Description:
             Saves LIONESS network.
