@@ -223,7 +223,7 @@ class Panda(object):
                 self.motif_genes = []
                 self.motif_tfs   = []
             else:
-                if ~isinstance(motif_file, pd.DataFrame):
+                if not isinstance(motif_file, pd.DataFrame):
                     raise Exception("Please provide a pandas dataframe for motif data with column names as 'source', 'target', and 'weight'.")
                 if ('source' not in motif_file.columns) or ('target' not in motif_file.columns):
                     print('renaming motif columns to "source", "target" and "weight" ')
@@ -242,7 +242,7 @@ class Panda(object):
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
             if expression_file is not None:
-                if ~isinstance(expression_file, pd.DataFrame):
+                if not isinstance(expression_file, pd.DataFrame):
                     raise Exception("Please provide a pandas dataframe for expression data.")
                 self.expression_data = expression_file #pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
                 self.expression_genes = self.expression_data.index.tolist()
@@ -262,7 +262,7 @@ class Panda(object):
                 print('Number of PPIs:', self.ppi_data.shape[0])
         elif type(ppi_file) is not str:
             if ppi_file is not None:
-                if ~isinstance(ppi_file, pd.DataFrame):
+                if not isinstance(ppi_file, pd.DataFrame):
                     raise Exception("Please provide a pandas dataframe for PPI data.")
                 self.ppi_data = ppi_file #pd.read_csv(ppi_file, sep='\t', header=None)
                 self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
