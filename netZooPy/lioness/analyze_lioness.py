@@ -33,7 +33,7 @@ class AnalyzeLioness(Lioness):
         self.export_panda_results = lioness_data.export_panda_results
         self.lioness_results = lioness_data.export_lioness_results
         return None
-    def top_network_plot(self, column = 0, top = 100, file = 'lioness_top_100.png'):
+    def top_network_plot(self, index = 0, top = 100, file = 'lioness_top_100.png'):
         """
         Description:
             Selects top genes.
@@ -43,7 +43,7 @@ class AnalyzeLioness(Lioness):
             top   : Top number of genes to plot.
             file  : File to save the network plot.
         """
-        self.export_panda_results[['force']] = self.lioness_results.iloc[:,column]
+        self.export_panda_results[['force']] = self.lioness_results.iloc[index,:]
         plot = AnalyzePanda(self)
         plot.top_network_plot(top, file)
         return None
