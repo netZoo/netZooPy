@@ -74,9 +74,9 @@ class Lioness(Panda):
             end             : Index of last sample to compute the network.
             save_dir        : Directory to save the networks.
             save_fmt        : Save format.
-                              '.npy': (Default) Numpy file.
-                              '.txt': Text file.
-                              '.mat': MATLAB file.
+                              'npy': (Default) Numpy file.
+                              'txt': Text file.
+                              'mat': MATLAB file.
         """
         # Load data
         with Timer("Loading input data ..."):
