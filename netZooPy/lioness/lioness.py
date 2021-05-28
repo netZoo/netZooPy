@@ -74,9 +74,9 @@ class Lioness(Panda):
             end             : Index of last sample to compute the network.
             save_dir        : Directory to save the networks.
             save_fmt        : Save format.
-                              '.npy': (Default) Numpy file.
-                              '.txt': Text file.
-                              '.mat': MATLAB file.
+                              'npy': (Default) Numpy file.
+                              'txt': Text file.
+                              'mat': MATLAB file.
         """
         # Load data
         with Timer("Loading input data ..."):
@@ -241,7 +241,7 @@ class Lioness(Panda):
         self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         return self.total_lioness_network
 
-    def save_lioness_results(self, file='lioness'):
+    def save_lioness_results(self):
         """
         Description:
             Saves LIONESS network.
