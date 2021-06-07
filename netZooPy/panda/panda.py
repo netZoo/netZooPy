@@ -59,7 +59,7 @@ class Panda(object):
         EGR1	AACSL	0.0	-0.695698519643
 
      Authors: 
-       cychen, davidvi, alessandromarin, Marouen Ben Guebila, Daniel Morgan
+       Cho-Yi Chen, David Vi, Alessandro Marin, Marouen Ben Guebila, Daniel Morgan
 
     Reference:
         Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
