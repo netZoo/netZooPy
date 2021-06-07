@@ -297,6 +297,9 @@ class Panda(object):
         self.num_genes  = len(self.gene_names)
         self.num_tfs    = len(self.unique_tfs)
 
+        if self.num_genes!=len(self.expression_genes):
+            print('Duplicate gene symbols detected. Consider averaging before running PANDA')
+
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
         tf2idx = {x: i for i,x in enumerate(self.unique_tfs)}
