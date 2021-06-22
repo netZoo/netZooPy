@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from scipy.stats import zscore
 from .timer import Timer
+from netZooPy.panda.panda import Panda
 
 class Puma(object):
     """ 
