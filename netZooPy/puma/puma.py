@@ -245,7 +245,7 @@ class Puma(object):
         normalized_matrix[nan_col & nan_row] = 2*norm_col[nan_col & nan_row]/math.sqrt(2)
         return normalized_matrix
 
-    def puma_loop(self, correlation_matrix, motif_matrix, ppi_matrix, alpha, computing):
+    def puma_loop(self, correlation_matrix, motif_matrix, ppi_matrix, alpha=0.1, computing='cpu'):
         """ 
         Description:
             The PUMA algorithm.
