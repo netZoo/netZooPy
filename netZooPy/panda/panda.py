@@ -359,7 +359,7 @@ class Panda(object):
         
         return
 
-    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing='cpu', alpha):
+    def panda_loop(self, alpha, correlation_matrix, motif_matrix, ppi_matrix,computing='cpu'):
         """ 
         Description:
             The PANDA algorithm.
