@@ -44,7 +44,7 @@ class Puma(object):
     Reference:
         Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." BioRxiv (2019).
     """
-    def __init__(self, expression_file, motif_file, ppi_file, mir_file,computing='cpu', precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, alpha=0.1):
+    def __init__(self, expression_file, motif_file, ppi_file, mir_file, modeProcess='union', computing='cpu', precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, alpha=0.1):
         """ 
         Description:
             Intialize instance of Puma class and load data.
@@ -65,39 +65,16 @@ class Puma(object):
             save_tmp        : Save temporary variables.
             remove_missing  : Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
             keep_expression_matrix: Keeps the input expression matrix in the result Puma object.
+            modeProcess     : The input data processing mode.
+                              'legacy': refers to the processing mode in netZooPy<=0.5
+                              (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
+                              'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
             alpha           : Learning rate (default: 0.1)
         """
         # =====================================================================
         # Data loading
         # =====================================================================
-        if motif_file is not None:
-            with Timer('Loading motif data ...'):
-                self.motif_data = pd.read_table(motif_file, sep='\t', header=None)
-                self.unique_tfs = sorted(set(self.motif_data[0]))
-                self.num_tfs = len(self.unique_tfs)
-                print('Unique TFs:', self.num_tfs)
-        else:
-            self.motif_data = None
-
-        if expression_file:
-            with Timer('Loading expression data ...'):
-                self.expression_data = pd.read_table(expression_file, sep='\t', header=None, index_col=0)
-                self.gene_names = self.expression_data.index.tolist()
-                self.num_genes = len(self.gene_names)
-                print('Expression matrix:', self.expression_data.shape)
-        else:
-            self.gene_names = list(set(self.motif_data[1]))
-            self.num_genes = len(self.gene_names)
-            self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
-            print('No Expression data given: correlation matrix will be an identity matrix of size', self.num_genes)
-
-        if ppi_file:
-            with Timer('Loading PPI data ...'):
-                self.ppi_data = pd.read_table(ppi_file, sep='\t', header=None)
-                print('Number of PPIs:', self.ppi_data.shape[0])
-        else:
-            print('No PPI data given: ppi matrix will be an identity matrix of size', self.num_tfs)
-            self.ppi_data = None
+        Panda.processData(self, modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
 
         with Timer('Loading miR data ...'):
             with open(mir_file, "r") as f:
