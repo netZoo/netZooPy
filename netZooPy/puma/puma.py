@@ -44,7 +44,7 @@ class Puma(object):
     Reference:
         Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." BioRxiv (2019).
     """
-    def __init__(self, expression_file, motif_file, ppi_file, mir_file,computing='cpu', precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
+    def __init__(self, expression_file, motif_file, ppi_file, mir_file,computing='cpu', precision='double',save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False, alpha=0.1):
         """ 
         Description:
             Intialize instance of Puma class and load data.
@@ -65,6 +65,7 @@ class Puma(object):
             save_tmp        : Save temporary variables.
             remove_missing  : Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
             keep_expression_matrix: Keeps the input expression matrix in the result Puma object.
+            alpha           : Learning rate (default: 0.1)
         """
         # =====================================================================
         # Data loading
@@ -187,7 +188,7 @@ class Puma(object):
         # Running PUMA algorithm
         # =====================================================================
         print('Running PUMA algorithm ...')
-        self.puma_network = self.puma_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix)
+        self.puma_network = self.puma_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix, alpha=alpha)
 
     def __remove_missing(self):
         """ 
@@ -244,7 +245,7 @@ class Puma(object):
         normalized_matrix[nan_col & nan_row] = 2*norm_col[nan_col & nan_row]/math.sqrt(2)
         return normalized_matrix
 
-    def puma_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing='cpu'):
+    def puma_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing='cpu', alpha):
         """ 
         Description:
             The PUMA algorithm.
@@ -334,7 +335,6 @@ class Puma(object):
 
         step = 0
         hamming = 1
-        alpha = 0.1
         while hamming > 0.001:
             # Update motif_matrix
             if computing=='gpu':
