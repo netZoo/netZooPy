@@ -132,7 +132,7 @@ class Panda(object):
         # =====================================================================
         if self.motif_data is not None:
             print('Running PANDA algorithm ...')
-            self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix,alpha,computing)
+            self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix,alpha,computing='cpu')
         else:
             self.panda_network = self.correlation_matrix
             self.__pearson_results_data_frame()
