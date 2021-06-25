@@ -52,12 +52,12 @@ class Lioness(Panda):
         TF, Gene and Motif order is identical to the panda output file.
 
     Authors: 
-        cychen, davidvi, dcolinmorgan
+        Cho-Yi Chen, David Vi, Daniel Morgan
 
     Reference:
         Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
     """
-    def __init__(self, obj, computing='cpu', precision='double',ncores=1,start=1, end=None, save_dir='lioness_output', save_fmt='npy'):
+    def __init__(self, obj, computing='cpu', precision='double',ncores=1,start=1, end=None, save_dir='lioness_output', save_fmt='npy', output='network'):
         """
         Description:
             Initialize instance of Lioness class and load data.
@@ -77,6 +77,12 @@ class Lioness(Panda):
                               '.npy': (Default) Numpy file.
                               '.txt': Text file.
                               '.mat': MATLAB file.
+            output          : 'network' returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network). For large sample sizes, this variable requires large RAM memory.
+                              'gene_targeting' returns gene targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
+                              'tf_targeting' returns tf targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
+
+        Output:
+            export_lioness_results : Depeding on the output argument, this can be either all the lioness networks or their gene/tf targeting scores.
         """
         # Load data
         with Timer("Loading input data ..."):
@@ -98,6 +104,8 @@ class Lioness(Panda):
             else:
                 print('Cannot find panda or puma network in object')
                 raise AttributeError('Cannot find panda or puma network in object')
+            gene_names=obj.gene_names
+            tf_names  =obj.unique_tfs
             del obj
 
         # Get sample range to iterate
@@ -111,7 +119,7 @@ class Lioness(Panda):
             os.makedirs(save_dir)
         # Run LIONESS
         if int(self.n_conditions) >= int(self.n_cores) and self.computing=='cpu':
-            self.total_lioness_network=Parallel(n_jobs=self.n_cores)(self.__par_lioness_loop(i) for i in (self.indexes))
+            self.total_lioness_network=Parallel(n_jobs=self.n_cores)(self.__par_lioness_loop(i, output) for i in (self.indexes))
             
         elif self.computing=='gpu':
             for i in self.indexes:
@@ -119,7 +127,12 @@ class Lioness(Panda):
         #        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
 
         # create result data frame
-        self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+        if output=='network':
+            self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+        elif output=='gene_targeting':
+            self.export_lioness_results = pd.DataFrame(self.total_lioness_network, columns=gene_names).transpose()
+        elif output=='tf_targeting':
+            self.export_lioness_results = pd.DataFrame(self.total_lioness_network, columns=tf_names).transpose()
         self.save_lioness_results()
         
     def __lioness_loop(self,i):
@@ -182,7 +195,7 @@ class Lioness(Panda):
     
     @delayed
     @wrap_non_picklable_objects
-    def __par_lioness_loop(self,i):
+    def __par_lioness_loop(self,i,output):
         """
         Description:
             Initialize instance of Lioness class and load data.
@@ -238,10 +251,15 @@ class Lioness(Panda):
         # else:
         #    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
 
-        self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+        if output=='network':
+            self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
+        elif output=='gene_targeting':
+            self.total_lioness_network = np.sum(lioness_network,axis=0)
+        elif output=='tf_targeting':
+            self.total_lioness_network = np.sum(lioness_network,axis=1)
         return self.total_lioness_network
 
-    def save_lioness_results(self, file='lioness'):
+    def save_lioness_results(self):
         """
         Description:
             Saves LIONESS network.
@@ -259,6 +277,7 @@ class Lioness(Panda):
             from scipy.io import savemat 
             savemat(fullpath, np.transpose(self.total_lioness_network))
         return None
+
 
 
 

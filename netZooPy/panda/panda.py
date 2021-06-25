@@ -59,21 +59,21 @@ class Panda(object):
         EGR1	AACSL	0.0	-0.695698519643
 
      Authors: 
-       cychen, davidvi, alessandromarin, Marouen Ben Guebila, Daniel Morgan
+       Cho-Yi Chen, David Vi, Alessandro Marin, Marouen Ben Guebila, Daniel Morgan
 
     Reference:
         Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
     """
-    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = True, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union'):
+    def __init__(self, expression_file, motif_file, ppi_file, computing='cpu',precision='double',save_memory = True, save_tmp=True, remove_missing=False, keep_expression_matrix = False, modeProcess = 'union', alpha = 0.1):
         """ 
         Description:
             Intialize instance of Panda class and load data.
 
         Inputs:
-            expression_file : Path to file containing the gene expression data.
-            motif_file      : Path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1).
+            expression_file : Path to file containing the gene expression data or pandas dataframe.
+            motif_file      : Path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1) or pandas dataframe.
                               If set to none, the gene coexpression matrix is returned as a result network.
-            ppi_file        : Path to file containing the PPI data. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
+            ppi_file        : Path to file containing the PPI data. or pandas dataframe. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
             computing       : 'cpu' uses Central Processing Unit (CPU) to run PANDA.
                               'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
             precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
@@ -87,6 +87,7 @@ class Panda(object):
                               'legacy': refers to the processing mode in netZooPy<=0.5
                               (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                               'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
+            alpha           : Learning rate (default: 0.1)
         """
         # Read data
         self.processData(modeProcess, motif_file, expression_file, ppi_file, remove_missing, keep_expression_matrix)
@@ -131,7 +132,7 @@ class Panda(object):
         # =====================================================================
         if self.motif_data is not None:
             print('Running PANDA algorithm ...')
-            self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix,computing)
+            self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix, computing, alpha)
         else:
             self.panda_network = self.correlation_matrix
             self.__pearson_results_data_frame()
@@ -222,7 +223,12 @@ class Panda(object):
                 self.motif_genes = []
                 self.motif_tfs   = []
             else:
-                self.motif_data = pd.DataFrame(motif_file.values) #pd.read_csv(motif_file, sep='\t', header=None)
+                if not isinstance(motif_file, pd.DataFrame):
+                    raise Exception("Please provide a pandas dataframe for motif data with column names as 'source', 'target', and 'weight'.")
+                if ('source' not in motif_file.columns) or ('target' not in motif_file.columns):
+                    print('renaming motif columns to "source", "target" and "weight" ')
+                    motif_file.columns = ['source','target','weight']
+                self.motif_data = pd.DataFrame(motif_file.values) 
                 self.motif_tfs  = sorted(set(motif_file['source']))
                 self.motif_genes = sorted(set(motif_file['target']))
             # self.num_tfs = len(self.unique_tfs)
@@ -236,6 +242,8 @@ class Panda(object):
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
             if expression_file is not None:
+                if not isinstance(expression_file, pd.DataFrame):
+                    raise Exception("Please provide a pandas dataframe for expression data.")
                 self.expression_data = expression_file #pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
                 self.expression_genes = self.expression_data.index.tolist()
                 # self.num_genes = len(self.gene_names)
@@ -254,6 +262,8 @@ class Panda(object):
                 print('Number of PPIs:', self.ppi_data.shape[0])
         elif type(ppi_file) is not str:
             if ppi_file is not None:
+                if not isinstance(ppi_file, pd.DataFrame):
+                    raise Exception("Please provide a pandas dataframe for PPI data.")
                 self.ppi_data = ppi_file #pd.read_csv(ppi_file, sep='\t', header=None)
                 self.ppi_tfs  = sorted(set(pd.concat([self.ppi_data[0],self.ppi_data[1]])))
                 print('Number of PPIs:', self.ppi_data.shape[0])
@@ -286,6 +296,9 @@ class Panda(object):
         
         self.num_genes  = len(self.gene_names)
         self.num_tfs    = len(self.unique_tfs)
+
+        if self.num_genes!=len(self.expression_genes):
+            print('Duplicate gene symbols detected. Consider averaging before running PANDA')
 
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
@@ -346,7 +359,7 @@ class Panda(object):
         
         return
 
-    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix,computing='cpu'):
+    def panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix, computing='cpu', alpha=0.1):
         """ 
         Description:
             The PANDA algorithm.
@@ -442,7 +455,6 @@ class Panda(object):
         num_tfs, num_genes = motif_matrix.shape
         step = 0
         hamming = 1
-        alpha = 0.1
         
         while hamming > 0.001:
             # Update motif_matrix
