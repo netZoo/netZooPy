@@ -255,6 +255,9 @@ class Panda(object):
                 self.expression_data = None #pd.DataFrame(np.identity(self.num_genes, dtype=int))
                 print('No Expression data given: correlation matrix will be an identity matrix of size', len(self.motif_genes))
 
+        if len(self.expression_genes)!=len(np.unique(self.expression_genes)):
+            print('Duplicate gene symbols detected. Consider averaging before running PANDA')
+
         if type(ppi_file) is str:
             with Timer('Loading PPI data ...'):
                 self.ppi_data = pd.read_csv(ppi_file, sep='\t', header=None)
@@ -296,9 +299,6 @@ class Panda(object):
         
         self.num_genes  = len(self.gene_names)
         self.num_tfs    = len(self.unique_tfs)
-
-        if self.num_genes!=len(self.expression_genes):
-            print('Duplicate gene symbols detected. Consider averaging before running PANDA')
 
         # Auxiliary dicts
         gene2idx = {x: i for i,x in enumerate(self.gene_names)}
