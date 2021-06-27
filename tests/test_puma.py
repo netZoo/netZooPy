@@ -18,7 +18,7 @@ def test_puma():
 
     #1. Vanilla panda
     panda_obj      = Puma(expression_data, motif, ppi, mir_file,save_tmp=False, remove_missing=rm_missing,
-                      keep_expression_matrix=bool(lioness_file))
+                      keep_expression_matrix=bool(lioness_file), modeProcess='legacy')
     panda_obj.save_puma_results(output_file)
     res=pd.read_csv(output_file, sep=' ', header=None)
     gt =pd.read_csv(gt_file, sep=' ', header=None)
