@@ -98,7 +98,7 @@ class Lioness(Panda):
             self.computing=computing
             self.n_cores=int(ncores)
             if hasattr(obj,'panda_network'):
-                self.network = obj.panda_network
+                self.network = obj.panda_network.to_numpy()
             elif hasattr(obj,'puma_network'):
                 self.network = obj.puma_network
             else:
@@ -250,7 +250,6 @@ class Lioness(Panda):
             # self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         # else:
         #    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
-
         if output=='network':
             self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         elif output=='gene_targeting':

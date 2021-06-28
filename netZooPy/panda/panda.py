@@ -114,6 +114,7 @@ class Panda(object):
         # =====================================================================
         # Clean up useless variables to release memory
         # =====================================================================
+        self.tfs, self.genes = self.unique_tfs, self.gene_names
         if save_memory:
             print("Clearing motif and ppi data, unique tfs, and gene names for speed")
             del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
@@ -138,10 +139,12 @@ class Panda(object):
             print('Running PANDA algorithm ...')
             self.panda_network = self.panda_loop(self.correlation_matrix, self.motif_matrix, self.ppi_matrix, computing, alpha)
             # label dataframe
-            self.panda_network = pd.DataFrame(self.panda_network, index=self.unique_tfs, columns=self.gene_names)
+            self.panda_network = pd.DataFrame(self.panda_network, index=self.tfs, columns=self.genes)
         else:
             self.panda_network = self.correlation_matrix
             self.__pearson_results_data_frame()
+            # label dataframe
+            self.panda_network = pd.DataFrame(self.panda_network, index=self.genes, columns=self.genes)
 
     def __remove_missing(self):
         """ 
@@ -342,6 +345,7 @@ class Panda(object):
             self.motif_matrix         = self.motif_data
             self.ppi_matrix           = self.ppi_data
             self.__pearson_results_data_frame()
+            self.panda_network = pd.DataFrame(self.panda_network, index=self.expression_genes, columns=self.expression_genes)
             return
 
         with Timer('Creating motif network ...'):
