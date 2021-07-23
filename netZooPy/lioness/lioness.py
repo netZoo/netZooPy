@@ -133,7 +133,7 @@ class Lioness(Panda):
 
         # create result data frame
         if output == 'network':
-            total_tfs = tf_names * len(tf_genes)
+            total_tfs = tf_names * len(tf_names)
             total_genes = [i for i in gene_names for _ in range(len(tf_names))]
             indDF = pd.DataFrame([total_tfs, total_genes], index=['tf', 'gene'])
             indDF = indDF.append(pd.DataFrame(self.total_lioness_network)).transpose()
