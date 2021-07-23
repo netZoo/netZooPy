@@ -128,7 +128,11 @@ class Lioness(Panda):
 
         # create result data frame
         if output=='network':
-            self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+            total_genes = gene_names * len(tf_names)
+            total_tfs = [i for i in tf_names for _ in range(len(gene_names))]
+            indDF = pd.DataFrame([total_tfs,total_genes],index=['tf','gene'])
+            indDF = indDF.append(pd.DataFrame(self.total_lioness_network)).transpose()
+            self.export_lioness_results = indDF
         elif output=='gene_targeting':
             self.export_lioness_results = pd.DataFrame(self.total_lioness_network, columns=gene_names).transpose()
         elif output=='tf_targeting':
