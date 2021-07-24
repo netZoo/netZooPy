@@ -265,7 +265,7 @@ class Lioness(Panda):
         # else:
         #    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
         if output == 'network':
-            self.total_lioness_network = np.flatten(np.transpose(lioness_network))
+            self.total_lioness_network = np.transpose(lioness_network).flatten()
         elif output == 'gene_targeting':
             self.total_lioness_network = np.sum(lioness_network, axis=0)
         elif output == 'tf_targeting':
