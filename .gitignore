@@ -38,3 +38,4 @@ pt_out.csv
 *.ipynb
 reg_memb.txt
 tar_memb.txt
+gt_panda*.txt
