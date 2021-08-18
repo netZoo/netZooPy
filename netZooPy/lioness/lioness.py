@@ -258,8 +258,8 @@ class Lioness(Panda):
                 from scipy.io import savemat
                 savemat(path, {'PredNet': lioness_network})
             else:
-                print("Unknown format %s! Use npy format instead." % self.save_fmt)
-                np.save(path, lioness_network)
+                print("Unknown format %s! File will not be saved." % self.save_fmt)
+                #np.save(path, lioness_network)
         # if i == 0:
         # self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         # else:
