@@ -61,7 +61,7 @@ class Lioness(Panda):
     """
 
     def __init__(self, obj, computing='cpu', precision='double', ncores=1, start=1, end=None, save_dir='lioness_output',
-                 save_fmt='npy', output='network'):
+                 save_fmt='npy', output='network', alpha=0.1):
         """
         Description:
             Initialize instance of Lioness class and load data.
@@ -84,6 +84,7 @@ class Lioness(Panda):
             output          : 'network' returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network). For large sample sizes, this variable requires large RAM memory.
                               'gene_targeting' returns gene targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
                               'tf_targeting' returns tf targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
+            alpha            : learning rate, set to 0.1 by default but has to be changed manually to match the learning rate of the PANDA object.
 
         Output:
             export_lioness_results : Depeding on the output argument, this can be either all the lioness networks or their gene/tf targeting scores.
@@ -100,6 +101,7 @@ class Lioness(Panda):
                 self.motif_matrix = np.float32(self.motif_matrix)
                 self.ppi_matrix = np.float32(self.ppi_matrix)
             self.computing = computing
+            self.alpha = alpha
             self.n_cores = int(ncores)
             if hasattr(obj, 'panda_network'):
                 self.network = obj.panda_network.to_numpy()
@@ -177,7 +179,7 @@ class Lioness(Panda):
             if self.motif_matrix is not None:
                 del correlation_matrix_orig
                 subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix),
-                                                       np.copy(self.ppi_matrix), self.computing)
+                                                       np.copy(self.ppi_matrix), self.computing, self.alpha)
             else:
                 del correlation_matrix
                 subset_panda_network = correlation_matrix_orig
@@ -241,7 +243,7 @@ class Lioness(Panda):
             if self.motif_matrix is not None:
                 del correlation_matrix_orig
                 subset_panda_network = self.panda_loop(correlation_matrix, np.copy(self.motif_matrix),
-                                                       np.copy(self.ppi_matrix), self.computing)
+                                                       np.copy(self.ppi_matrix), self.computing, self.alpha)
             else:
                 del correlation_matrix
                 subset_panda_network = correlation_matrix_orig
