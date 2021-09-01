@@ -118,7 +118,7 @@ class LionessPuma(Puma):
                 correlation_matrix = self._normalize_network(correlation_matrix)
 
             with Timer("Inferring LIONESS network:"):
-                subset_puma_network = self.puma_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix), alpha)
+                subset_puma_network = self.puma_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix), self.alpha)
                 lioness_network = self.n_conditions * (self.network - subset_puma_network) + subset_puma_network
             
             force = lioness_network.flatten(order='F')
