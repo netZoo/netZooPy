@@ -135,7 +135,7 @@ class Lioness(Panda):
 
         # create result data frame
         if output == 'network':
-            if obj.motif==None:
+            if obj.motif_data==None:
                 total_genes1 = gene_names * len(gene_names)
                 total_genes2 = [i for i in gene_names for _ in range(len(gene_names))]
                 indDF = pd.DataFrame([total_genes1, total_genes2], index=['gene1', 'gene2'])
