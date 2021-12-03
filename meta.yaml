@@ -1,0 +1,53 @@
+package:
+  name: netzoopy
+  version: 0.8.1
+
+source:
+  path: .
+
+build:
+  script: "python -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  build:
+    - numpy
+    - python
+    - networkx
+    - matplotlib
+    - scipy
+    - python-igraph
+    - joblib
+    - statsmodels
+
+  run:
+    - numpy
+    - python
+    - networkx
+    - matplotlib
+    - scipy
+    - python-igraph
+    - joblib
+    - statsmodels
+
+test:
+  commands:
+    - python -c "from netZooPy.panda.panda import Panda"
+
+about:
+  home: https://github.com/netZoo/netZooPy
+  summary: Python implementation of the NetZoo ecosystem
+  license: GPL3
+  license_file: LICENSE
+  dev_url: https://github.com/netZoo/netZooPy
+  doc_url: netzoo.github.io/
+  description: |
+    netZooPy is a Python package of network methods and it is part of the NetZoo family.
+
+#test:
+#  imports:
+#    - netZooPy
+#    - netZooPy.condor
+#  commands:
+#    - pip check
+#  requires:
+#    - pip
