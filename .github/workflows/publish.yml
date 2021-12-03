@@ -35,6 +35,12 @@ jobs:
       - name: Test with pytest
         run: |
           pytest --cov=netZooPy tests
+      - name: publish-to-conda
+        uses: fcakyon/conda-publish-action@v1.3
+        with:
+          subdir: "conda"
+          anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
+          platforms: "linux"
       - name: Install pypa/build
         run: >-
           python -m
@@ -54,9 +60,3 @@ jobs:
           user: __token__
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
-      - name: publish-to-conda
-        uses: fcakyon/conda-publish-action@v1.3
-        with:
-          subdir: "conda"
-          anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
-          platforms: "linux"
