@@ -42,12 +42,3 @@ about:
   doc_url: netzoo.github.io/
   description: |
     netZooPy is a Python package of network methods and it is part of the NetZoo family.
-
-#test:
-#  imports:
-#    - netZooPy
-#    - netZooPy.condor
-#  commands:
-#    - pip check
-#  requires:
-#    - pip
