@@ -6,7 +6,7 @@ source:
   path: .
 
 build:
-  script: "python -m pip install . --no-deps --ignore-installed -vv"
+  script: "python -m pip install ../ --no-deps --ignore-installed -vv"
 
 requirements:
   build:
