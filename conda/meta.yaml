@@ -6,7 +6,7 @@ source:
   path: .
 
 build:
-  script: "python -m pip install ../ --no-deps --ignore-installed -vv"
+  script: "python setup.py install --single-version-externally-managed --record=record.txt --no-deps --ignore-installed -vv"
 
 requirements:
   build:
