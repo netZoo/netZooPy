@@ -1,7 +1,7 @@
 name: netZooPy
 
 on:
-  push:
+  release:
     branches:
       - master
       - devel
