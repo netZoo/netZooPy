@@ -4,6 +4,7 @@ on:
   release:
     branches:
       - master
+      - devel
 
 jobs:
   build:
