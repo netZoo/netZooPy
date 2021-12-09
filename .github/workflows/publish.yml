@@ -9,6 +9,10 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.8]
     steps:
       - uses: actions/checkout@v2
       - name: publish-to-conda
