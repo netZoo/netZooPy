@@ -65,7 +65,7 @@ def main(argv):
 
     # Run PANDA
     print('Start Panda run ...')
-    panda_obj = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=bool(lioness_file))
+    panda_obj = Panda(expression_data, motif, ppi, save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=bool(lioness_file), save_memory=False)
     #panda_obj = pypanda.Panda(expression_data, motif, None, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(None, motif, ppi, save_tmp=True, remove_missing=rm_missing)
     #panda_obj = pypanda.Panda(None, motif, None, save_tmp=True, remove_missing=rm_missing)
