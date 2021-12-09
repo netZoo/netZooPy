@@ -11,23 +11,23 @@ build:
 
 requirements:
   build:
-    - numpy==1.21.4
-    - python
+    - numpy==1.19.2
+    - python {{ python }}
     - networkx==2.6.3
-    - matplotlib==3.5.0
-    - scipy==1.7.3
-    - python-igraph==0.9.8
+    - matplotlib==3.3.4
+    - scipy==1.5.3
+    - python-igraph==0.9.6
     - joblib==1.1.0
-    - statsmodels==0.13.1
+    - statsmodels==0.12.2
   run:
-    - numpy==1.21.4
-    - python
+    - numpy==1.19.2
+    - python {{ python }}
     - networkx==2.6.3
-    - matplotlib==3.5.0
-    - scipy==1.7.3
-    - python-igraph==0.9.8
+    - matplotlib==3.3.4
+    - scipy==1.5.3
+    - python-igraph==0.9.6
     - joblib==1.1.0
-    - statsmodels==0.13.1
+    - statsmodels==0.12.2
 
 test:
   commands:
