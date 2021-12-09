@@ -1,4 +1,4 @@
-name: netZooPy
+name: Manually build conda recipe
 
 on:
   workflow_dispatch:
