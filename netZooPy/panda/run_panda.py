@@ -77,7 +77,7 @@ def main(argv):
 
     if lioness_file:
         from netZooPy.lioness.lioness import Lioness
-        lioness_obj = Lioness(obj)
+        lioness_obj = Lioness(panda_obj)
         lioness_obj.save_lioness_results(lioness_file)
     print('All done!')
 
