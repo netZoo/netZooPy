@@ -1,4 +1,4 @@
-name: testconda
+name: test conda
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -29,3 +29,4 @@ jobs:
           mkdir conda-build
           conda build . --no-build-id  --output-folder ./conda-build
           conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build
+          anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload --force -u netzoo --no-progress ./conda-build/**/netzoopy*.bz2
