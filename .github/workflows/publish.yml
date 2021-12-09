@@ -1,6 +1,9 @@
-name: Manually build conda recipe
-
-on: [workflow_dispatch]
+name: manualconda
+on:
+  workflow_dispatch:
+    branches:
+      - master
+      - devel
 jobs:
   build:
     runs-on: ${{ matrix.os }}
