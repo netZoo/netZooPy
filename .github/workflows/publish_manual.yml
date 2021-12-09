@@ -12,22 +12,21 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-
-      steps:
-        - uses: actions/checkout@v2
-        - name: "Setup Conda"
-          uses: s-weigand/setup-conda@v1
-          with:
-            update-conda: true
-            python-version: ${{ matrix.python }}
-            conda-channels: anaconda, conda-forge, bioconda
-        - name: "Install Conda development packages"
-          run: |
-            conda install conda-build
-            conda install -c anaconda anaconda-client
-        - name: "Build and upload package"
-          run: |
-            mkdir conda-build
-            conda build . --no-build-id --numpy ${{ matrix.numpy }} --output-folder ./conda-build
-            conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build
-            anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload --force -u netzoo --no-progress ./conda-build/**/netzoopy*.bz2
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Setup Conda"
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          python-version: ${{ matrix.python }}
+          conda-channels: anaconda, conda-forge, bioconda
+      - name: "Install Conda development packages"
+        run: |
+          conda install conda-build
+          conda install -c anaconda anaconda-client
+      - name: "Build and upload package"
+        run: |
+          mkdir conda-build
+          conda build . --no-build-id --numpy ${{ matrix.numpy }} --output-folder ./conda-build
+          conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build
+          anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload --force -u netzoo --no-progress ./conda-build/**/netzoopy*.bz2
