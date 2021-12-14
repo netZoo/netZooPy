@@ -118,6 +118,9 @@ class Lioness(Panda):
         # Get sample range to iterate
         self.n_conditions = self.expression_matrix.shape[1]
         self.indexes = range(self.n_conditions)[start - 1:end]  # sample indexes to include
+        print('Number of total samples:' self.n_conditions)
+        print('Number of computed samples:' len(self.indexes))
+        print('Number of parallel cores:' self.n_cores)
 
         # Create the output folder if not exists
         self.save_dir = save_dir
