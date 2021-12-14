@@ -17,12 +17,15 @@ def main(argv):
         -o, --out: output file
         -r, --rm_missing
         -q, --lioness: output for Lioness single sample networks 
+        expression_file : Path to file containing the gene expression data. By default, the expression file does not have a header, and the cells ares separated by a tab.
+        motif_file      : Path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1).
+        ppi_file        : Path to file containing the PPI data. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
     
     Example:
         python run_panda.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
 
     Reference:
-        Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
+        Glass, Kimberley, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
     """
     #Create variables
     expression_data = None
