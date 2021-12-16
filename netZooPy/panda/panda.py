@@ -74,7 +74,7 @@ class Panda(object):
             Intialize instance of Panda class and load data.
 
         Inputs:
-            expression_file : Path to file containing the gene expression data or pandas dataframe.
+            expression_file : Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
             motif_file      : Path to file containing the transcription factor DNA binding motif data in the form of TF-gene-weight(0/1) or pandas dataframe.
                               If set to none, the gene coexpression matrix is returned as a result network.
             ppi_file        : Path to file containing the PPI data. or pandas dataframe. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
