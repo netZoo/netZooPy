@@ -11,18 +11,18 @@ def main(argv):
 
     Inputs:
         -h, --help: help
-        -e, --expression: expression values
-        -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided
-        -p, --ppi: pair file of PPI edges
-        -o, --out: output file
-        -r, --rm_missing
-        -q, --lioness: output for Lioness single sample networks 
+        -e, --expression: expression_file : Path to file containing the gene expression data. By default, the expression file does not have a header, and the cells ares separated by a tab.
+        -m, --motif: Path to pair file containing the transcription factor DNA binding motif edges in the form of TF-gene-weight(0/1). If not provided, the gene coexpression matrix is returned as a result network.
+        -p, --ppi: Path to pair file containing the PPI edges. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
+        -o, --out: output file.
+        -r, --rm_missing.
+        -q, --lioness: output for Lioness single sample networks. 
     
     Example:
         python run_panda.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
 
     Reference:
-        Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
+        Glass, Kimberley, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
     """
     #Create variables
     expression_data = None
