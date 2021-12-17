@@ -22,7 +22,7 @@ def main(argv):
         python run_panda.py -e ../../tests/ToyData/ToyExpressionData.txt -m ../../tests/ToyData/ToyMotifData.txt -p ../../tests/ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
 
     Reference:
-        Glass, Kimberley, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
+        Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
     """
     #Create variables
     expression_data = None
