@@ -13,7 +13,7 @@ def test_condor():
     gt_file2       ='tests/condot/gh_reg_memb.txt'
 
     #1. Condor
-    condor.condor(network)
+    condor.run_condor(network)
     res1=pd.read_csv(output_file1, sep=' ', header=None)
     res2=pd.read_csv(output_file2, sep=' ', header=None)
     gt1 =pd.read_csv(gt_file1, sep=' ', header=None)
