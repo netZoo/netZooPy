@@ -3,9 +3,11 @@ import os
 from netZooPy import condor
 import pandas as pd
 import numpy as np
+import random
 
 def test_condor():
     print('Start Condor run ...')
+    random.seed(10)
     network        ='tutorials/condor/toynetwork.csv'
     output_file1   ='tar_memb.txt'
     output_file2   ='reg_memb.txt'
