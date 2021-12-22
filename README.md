@@ -6,7 +6,7 @@
 [![tutorials](https://img.shields.io/badge/netZooPy-tutorials-9cf)](https://github.com/netZoo/netZooPy/tree/master/tutorials)
 [![netBooks](https://img.shields.io/badge/netZooPy-netBooks-ff69b4)](http://netbooks.networkmedicine.org/user/marouenbg/notebooks/Welcome_to_netBooks.ipynb?)
 
-netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.7 + Python v3.8 + Python v3.9)
+netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.6 + Python v3.7 + Python v3.8 + Python v3.9)
 
 ## Description
 netZooPy is a Python package of network methods. 
