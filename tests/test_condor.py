@@ -10,7 +10,7 @@ def test_condor():
     output_file1   ='tar_memb.txt'
     output_file2   ='reg_memb.txt'
     gt_file1       ='tests/condor/gh_tar_memb.txt'
-    gt_file2       ='tests/condot/gh_reg_memb.txt'
+    gt_file2       ='tests/condor/gh_reg_memb.txt'
 
     #1. Condor
     condor.run_condor(network)
