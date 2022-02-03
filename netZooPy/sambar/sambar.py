@@ -42,8 +42,8 @@ Functions:
 ## Default toydata files
 esize = pkg_resources.resource_filename(__name__, 'esizef.csv')
 genes = pkg_resources.resource_filename(__name__, 'genes.txt')
-sign  = pkg_resources.resource_filename(__name__, 'ToyData/h.all.v6.1.symbols.gmt')
-mut   = pkg_resources.resource_filename(__name__, 'ToyData/mut.ucec.csv')
+sign  = pkg_resources.resource_filename(__name__, 'h.all.v6.1.symbols.gmt')
+mut   = pkg_resources.resource_filename(__name__, 'mut.ucec.csv')
 
 def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
     """
