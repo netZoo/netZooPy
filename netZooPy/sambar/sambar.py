@@ -40,10 +40,10 @@ Functions:
             This package includes the functions ```sambar```,```desparsify```,```corgenelength```,```convertgmt```,```clustering``` as well as an implementation of the binomial distance (Millar dissimilarity from the package vegdist from R. To see the full description of each of this functions use ```help(pysambar.function)```.
 """
 ## Default toydata files
-esize = pkg_resources.resource_filename('tests', 'sambar/ToyData/esizef.csv')
-genes = pkg_resources.resource_filename('tests', 'sambar/ToyData/genes.txt')
-sign  = pkg_resources.resource_filename('tests', 'sambar/ToyData/h.all.v6.1.symbols.gmt')
-mut   = pkg_resources.resource_filename('tests', 'sambar/ToyData/mut.ucec.csv')
+esize = pkg_resources.resource_filename('netZooPy', 'tests/sambar/ToyData/esizef.csv')
+genes = pkg_resources.resource_filename('netZooPy', 'tests/sambar/ToyData/genes.txt')
+sign  = pkg_resources.resource_filename('netZooPy', 'tests/sambar/ToyData/h.all.v6.1.symbols.gmt')
+mut   = pkg_resources.resource_filename('netZooPy', 'tests/sambar/ToyData/mut.ucec.csv')
 
 def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
     """
