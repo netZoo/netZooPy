@@ -19,3 +19,6 @@ def test_sambar():
     #res=pd.read_csv(output_file, sep=' ', header=None)
     gt =pd.read_csv(gt_file, sep=',', header=0, index_col=0)
     pd.testing.assert_frame_equal(pathway_scores,gt,check_less_precise=False,check_exact=False)
+
+    #2. Sambar call without files
+    a, b = sambar.sambar()
