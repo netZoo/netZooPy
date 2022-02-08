@@ -1,16 +1,10 @@
 from __future__ import print_function
 
 import math
-import numpy as np
-from scipy.stats import zscore
-import sys
 import cupy as cp
 
-# TODO:
-# 1.Cupy needs to be imported where the functions are defined
-# 2. Cupy as requirement
 #
-# Calculation functions:
+# GPU Calculation functions:
 # These functions were defined in Panda, but are
 # also shared by Puma and possibly others.
 # We are going to start putting these here so they can be
@@ -111,9 +105,5 @@ def compute_panda_gpu(
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
 
-    else:
-        sys.error("ERROR: %s not recognised as computing choice" % computing)
-
     motif_matrix = cp.asnumpy(motif_matrix)
     return motif_matrix
-

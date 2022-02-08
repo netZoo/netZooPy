@@ -1,18 +1,11 @@
 from __future__ import print_function
 
 import sys
-import math
-import time
-import pandas as pd
 import numpy as np
-from scipy.stats import zscore
-from .timer import Timer
-from netZooPy.panda.panda import Panda
 from netZooPy.panda.calculations import (
     t_function,
     update_diagonal
 )
-
 
 
 def compute_puma_cpu(
@@ -85,6 +78,7 @@ def compute_puma_cpu(
 
     return motif_matrix
 
+
 def compute_puma(
     correlation_matrix,
     motif_matrix,
@@ -113,8 +107,6 @@ def compute_puma(
         gupdate_diagonal: Updates the diagonal of the input matrix in the message passing computed on the GPU.
     """
 
-
-
     if computing == "cpu":
         motif_matrix = compute_puma_cpu(
             correlation_matrix,
@@ -137,4 +129,3 @@ def compute_puma(
         sys.error("ERROR: %s is not an existing computing device")
 
     return motif_matrix
-

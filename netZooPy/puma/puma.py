@@ -4,7 +4,6 @@ import math
 import time
 import pandas as pd
 import numpy as np
-from scipy.stats import zscore
 from .timer import Timer
 from netZooPy.panda.panda import Panda
 import netZooPy.panda.calculations as calc
@@ -64,7 +63,7 @@ class Puma(object):
         keep_expression_matrix=False,
         alpha=0.1,
         start=1,
-        end=None
+        end=None,
     ):
         """
         Description:

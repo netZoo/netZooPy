@@ -5,9 +5,6 @@ import numpy as np
 from scipy.stats import zscore
 import sys
 
-# TODO:
-# 1.Cupy needs to be imported where the functions are defined
-# 2. Cupy as requirement
 #
 # Calculation functions:
 # These functions were defined in Panda, but are
@@ -57,6 +54,7 @@ def update_diagonal(diagonal_matrix, num, alpha, step):
     diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
     np.fill_diagonal(diagonal_matrix, diagonal_fill)
     return diagonal_matrix
+
 
 def compute_panda_cpu(
     correlation_matrix,
@@ -145,7 +143,8 @@ def compute_panda(
             motif_matrix,
             alpha=alpha,
         )
-
+    else:
+        sys.error("ERROR: %s is not an existing computing device" % str(computing))
     return motif_matrix
 
 

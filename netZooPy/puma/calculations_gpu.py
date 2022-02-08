@@ -1,19 +1,9 @@
 from __future__ import print_function
 
-import sys
-import math
-import time
-import pandas as pd
 import numpy as np
-from scipy.stats import zscore
-from .timer import Timer
-from netZooPy.panda.panda import Panda
 import cupy as cp
 
-from netZooPy.panda.calculations_gpu import (
-            gt_function,
-            gupdate_diagonal
-            )
+from netZooPy.panda.calculations_gpu import gt_function, gupdate_diagonal
 
 
 def compute_puma_gpu(
@@ -57,8 +47,8 @@ def compute_puma_gpu(
 
     while hamming > threshold:
         W = 0.5 * (
-                gt_function(ppi_matrix, motif_matrix)
-                + gt_function(motif_matrix, correlation_matrix)
+            gt_function(ppi_matrix, motif_matrix)
+            + gt_function(motif_matrix, correlation_matrix)
         )  # W = (R + A) / 2
         hamming = cp.abs(motif_matrix - W).mean()
         motif_matrix = cp.array(motif_matrix)
@@ -84,8 +74,7 @@ def compute_puma_gpu(
 
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
-        
+
     motif_matrix = cp.asnumpy(motif_matrix)
 
     return motif_matrix
-
