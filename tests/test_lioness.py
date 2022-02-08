@@ -63,7 +63,7 @@ def test_lioness():
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res = np.load("lioness_output/lioness.1.npy")
-    gt = np.load("tests/lioness/lioness_output_coexpression/lioness.1.npy")
+    gt = np.load("tests/lioness/lioness.1.coexpression.npy")
     # Compare to ground truth
     assert np.allclose(gt, res)
     
@@ -74,7 +74,7 @@ def test_lioness():
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res = np.load("lioness_output/lioness.1.npy")
-    gt = np.load("tests/lioness/lioness_output/lioness.1.npy")
+    gt = np.load("tests/lioness/lioness.1.npy")
     # Compare to ground truth
     assert np.allclose(gt, res)
     
