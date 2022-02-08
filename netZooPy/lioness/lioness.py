@@ -219,19 +219,19 @@ class Lioness(Panda):
                     correlation_matrix,
                     np.copy(self.ppi_matrix),
                     np.copy(self.motif_matrix),
-                    self.computing,
-                    self.alpha,
+                    computing = self.computing,
+                    alpha = self.alpha,
                 )
             else:
                 del correlation_matrix
                 subset_panda_network = correlation_matrix_orig
 
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
-        #lioness_network = (self.n_conditions * self.network) - (
-        #    (self.n_conditions - 1) * subset_panda_network
-        #)
+        lioness_network = (self.n_conditions * self.network) - (
+            (self.n_conditions - 1) * subset_panda_network
+        )
         # old
-        lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
+        #lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
 
         with Timer(
             "Saving LIONESS network %d to %s using %s format:"
@@ -307,18 +307,19 @@ class Lioness(Panda):
                     correlation_matrix,
                     np.copy(self.ppi_matrix),
                     np.copy(self.motif_matrix),
-                    self.computing,
-                    self.alpha,
+                    computing = self.computing,
+                    alpha = self.alpha,
                 )
             else:
                 del correlation_matrix
                 subset_panda_network = correlation_matrix_orig
 
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
-        lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
-        #lioness_network = (self.n_conditions * self.network) - (
-        #    (self.n_conditions - 1) * subset_panda_network
-        #)
+        #lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
+
+        lioness_network = (self.n_conditions * self.network) - (
+            (self.n_conditions - 1) * subset_panda_network
+        )
 
         with Timer(
             "Saving LIONESS network %d to %s using %s format:"

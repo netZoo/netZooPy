@@ -84,6 +84,8 @@ class Panda(object):
         keep_expression_matrix=False,
         modeProcess="union",
         alpha=0.1,
+        start=1,
+        end=None,
     ):
         """
         Description:
@@ -108,6 +110,8 @@ class Panda(object):
                               (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                               'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
             alpha           : Learning rate (default: 0.1)
+            start           : First sample of the expression dataset. This replicates the behavior of Lioness (default : 1)
+            end             : Last sample of the expression dataset. This replicates the behavior of Lioness (default : None )
         """
         # Read data
         self.processData(
@@ -117,6 +121,8 @@ class Panda(object):
             ppi_file,
             remove_missing,
             keep_expression_matrix,
+            start=start,
+            end=end
         )
         if hasattr(self, "export_panda_results"):
             return
@@ -252,6 +258,8 @@ class Panda(object):
         ppi_file,
         remove_missing,
         keep_expression_matrix,
+        start=1,
+        end=None,
     ):
         """
         Description:
@@ -303,6 +311,8 @@ class Panda(object):
                 self.expression_data = pd.read_csv(
                     expression_file, sep="\t", header=None, index_col=0
                 )
+
+                self.expression_data = self.expression_data.iloc[:, (start-1):end]
                 self.expression_genes = self.expression_data.index.tolist()
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
@@ -312,7 +322,7 @@ class Panda(object):
                     raise Exception(
                         "Please provide a pandas dataframe for expression data."
                     )
-                self.expression_data = expression_file  # pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
+                self.expression_data = expression_file.iloc[:, (start-1):end]  # pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
                 self.expression_genes = self.expression_data.index.tolist()
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
@@ -493,10 +503,11 @@ class Panda(object):
 
 
         panda_loop_time = time.time()
+        # TODO:This should be using self.correlation. Keeping for retrocompatibility
         motif_matrix = calc.compute_panda(
-            self.correlation_matrix,
-            self.ppi_matrix,
-            self.motif_matrix,
+            correlation_matrix,
+            ppi_matrix,
+            motif_matrix,
             computing=computing,
             alpha=alpha,
         )

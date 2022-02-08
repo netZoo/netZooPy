@@ -17,6 +17,8 @@ def test_lioness():
     rm_missing = False
     output_file = "panda.npy"
     gt_file = "tests/panda/test_panda.txt"
+    output_table = "lioness_output/toy-lioness-py.txt"
+    toy_r_file = 'tests/lioness/toy-lioness-first4-1.txt'
 
     panda_obj = Panda(
         expression_data,
@@ -25,23 +27,26 @@ def test_lioness():
         save_tmp=True,
         remove_missing=rm_missing,
         keep_expression_matrix=bool(lioness_file),
-        modeProcess="union",
+        modeProcess="legacy",
         save_memory=False,
+        start = 1,
+        end = 4
     )
     # Set parameters
     lioness_obj = Lioness(panda_obj, start=1, end = 4)
-    lioness_obj.export_lioness_table('lioness_output/lioness.txt')
+    lioness_obj.export_lioness_table(output_table)
     # Check that the correlation matrix for Panda and Lioness are the same (there is no update by Panda or Lioness)
     np.allclose(panda_obj.correlation_matrix, lioness_obj.correlation_matrix)
     np.allclose(panda_obj.motif_matrix, lioness_obj.motif_matrix)
     np.allclose(panda_obj.ppi_matrix, lioness_obj.ppi_matrix)
-    # Read first lioness network
-    res = np.load("lioness_output/lioness.1.npy")
-    gt = np.load("tests/lioness/lioness.1.npy")
-    # Compare to ground truth
 
-    #assert np.allclose(gt, res)
-    """
+    # Compare with R
+    rdf = pd.read_csv(toy_r_file, sep = ' ', header=None)
+    pydf = pd.read_csv(output_table, sep = ' ', header=None).iloc[:,0:3]
+
+    pd.testing.assert_frame_equal(rdf, pydf, rtol=5e-1, atol= 99e-2,  check_exact=False)
+
+
     # 2. Testing Lioness with motif set to None to compute Lioness on coexpression networks
     motif = None
     # Make sure to keep epxression matrix for next step
@@ -58,10 +63,10 @@ def test_lioness():
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res = np.load("lioness_output/lioness.1.npy")
-    gt = np.load("tests/lioness/lionessCoexpression.1.npy")
+    gt = np.load("tests/lioness/lioness_output_coexpression/lioness.1.npy")
     # Compare to ground truth
     assert np.allclose(gt, res)
-
+    
     # 3. Testing Lioness in parallel
     # Set parameters
     os.remove("lioness_output/lioness.1.npy")
@@ -69,8 +74,7 @@ def test_lioness():
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res = np.load("lioness_output/lioness.1.npy")
-    gt = np.load("tests/lioness/lioness.1.npy")
+    gt = np.load("tests/lioness/lioness_output/lioness.1.npy")
     # Compare to ground truth
     assert np.allclose(gt, res)
-    """
-test_lioness()
+    
