@@ -7,6 +7,8 @@ import numpy as np
 from scipy.stats import zscore
 from .timer import Timer
 from netZooPy.panda.panda import Panda
+import netZooPy.panda.calculations as calc
+from netZooPy.puma.calculations import compute_puma
 
 
 class Puma(object):
@@ -215,20 +217,7 @@ class Puma(object):
         Outputs:
             normalized_matrix: Standardized adjacency matrix.
         """
-        norm_col = zscore(x, axis=0)
-        if x.shape[0] == x.shape[1]:
-            norm_row = norm_col.T
-        else:
-            norm_row = zscore(x, axis=1)
-        # Alessandro: replace nan values
-        normalized_matrix = (norm_col + norm_row) / math.sqrt(2)
-        norm_total = (x - np.mean(x)) / np.std(x)  # NB zscore(x) is not the same
-        nan_col = np.isnan(norm_col)
-        nan_row = np.isnan(norm_row)
-        normalized_matrix[nan_col] = (norm_row[nan_col] + norm_total[nan_col]) / math.sqrt(2)
-        normalized_matrix[nan_row] = (norm_col[nan_row] + norm_total[nan_row]) / math.sqrt(2)
-        normalized_matrix[nan_col & nan_row] = 2 * norm_col[nan_col & nan_row] / math.sqrt(2)
-        return normalized_matrix
+        return(calc.normalize_network(x))
 
     def puma_loop(self, correlation_matrix, motif_matrix, ppi_matrix, computing='cpu', alpha=0.1):
         """
@@ -249,153 +238,18 @@ class Puma(object):
             gupdate_diagonal: Updates the diagonal of the input matrix in the message passing computed on the GPU.
         """
 
-        def t_function(x, y=None):
-            '''T function.'''
-            if y is None:
-                a_matrix = np.dot(x, x.T)
-                s = np.square(x).sum(axis=1)
-                a_matrix /= np.sqrt(s + s.reshape(-1, 1) - np.abs(a_matrix))
-            else:
-                a_matrix = np.dot(x, y)
-                a_matrix /= np.sqrt(
-                    np.square(y).sum(axis=0) + np.square(x).sum(axis=1).reshape(-1, 1) - np.abs(a_matrix))
-            return a_matrix
-
-        def update_diagonal(diagonal_matrix, num, alpha, step):
-            """
-            Description:
-                Updates the diagonal of the input matrix in the message passing computed on the CPU.
-
-            Inputs:
-                diagonal_matrix: Input diagonal matrix.
-                num            : Number of rows/columns.
-                alpha          : Learning rate.
-                step           : The current step in the algorithm.
-            """
-            np.fill_diagonal(diagonal_matrix, np.nan)
-            diagonal_std = np.nanstd(diagonal_matrix, 1)
-            diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
-            np.fill_diagonal(diagonal_matrix, diagonal_fill)
-
-        def gt_function(x, y=None):
-            """
-            Description:
-                Continuous Tanimoto similarity function computed on the GPU.
-
-            Inputs:
-                x: First object to measure the distance from. If only this matrix is provided, then the distance is meausred between the columns of x.
-                y: Second object to measure the distance to.
-
-            Ouputs:
-                a_matrix: Matrix containing the pairwsie distances.
-            """
-            if y is None:
-                a_matrix = cp.dot(x, x.T)
-                s = cp.square(x).sum(axis=1)
-                a_matrix /= cp.sqrt(s + s.reshape(-1, 1) - cp.abs(a_matrix))
-            else:
-                a_matrix = cp.dot(x, y)
-                a_matrix /= cp.sqrt(
-                    cp.square(y).sum(axis=0) + cp.square(x).sum(axis=1).reshape(-1, 1) - cp.abs(a_matrix))
-            return a_matrix
-
-        def gupdate_diagonal(diagonal_matrix, num, alpha, step):
-            """
-            Description:
-                Updates the diagonal of the input matrix in the message passing computed on the GPU.
-
-            Inputs:
-                diagonal_matrix: Input diagonal matrix.
-                num            : Number of rows/columns.
-                alpha          : Learning rate.
-                step           : The current step in the algorithm.
-            """
-            cp.fill_diagonal(diagonal_matrix, cp.nan)
-            diagonal_std = cp.nanstd(diagonal_matrix, 1)
-            diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
-            cp.fill_diagonal(diagonal_matrix, diagonal_fill)
-
         puma_loop_time = time.time()
-        num_tfs, num_genes = motif_matrix.shape
-
-        # Alessandro
-        TFCoopInit = ppi_matrix.copy()
-
-        step = 0
-        hamming = 1
-        while hamming > 0.001:
-            # Update motif_matrix
-            if computing == 'gpu':
-                import cupy as cp
-                ppi_matrix = cp.array(ppi_matrix)
-                motif_matrix = cp.array(motif_matrix)
-                correlation_matrix = cp.array(correlation_matrix)
-                W = 0.5 * (gt_function(ppi_matrix, motif_matrix) + gt_function(motif_matrix,
-                                                                               correlation_matrix))  # W = (R + A) / 2
-                hamming = cp.abs(motif_matrix - W).mean()
-                motif_matrix = cp.array(motif_matrix)
-                motif_matrix *= (1 - alpha)
-                motif_matrix += (alpha * W)
-
-                if hamming > 0.001:
-                    # Update ppi_matrix
-                    ppi = gt_function(motif_matrix)  # t_func(X, X.T)
-                    gupdate_diagonal(ppi, num_tfs, alpha, step)
-                    ppi_matrix *= (1 - alpha)
-                    ppi_matrix += (alpha * ppi)
-
-                    # Alessandro
-                    TFCoopDiag = ppi_matrix.diagonal()
-                    ppi_matrix[self.s1] = TFCoopInit[self.s1]
-                    ppi_matrix[:, self.s1] = TFCoopInit[:, self.s1]
-                    np.fill_diagonal(ppi_matrix, TFCoopDiag)
-
-                    # Update correlation_matrix
-                    motif = gt_function(motif_matrix.T)
-                    gupdate_diagonal(motif, num_genes, alpha, step)
-                    correlation_matrix *= (1 - alpha)
-                    correlation_matrix += (alpha * motif)
-
-                    del W, ppi, motif  # release memory for next step
-
-            elif computing == 'cpu':
-                W = 0.5 * (t_function(ppi_matrix, motif_matrix) + t_function(motif_matrix,
-                                                                             correlation_matrix))  # W = (R + A) / 2
-                hamming = np.abs(motif_matrix - W).mean()
-                motif_matrix *= (1 - alpha)
-                motif_matrix += (alpha * W)
-
-                if hamming > 0.001:
-                    # Update ppi_matrix
-                    ppi = t_function(motif_matrix)  # t_func(X, X.T)
-                    update_diagonal(ppi, num_tfs, alpha, step)
-                    ppi_matrix *= (1 - alpha)
-                    ppi_matrix += (alpha * ppi)
-
-                    # Alessandro
-                    TFCoopDiag = ppi_matrix.diagonal()
-                    ppi_matrix[self.s1] = TFCoopInit[self.s1]
-                    ppi_matrix[:, self.s1] = TFCoopInit[:, self.s1]
-                    np.fill_diagonal(ppi_matrix, TFCoopDiag)
-
-                    # Update correlation_matrix
-                    motif = t_function(motif_matrix.T)  # t_func(X.T, X)
-                    update_diagonal(motif, num_genes, alpha, step)
-                    correlation_matrix *= (1 - alpha)
-                    correlation_matrix += (alpha * motif)
-
-                    del W, ppi, motif  # release memory for next step
-
-            print('step: {}, hamming: {}'.format(step, hamming))
-            step = step + 1
-
+        motif_matrix = compute_puma(self.correlation_matrix, self.motif_matrix, self.ppi_matrix, self.s1, computing = computing, alpha = alpha)
+        
         print('Running puma took: %.2f seconds!' % (time.time() - puma_loop_time))
+        self.puma_network = motif_matrix
         # Ale: reintroducing the export_puma_results array if Puma called with save_memory=False
         if hasattr(self, 'unique_tfs'):
             tfs = np.tile(self.unique_tfs, (len(self.gene_names), 1)).flatten()
             genes = np.repeat(self.gene_names, self.num_tfs)
             motif = self.motif_matrix_unnormalized.flatten(order='F')
-            force = self.motif_matrix.flatten(order='F')
+            force = motif_matrix.flatten(order='F')
+            # TODO: should we keep formats consistent between Panda and Puma?
             # self.export_puma_results = pd.DataFrame({'tf':tfs, 'gene': genes,'motif': motif, 'force': force})
             self.export_puma_results = np.column_stack((tfs, genes, motif, force))
         return motif_matrix
@@ -555,18 +409,3 @@ class Puma(object):
         subset_outdegree = export_puma_results_pd.loc[:, ['tf', 'force']]
         self.puma_outdegree = subset_outdegree.groupby('tf').sum()
         return self.puma_outdegree
-
-    def __pearson_results_data_frame(self):
-        """
-        Description:
-            Saves PANDA network in edges format. Taken from PANDA to address PUMA edge case when motif is not provided.
-        """
-        genes_1 = np.tile(self.gene_names, (len(self.gene_names), 1)).flatten()
-        genes_2 = np.tile(self.gene_names, (len(self.gene_names), 1)).transpose().flatten()
-        self.flat_panda_network = self.panda_network.transpose().flatten()
-        print(genes_1)
-        print(genes_2)
-        print((self.flat_panda_network).shape)
-        self.export_panda_results = pd.DataFrame({'tf': genes_1, 'gene': genes_2, 'force': self.flat_panda_network})
-        self.export_panda_results = self.export_panda_results[['tf', 'gene', 'force']]
-        return None
