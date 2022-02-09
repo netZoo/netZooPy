@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.stats import zscore
 from .timer import Timer
 import numpy as np
-import netZooPy.panda.calculations as calc
+from netZooPy.panda import calculations as calc
 
 
 class Panda(object):
