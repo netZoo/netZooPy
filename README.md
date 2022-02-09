@@ -1,5 +1,5 @@
-![master](https://github.com/netZoo/netZooPy/workflows/netZooPy/badge.svg?branch=master)
-![devel](https://github.com/netZoo/netZooPy/workflows/netZooPy/badge.svg?branch=devel)
+[![master](https://github.com/netZoo/netZooPy/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/netZoo/netZooPy/actions/workflows/main.yml)
+[![devel](https://github.com/netZoo/netZooPy/actions/workflows/main.yml/badge.svg?branch=devel)](https://github.com/netZoo/netZooPy/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/netZoo/netZooPy/branch/devel/graph/badge.svg)](https://codecov.io/gh/netZoo/netZooPy)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Documentation Status](https://readthedocs.org/projects/netzoopy/badge/?version=latest)](https://netzoopy.readthedocs.io/en/latest/?badge=latest)
@@ -7,7 +7,9 @@
 [![alt-version](https://anaconda.org/netzoo/netzoopy/badges/version.svg)](https://anaconda.org/netzoo/netzoopy)
 [![netBooks](https://img.shields.io/badge/netZooPy-netBooks-ff69b4)](http://netbooks.networkmedicine.org/)
 
-netZooPy is tested on: (OS: Linux + Macos) X (Language: Python v3.7 + Python v3.8 + Python v3.9)
+
+netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.6 + Python v3.7 + Python v3.8 + Python v3.9)
+
 
 ## Description
 
