@@ -8,7 +8,7 @@
 [![netBooks](https://img.shields.io/badge/netZooPy-netBooks-ff69b4)](http://netbooks.networkmedicine.org/)
 
 
-netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.6 + Python v3.7 + Python v3.8 + Python v3.9)
+netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.7 + Python v3.8 + Python v3.9)
 
 
 ## Description
@@ -47,7 +47,7 @@ On anaconda.org you will find the conda recipes for all platforms. We recommend 
 To install netzoopy through conda:
 
 ```bash
-conda install -c netzoo netzoopy
+conda install -c netzoo -c conda-forge netzoopy
 ```
 
 ## User guide
