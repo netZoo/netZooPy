@@ -7,8 +7,8 @@
 [![alt-version](https://anaconda.org/netzoo/netzoopy/badges/version.svg)](https://anaconda.org/netzoo/netzoopy)
 [![netBooks](https://img.shields.io/badge/netZooPy-netBooks-ff69b4)](http://netbooks.networkmedicine.org/)
 
-
 netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.7 + Python v3.8 + Python v3.9)
+
 
 
 ## Description
