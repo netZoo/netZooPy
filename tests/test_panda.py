@@ -120,7 +120,7 @@ def test_panda():
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
     print("Test panda passed was successful!")
 
-    # 4. Legacy with rm_missing=True
+    # 3' Legacy with rm_missing=True
     panda_obj = Panda(
         expression_data,
         motif,
@@ -132,9 +132,8 @@ def test_panda():
         modeProcess="legacy",
     )
     panda_obj.save_panda_results(output_file)
-    gt_file = "tests/panda/rm_test_panda.txt"
     res = pd.read_csv(output_file, sep=" ", header=None)
-    gt = pd.read_csv(gt_file, sep=" ", header=None)
+    gt = pd.read_csv(gt_file_rm, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
     print("Test panda passed was successful!")
 
