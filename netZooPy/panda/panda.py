@@ -369,7 +369,7 @@ class Panda(object):
 
         if modeProcess == "legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
-        if modeProcess == "legacy":
+        if modeProcess == "legacy" and remove_missing==False:
             if expression_file is not None:
                 self.gene_names = (
                     self.expression_genes
