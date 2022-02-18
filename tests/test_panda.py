@@ -16,6 +16,7 @@ def test_panda():
     output_file = "travis_test_panda.txt"
     gt_file = "tests/panda/union_test_panda.txt"
     gt_file_inter = "tests/panda/inter_test_panda.txt"
+    gt_file_rm = "tests/panda/rm_test_panda.txt"
 
     # 0. Intersection
     panda_obj = Panda(
@@ -116,6 +117,23 @@ def test_panda():
     gt_file = "tests/panda/legacy_test_panda.txt"
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file, sep=" ", header=None)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    print("Test panda passed was successful!")
+
+    # 3' Legacy with rm_missing=True
+    panda_obj = Panda(
+        expression_data,
+        motif,
+        ppi,
+        save_tmp=True,
+        remove_missing=True,
+        keep_expression_matrix=True,
+        save_memory=True,
+        modeProcess="legacy",
+    )
+    panda_obj.save_panda_results(output_file)
+    res = pd.read_csv(output_file, sep=" ", header=None)
+    gt = pd.read_csv(gt_file_rm, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
     print("Test panda passed was successful!")
 
