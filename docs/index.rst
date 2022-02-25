@@ -13,15 +13,37 @@ Home
 
 netZooPy is a catalog of methods for the reconstruction and analysis of gene regulatory networks.
 
-netZooPy has started as a merge of the following repositories and forks:
+Available animals are: (gpu)PANDA, (gpu)LIONESS, (gpu)PUMA, SAMBAR, CONDOR, OTTER, and DRAGON.
 
-- `pypanda <https://github.com/davidvi/pypanda>`_ from David Van Ijzendorn, 
 
-- Alessandro Marin's pypanda and Marieke Kuijjer's pypuma `fork <https://github.com/aless80/pypanda>`_, and 
+Getting started
+------------------
 
-- Cho-Yi Chen's `fork <https://github.com/QuackenbushLab/pypanda>`_.
 
-- Genis Calderer's `pysambar <https://github.com/genis/pysambar>`_ and `pycondor <https://github.com/genis/pycondr>`_
+.. toctree::
+
+   install/index
+
+
+Tutorial
+------------------
+
+You will find a comprehensive tutorial for all the animals at 
+
+Command Line Interface
+------------------------
+
+Netzoopy is now support command line calls to its functions. 
+
+.. toctree::
+   functions/cli
+
+API
+-----
+.. toctree::
+
+   functions/api
+
 
 Contents
 ========
@@ -30,10 +52,6 @@ Contents
    :hidden:
 
    self
-
-.. toctree::
-
-   install/index
 
 .. toctree::
 
@@ -46,6 +64,20 @@ Contents
 .. toctree::
 
    changelog
+
+Legacy
+-------
+
+netZooPy has merged of the following repositories and forks:
+
+- `pypanda <https://github.com/davidvi/pypanda>`_ from David Van Ijzendorn, 
+
+- Alessandro Marin's pypanda and Marieke Kuijjer's pypuma `fork <https://github.com/aless80/pypanda>`_, and 
+
+- Cho-Yi Chen's `fork <https://github.com/QuackenbushLab/pypanda>`_.
+
+- Genis Calderer's `pysambar <https://github.com/genis/pysambar>`_ and `pycondor <https://github.com/genis/pycondr>`_
+
 
 Indices and tables
 ==================

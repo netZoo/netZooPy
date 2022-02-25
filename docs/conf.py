@@ -12,9 +12,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath("../../netZooPy"))
+sys.path.insert(0, os.path.abspath("../../netZooPy/docs/"))
 
 
 # -- Project information -----------------------------------------------------
@@ -24,7 +27,7 @@ copyright = u'2019, netZoo'
 author    = u'netZoo'
 
 # The short X.Y version
-__version__ = "0.1.1"
+__version__ = "0.9.1"
 version     = ".".join(__version__.split(".")[:2])
 # The full version, including alpha/beta/rc tags
 release     = __version__
@@ -39,12 +42,26 @@ release     = __version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['releases']
+#extensions = ['releases','myst_parser']
+
+extensions = [
+    'myst_parser',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
+    'sphinx_rtd_theme',
+    'sphinx_click']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-releases_github_path = "netZoo/netZooPy"  # NOTE Change to "velocyto-team/velocyto.py" upon public release
-releases_unstable_prehistory = True
+#releases_github_path = "netZoo/netZooPy"  # NOTE Change to "velocyto-team/velocyto.py" upon public release
+#releases_unstable_prehistory = True
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -87,11 +104,27 @@ html_theme_options ={
 #
 # html_theme_options = {}
 
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_logo = "_static/netZoo_logo_v14.png"
+html_theme_options = {
+    'canonical_url': '',
+    'logo_only': False,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': False,
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False,
+
+}
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
@@ -160,10 +193,15 @@ texinfo_documents = [
 ]
 
 
-from recommonmark.parser import CommonMarkParser
+#from recommonmark.parser import CommonMarkParser
 
-source_parsers = {
-    '.md': CommonMarkParser,
+#source_parsers = {
+#    '.md': CommonMarkParser,
+#}
+
+#source_suffix = ['.rst', '.md']
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
 }
-
-source_suffix = ['.rst', '.md']

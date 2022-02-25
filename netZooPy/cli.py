@@ -1,0 +1,12 @@
+#!/usr/bin/python3
+
+import click
+
+from netZooPy import command_line as cl
+
+@click.group()
+def cli():
+    pass
+
+cli.add_command(cl.panda)
+cli.add_command(cl.lioness)
