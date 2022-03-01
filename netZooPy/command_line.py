@@ -65,7 +65,7 @@ def panda(expression, motif, ppi, output, computing, precision, save_memory, sav
 
     # Run PANDA
     print('Start Panda run ...')
-    panda_obj = Panda(expression, motif, ppi, computing=computing, save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=keep_expr, save_memory=save_memory,modeProcess=mode_process, alpha=alpha,start=start, end=end)
+    panda_obj = Panda(expression, motif, ppi, computing=computing,precision = precision,  save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=keep_expr, save_memory=save_memory,modeProcess=mode_process, alpha=alpha,start=start, end=end)
     panda_obj.save_panda_results(output)
 
 #############################################################################

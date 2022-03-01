@@ -1,13 +1,14 @@
-Classes
-=======
+The Animals (API)
+-------------------
+
 
 Panda
------
+======
 
 .. autoclass:: netZooPy.panda.panda.Panda
 
 Lioness
----------
+=========
 
 
 .. autoclass:: netZooPy.lioness.lioness.Lioness
@@ -17,12 +18,12 @@ Lioness
    :private-members:
    
 Puma
-------
+=====
 
 .. autoclass:: netZooPy.puma.puma.Puma
 
 Sambar
--------
+======
 
 .. autofunction:: netZooPy.sambar.sambar
 
