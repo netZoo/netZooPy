@@ -13,51 +13,83 @@ from joblib import wrap_non_picklable_objects
 from netZooPy.panda.calculations import compute_panda
 
 class Lioness(Panda):
-    """
-    Description:
-        Using LIONESS to infer single-sample gene regulatory networks.
+    """ Using LIONESS to infer single-sample gene regulatory networks.
         1. Reading in PANDA network and preprocessed middle data
         2. Computing coexpression network
         3. Normalizing coexpression network
         4. Running PANDA algorithm
         5. Writing out LIONESS networks
 
-    Inputs:
-        Panda: Panda object.
+    Parameters
+    ----------
+            obj             : object
+                PANDA object, generated with keep_expression_matrix=True.
+            computing       : str
+                'cpu' uses Central Processing Unit (CPU) to run PANDA
+                'gpu' use the Graphical Processing Unit (GPU) to run PANDA
+            precision       : str
+                'double' computes the regulatory network in double precision (15 decimal digits).
+                'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+            start           : int
+                Index of first sample to compute the network.
+            end             : int
+                Index of last sample to compute the network.
+            save_dir        : str
+                Directory to save the networks.
+            save_fmt        : str
+                Save format.
+                - '.npy': (Default) Numpy file.
+                - '.txt': Text file.
+                - '.mat': MATLAB file.
+            output          : str
+                - 'network' returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network). For large sample sizes, this variable requires large RAM memory.
+                - 'gene_targeting' returns gene targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
+                - 'tf_targeting' returns tf targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
+            alpha            : float
+                learning rate, set to 0.1 by default but has to be changed manually to match the learning rate of the PANDA object.
 
-    Methods:
-        __init__              : Intialize instance of Lioness class and load data.
-        __lioness_loop        : The LIONESS algorithm.
-        save_lioness_results  : Saves LIONESS network.
+    Returns
+    --------
+        export_lioness_results : _
+            Depeding on the output argument, this can be either all the lioness 
+            networks or their gene/tf targeting scores.
+        
 
-    Example:
-        from netZooPy.lioness.lioness import Lioness
-        To run the Lioness algorithm for single sample networks, first run PANDA using the keep_expression_matrix flag, then use Lioness as follows:
-        panda_obj = Panda('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
-        lioness_obj = Lioness(panda_obj)
+    Examples
+    -----------
+        >>> from netZooPy.lioness.lioness import Lioness
+        >>> #To run the Lioness algorithm for single sample networks, first run PANDA using the keep_expression_matrix flag, then use Lioness as follows:
+        >>> panda_obj = Panda('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
+        >>> lioness_obj = Lioness(panda_obj)
 
-        Save Lioness results:
-        lioness_obj.save_lioness_results('Toy_Lioness.txt')
-        Return a network plot for one of the Lioness single sample networks:
-        plot = AnalyzeLioness(lioness_obj)
-        plot.top_network_plot(column= 0, top=100, file='top_100_genes.png')
+        >>> #Save Lioness results:
+        >>> lioness_obj.save_lioness_results('Toy_Lioness.txt')
+        >>> #Return a network plot for one of the Lioness single sample networks:
+        >>> plot = AnalyzeLioness(lioness_obj)
+        >>> plot.top_network_plot(column= 0, top=100, file='top_100_genes.png')
 
-        Example lioness output:
-        Sample1 Sample2 Sample3 Sample4
-        -------------------------------
-        -0.667452814003	-1.70433776179	-0.158129613892	-0.655795512803
-        -0.843366539284	-0.733709815256	-0.84849895139	-0.915217389738
-        3.23445386464	2.68888472802	3.35809757371	3.05297381396
-        2.39500370135	1.84608635425	2.80179804094	2.67540878165
-        -0.117475863987	0.494923925853	0.0518448588965	-0.0584810456421
+    Notes
+    -------
 
+    Example lioness output:
         TF, Gene and Motif order is identical to the panda output file.
+
+        - Sample1 Sample2 Sample3 Sample4\n
+        - -------------------------------\n
+        - -0.667452814003	-1.70433776179	-0.158129613892	-0.655795512803\n
+        - -0.843366539284	-0.733709815256	-0.84849895139	-0.915217389738\n
+        - 3.23445386464	2.68888472802	3.35809757371	3.05297381396\n
+        - 2.39500370135	1.84608635425	2.80179804094	2.67540878165\n
+        - -0.117475863987	0.494923925853	0.0518448588965	-0.0584810456421\n
 
     Authors:
         Cho-Yi Chen, David Vi, Daniel Morgan
 
-    Reference:
-        Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
+    References
+    -----------
+
+    .. [1] Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." 
+        Iscience 14 (2019): 226-240.
     """
 
     def __init__(
@@ -73,32 +105,7 @@ class Lioness(Panda):
         output="network",
         alpha=0.1,
     ):
-        """
-        Description:
-            Initialize instance of Lioness class and load data.
-
-        Inputs:
-            obj             : PANDA object, generated with keep_expression_matrix=True.
-            obj.motif_matrix: TF DNA motif binding data in tf-by-gene format.
-                              If set to None, Lioness will be performed on gene coexpression network.
-            computing       : 'cpu' uses Central Processing Unit (CPU) to run PANDA
-                              'gpu' use the Graphical Processing Unit (GPU) to run PANDA
-            precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
-                              'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
-            start           : Index of first sample to compute the network.
-            end             : Index of last sample to compute the network.
-            save_dir        : Directory to save the networks.
-            save_fmt        : Save format.
-                              '.npy': (Default) Numpy file.
-                              '.txt': Text file.
-                              '.mat': MATLAB file.
-            output          : 'network' returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network). For large sample sizes, this variable requires large RAM memory.
-                              'gene_targeting' returns gene targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
-                              'tf_targeting' returns tf targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
-            alpha            : learning rate, set to 0.1 by default but has to be changed manually to match the learning rate of the PANDA object.
-
-        Output:
-            export_lioness_results : Depeding on the output argument, this can be either all the lioness networks or their gene/tf targeting scores.
+        """ Initialize instance of Lioness class and load data.
         """
         # Load data
         with Timer("Loading input data ..."):
@@ -181,12 +188,12 @@ class Lioness(Panda):
         self.save_lioness_results()
 
     def __lioness_loop(self, i):
-        """
-        Description:
-            Initialize instance of Lioness class and load data.
+        """ Initialize instance of Lioness class and load data.
 
-        Outputs:
-            self.total_lioness_network: An edge-by-sample matrix containing sample-specific networks.
+        Returns
+        --------
+            self.total_lioness_network: array
+                An edge-by-sample matrix containing sample-specific networks.
         """
         # for i in self.indexes:
         print("Running LIONESS for sample %d:" % (i + 1))
@@ -269,12 +276,12 @@ class Lioness(Panda):
     @delayed
     @wrap_non_picklable_objects
     def __par_lioness_loop(self, i, output):
-        """
-        Description:
-            Initialize instance of Lioness class and load data.
+        """ Initialize instance of Lioness class and load data.
 
-        Outputs:
-            self.total_lioness_network: An edge-by-sample matrix containing sample-specific networks.
+        Returns
+        ---------
+            self.total_lioness_network: array
+                An edge-by-sample matrix containing sample-specific networks.
         """
         # for i in self.indexes:
         print("Running LIONESS for sample %d:" % (i + 1))
@@ -350,12 +357,9 @@ class Lioness(Panda):
         return self.total_lioness_network
 
     def save_lioness_results(self):
-        """
-        Description:
-            Saves LIONESS network.
-
-        Outputs:
-            file: Path to save the network.
+        """ Saves LIONESS network.
+            Uses self.save_fmt, self.save_dir to save the data
+            into self.total_lioness_network
         """
         # self.lioness_network.to_csv(file, index=False, header=False, sep="\t")
         fullpath = os.path.join(self.save_dir, "lioness.%s" % (self.save_fmt))
@@ -375,14 +379,16 @@ class Lioness(Panda):
         return None
 
     def export_lioness_table(self, output_filename="lioness_table.txt", header=False):
-        """
-        Description:
+        """ 
             Saves LIONESS network with edge names. This saves a dataframe with the corresponding
             header and indexes.
-            So far we
-        Outputs:
-            output_filename: Path to save the network. Specify relative path
-            and format. Choose between .csv, .tsv and .txt. (Defaults to .lioness_table.txt))
+
+        Parameters
+        ------------
+            output_filename: str
+                Path to save the network. Specify relative path
+                and format. Choose between .csv, .tsv and .txt. 
+                (Defaults to .lioness_table.txt))
         """
         df  = self.export_lioness_results
         df = df.sort_values(by=['tf','gene'])
