@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Animals (API) &mdash; netZooPy 0.9.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Changelog" href="../changelog.html" />
+    <link rel="prev" title="Command Line Interface" href="cli.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> netZooPy
+            <img src="../_static/netZoo_logo_v14.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The Animals (API)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#panda">Panda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lioness">Lioness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#puma">Puma</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sambar">Sambar</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Functions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutos/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">netZooPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>The Animals (API)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/functions/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-animals-api">
+<h1>The Animals (API)<a class="headerlink" href="#the-animals-api" title="Permalink to this headline"></a></h1>
+<section id="panda">
+<h2>Panda<a class="headerlink" href="#panda" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">netZooPy.panda.panda.</span></span><span class="sig-name descname"><span class="pre">Panda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppi_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">computing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'double'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_tmp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_expression_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modeProcess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/panda/panda.html#Panda"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.panda.panda.Panda" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Using PANDA to infer gene regulatory network.</dt><dd><ol class="arabic simple">
+<li><p>Reading in input data (expression data, motif prior, TF PPI data)</p></li>
+<li><p>Computing coexpression network</p></li>
+<li><p>Normalizing networks</p></li>
+<li><p>Running PANDA algorithm</p></li>
+<li><p>Writing out PANDA network</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expression_file</strong> (<em>str</em>) – Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.</p></li>
+<li><p><strong>motif_file</strong> (<em>str</em>) – Path to file containing the transcription factor DNA binding motif data in the form of
+TF-gene-weight(0/1) or pandas dataframe.
+If set to none, the gene coexpression matrix is returned as a result network.</p></li>
+<li><p><strong>ppi_file</strong> (<em>str</em>) – Path to file containing the PPI data. or pandas dataframe.
+The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.</p></li>
+<li><p><strong>computing</strong> (<em>str</em>) – ‘cpu’ uses Central Processing Unit (CPU) to run PANDA.
+‘gpu’ use the Graphical Processing Unit (GPU) to run PANDA.</p></li>
+<li><p><strong>precision</strong> (<em>str</em>) – <ul>
+<li><p>‘double’ computes the regulatory network in double precision (15 decimal digits).</p></li>
+<li><p>’single’ computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.</p></li>
+</ul>
+</p></li>
+<li><p><strong>save_memory</strong> (<em>bool</em>) – <ul>
+<li><p>True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).</p></li>
+<li><p>False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.</p></li>
+</ul>
+</p></li>
+<li><p><strong>save_tmp</strong> (<em>bool</em>) – Save temporary variables.</p></li>
+<li><p><strong>remove_missing</strong> (<em>bool</em>) – Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess=’legacy’.</p></li>
+<li><p><strong>keep_expression_matrix</strong> (<em>bool</em>) – Keeps the input expression matrix in the result Panda object.</p></li>
+<li><p><strong>modeProcess</strong> (<em>str</em>) – The input data processing mode.
+- ‘legacy’: refers to the processing mode in netZooPy&lt;=0.5
+- (Default)’union’: takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
+- ‘intersection’: intersects the input genes and TFs across priors and removes the missing TFs/genes.</p></li>
+<li><p><strong>alpha</strong> (<em>str</em>) – Learning rate (default: 0.1)</p></li>
+<li><p><strong>start</strong> (<em>int</em>) – First sample of the expression dataset. This replicates the behavior of Lioness (default : 1)</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – </p></li>
+<li><p><strong>(</strong><strong>default</strong> (<em>Last sample of the expression dataset. This replicates the behavior of Lioness</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1">#Import the classes in the pypanda library:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">netZooPy.panda.panda</span> <span class="kn">import</span> <span class="n">Panda</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Run the Panda algorithm, leave out motif and PPI data to use Pearson correlation network:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">panda_obj</span> <span class="o">=</span> <span class="n">Panda</span><span class="p">(</span><span class="s1">&#39;../../tests/ToyData/ToyExpressionData.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;../../tests/ToyData/ToyMotifData.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;../../tests/ToyData/ToyPPIData.txt&#39;</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Save the results:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">panda_obj</span><span class="o">.</span><span class="n">save_panda_results</span><span class="p">(</span><span class="s1">&#39;Toy_Panda.pairs.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Return a network plot:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">panda_obj</span><span class="o">.</span><span class="n">top_network_plot</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s1">&#39;top_genes.png&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Calculate in- and outdegrees for further analysis:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">indegree</span> <span class="o">=</span> <span class="n">panda_obj</span><span class="o">.</span><span class="n">return_panda_indegree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outdegree</span> <span class="o">=</span> <span class="n">panda_obj</span><span class="o">.</span><span class="n">return_panda_outdegree</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Toy data:</dt><dd><p>The example gene expression data that we have available here contains gene expression profiles
+for different samples in the columns. Of note, this is just a small subset of a larger gene
+expression dataset. We provided these “toy” data so that the user can test the method.</p>
+</dd>
+<dt>Sample PANDA results:</dt><dd><ul class="simple">
+<li><p>TF    Gene    Motif   Force</p></li>
+<li><p>CEBPA AACSL   0.0     -0.951416589143</p></li>
+<li><p>CREB1 AACSL   0.0     -0.904241609324</p></li>
+<li><p>DDIT3 AACSL   0.0     -0.956471642313</p></li>
+<li><p>E2F1  AACSL   1.0     3.685316051</p></li>
+<li><p>EGR1  AACSL   0.0     -0.695698519643</p></li>
+</ul>
+</dd>
+<dt>Authors:</dt><dd><p>Cho-Yi Chen, David Vi, Alessandro Marin, Marouen Ben Guebila, Daniel Morgan</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Glass, Kimberly, et al. “Passing messages between biological networks to refine predicted interactions.”
+PloS one 8.5 (2013): e64832.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.__create_plot">
+<span class="sig-name descname"><span class="pre">__create_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unique_genes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'panda.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_bipart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.panda.panda.Panda.__create_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Runs the plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unique_genes</strong> (<em>list</em>) – Unique list of PANDA genes.</p></li>
+<li><p><strong>links</strong> (<em>list</em>) – Edges of the subset PANDA network to the top genes.</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – File to save the network plot.</p></li>
+<li><p><strong>plot_bipart</strong> (<em>bool</em>) – Plot the network as a bipartite layout.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>split_label: Splits the plot label over several lines for plotting purposes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.__pearson_results_data_frame">
+<span class="sig-name descname"><span class="pre">__pearson_results_data_frame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.panda.panda.Panda.__pearson_results_data_frame" title="Permalink to this definition"></a></dt>
+<dd><p>Saves PANDA network in edges format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.__remove_missing">
+<span class="sig-name descname"><span class="pre">__remove_missing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.panda.panda.Panda.__remove_missing" title="Permalink to this definition"></a></dt>
+<dd><p>Removes the genes and TFs that are not present in one of the priors. Works only if modeProcess=’legacy’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.__shape_plot_network">
+<span class="sig-name descname"><span class="pre">__shape_plot_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset_panda_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'panda.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_bipart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.panda.panda.Panda.__shape_plot_network" title="Permalink to this definition"></a></dt>
+<dd><p>Creates plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subset_panda_results</strong> – array
+Reduced PANDA network to the top genes.</p></li>
+<li><p><strong>file</strong> – str
+File to save the network plot.</p></li>
+<li><p><strong>plot_bipart</strong> – bool
+Plot the network as a bipartite layout.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda._normalize_network">
+<span class="sig-name descname"><span class="pre">_normalize_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/panda/panda.html#Panda._normalize_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.panda.panda.Panda._normalize_network" title="Permalink to this definition"></a></dt>
+<dd><p>Standardizes the input data matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – Input adjacency matrix.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>normalized_matrix</strong> – Standardized adjacency matrix.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.panda_loop">
+<span class="sig-name descname"><span class="pre">panda_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correlation_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppi_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">computing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/panda/panda.html#Panda.panda_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.panda.panda.Panda.panda_loop" title="Permalink to this definition"></a></dt>
+<dd><p>The PANDA algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>correlation_matrix</strong> (<em>array</em>) – Input coexpression matrix.</p></li>
+<li><p><strong>motif_matrix</strong> (<em>array</em>) – Input motif regulation prior network.</p></li>
+<li><p><strong>ppi_matrix</strong> (<em>array</em>) – Input PPI matrix.</p></li>
+<li><p><strong>computing</strong> (<em>str</em>) – ‘cpu’ uses Central Processing Unit (CPU) to run PANDA.
+‘gpu’ use the Graphical Processing Unit (GPU) to run PANDA.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.processData">
+<span class="sig-name descname"><span class="pre">processData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modeProcess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expression_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppi_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_missing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_expression_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/panda/panda.html#Panda.processData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.panda.panda.Panda.processData" title="Permalink to this definition"></a></dt>
+<dd><p>Processes data files into data matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expression_file</strong> (<em>str</em>) – Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.</p></li>
+<li><p><strong>motif_file</strong> (<em>str</em>) – Path to file containing the transcription factor DNA binding motif data in the form of
+TF-gene-weight(0/1) or pandas dataframe.
+If set to none, the gene coexpression matrix is returned as a result network.</p></li>
+<li><p><strong>ppi_file</strong> (<em>str</em>) – Path to file containing the PPI data. or pandas dataframe.
+The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.</p></li>
+<li><p><strong>remove_missing</strong> (<em>bool</em>) – Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess=’legacy’.</p></li>
+<li><p><strong>keep_expression_matrix</strong> (<em>bool</em>) – Keeps the input expression matrix in the result Panda object.</p></li>
+<li><p><strong>modeProcess</strong> (<em>str</em>) – The input data processing mode.
+- ‘legacy’: refers to the processing mode in netZooPy&lt;=0.5
+- (Default)’union’: takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
+- ‘intersection’: intersects the input genes and TFs across priors and removes the missing TFs/genes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.return_panda_indegree">
+<span class="sig-name descname"><span class="pre">return_panda_indegree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/panda/panda.html#Panda.return_panda_indegree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.panda.panda.Panda.return_panda_indegree" title="Permalink to this definition"></a></dt>
+<dd><p>Computes indegree of PANDA network, only if save_memory = False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.return_panda_outdegree">
+<span class="sig-name descname"><span class="pre">return_panda_outdegree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/panda/panda.html#Panda.return_panda_outdegree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.panda.panda.Panda.return_panda_outdegree" title="Permalink to this definition"></a></dt>
+<dd><p>computes outdegree of PANDA network, only if save_memory = False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.save_panda_results">
+<span class="sig-name descname"><span class="pre">save_panda_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'panda.npy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/panda/panda.html#Panda.save_panda_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.panda.panda.Panda.save_panda_results" title="Permalink to this definition"></a></dt>
+<dd><p>Saves PANDA network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the network.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.panda.panda.Panda.top_network_plot">
+<span class="sig-name descname"><span class="pre">top_network_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'panda_top_100.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_bipart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/panda/panda.html#Panda.top_network_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.panda.panda.Panda.top_network_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Selects top genes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top</strong> (<em>int</em>) – Top number of genes to plot.</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – File to save the network plot.</p></li>
+<li><p><strong>plot_bipart</strong> (<em>bool</em>) – Plot the network as a bipartite layout.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="lioness">
+<h2>Lioness<a class="headerlink" href="#lioness" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">netZooPy.lioness.lioness.</span></span><span class="sig-name descname"><span class="pre">Lioness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">computing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'double'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lioness_output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'npy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'network'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/lioness/lioness.html#Lioness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Using LIONESS to infer single-sample gene regulatory networks.</dt><dd><ol class="arabic simple">
+<li><p>Reading in PANDA network and preprocessed middle data</p></li>
+<li><p>Computing coexpression network</p></li>
+<li><p>Normalizing coexpression network</p></li>
+<li><p>Running PANDA algorithm</p></li>
+<li><p>Writing out LIONESS networks</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>object</em>) – PANDA object, generated with keep_expression_matrix=True.</p></li>
+<li><p><strong>computing</strong> (<em>str</em>) – ‘cpu’ uses Central Processing Unit (CPU) to run PANDA
+‘gpu’ use the Graphical Processing Unit (GPU) to run PANDA</p></li>
+<li><p><strong>precision</strong> (<em>str</em>) – ‘double’ computes the regulatory network in double precision (15 decimal digits).
+‘single’ computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.</p></li>
+<li><p><strong>start</strong> (<em>int</em>) – Index of first sample to compute the network.</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – Index of last sample to compute the network.</p></li>
+<li><p><strong>save_dir</strong> (<em>str</em>) – Directory to save the networks.</p></li>
+<li><p><strong>save_fmt</strong> (<em>str</em>) – Save format.
+- ‘.npy’: (Default) Numpy file.
+- ‘.txt’: Text file.
+- ‘.mat’: MATLAB file.</p></li>
+<li><p><strong>output</strong> (<em>str</em>) – <ul>
+<li><p>‘network’ returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network). For large sample sizes, this variable requires large RAM memory.</p></li>
+<li><p>’gene_targeting’ returns gene targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).</p></li>
+<li><p>’tf_targeting’ returns tf targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).</p></li>
+</ul>
+</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – learning rate, set to 0.1 by default but has to be changed manually to match the learning rate of the PANDA object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>export_lioness_results</strong> – Depeding on the output argument, this can be either all the lioness
+networks or their gene/tf targeting scores.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><p>_</p>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">netZooPy.lioness.lioness</span> <span class="kn">import</span> <span class="n">Lioness</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#To run the Lioness algorithm for single sample networks, first run PANDA using the keep_expression_matrix flag, then use Lioness as follows:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">panda_obj</span> <span class="o">=</span> <span class="n">Panda</span><span class="p">(</span><span class="s1">&#39;../../tests/ToyData/ToyExpressionData.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;../../tests/ToyData/ToyMotifData.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;../../tests/ToyData/ToyPPIData.txt&#39;</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_expression_matrix</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lioness_obj</span> <span class="o">=</span> <span class="n">Lioness</span><span class="p">(</span><span class="n">panda_obj</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1">#Save Lioness results:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lioness_obj</span><span class="o">.</span><span class="n">save_lioness_results</span><span class="p">(</span><span class="s1">&#39;Toy_Lioness.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Return a network plot for one of the Lioness single sample networks:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">AnalyzeLioness</span><span class="p">(</span><span class="n">lioness_obj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">top_network_plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s1">&#39;top_100_genes.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Example lioness output:</dt><dd><p>TF, Gene and Motif order is identical to the panda output file.</p>
+<ul class="simple">
+<li><p>Sample1 Sample2 Sample3 Sample4</p></li>
+<li></li>
+<li><p>-0.667452814003       -1.70433776179  -0.158129613892 -0.655795512803</p></li>
+<li><p>-0.843366539284       -0.733709815256 -0.84849895139  -0.915217389738</p></li>
+<li><p>3.23445386464 2.68888472802   3.35809757371   3.05297381396</p></li>
+<li><p>2.39500370135 1.84608635425   2.80179804094   2.67540878165</p></li>
+<li><p>-0.117475863987       0.494923925853  0.0518448588965 -0.0584810456421</p></li>
+</ul>
+</dd>
+<dt>Authors:</dt><dd><p>Cho-Yi Chen, David Vi, Daniel Morgan</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Kuijjer, Marieke Lydia, et al. “Estimating sample-specific regulatory networks.”
+Iscience 14 (2019): 226-240.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.__lioness_loop">
+<span class="sig-name descname"><span class="pre">__lioness_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.__lioness_loop" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize instance of Lioness class and load data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>self.total_lioness_network</strong> – An edge-by-sample matrix containing sample-specific networks.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.__par_lioness_loop">
+<span class="sig-name descname"><span class="pre">__par_lioness_loop</span></span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.__par_lioness_loop" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness._normalize_network">
+<span class="sig-name descname"><span class="pre">_normalize_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness._normalize_network" title="Permalink to this definition"></a></dt>
+<dd><p>Standardizes the input data matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array</em>) – Input adjacency matrix.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>normalized_matrix</strong> – Standardized adjacency matrix.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.export_lioness_table">
+<span class="sig-name descname"><span class="pre">export_lioness_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lioness_table.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/lioness/lioness.html#Lioness.export_lioness_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.export_lioness_table" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Saves LIONESS network with edge names. This saves a dataframe with the corresponding
+header and indexes.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output_filename</strong> (<em>str</em>) – Path to save the network. Specify relative path
+and format. Choose between .csv, .tsv and .txt.
+(Defaults to .lioness_table.txt))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.panda_loop">
+<span class="sig-name descname"><span class="pre">panda_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correlation_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppi_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">computing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.panda_loop" title="Permalink to this definition"></a></dt>
+<dd><p>The PANDA algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>correlation_matrix</strong> (<em>array</em>) – Input coexpression matrix.</p></li>
+<li><p><strong>motif_matrix</strong> (<em>array</em>) – Input motif regulation prior network.</p></li>
+<li><p><strong>ppi_matrix</strong> (<em>array</em>) – Input PPI matrix.</p></li>
+<li><p><strong>computing</strong> (<em>str</em>) – ‘cpu’ uses Central Processing Unit (CPU) to run PANDA.
+‘gpu’ use the Graphical Processing Unit (GPU) to run PANDA.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.processData">
+<span class="sig-name descname"><span class="pre">processData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modeProcess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expression_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppi_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_missing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_expression_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.processData" title="Permalink to this definition"></a></dt>
+<dd><p>Processes data files into data matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expression_file</strong> (<em>str</em>) – Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.</p></li>
+<li><p><strong>motif_file</strong> (<em>str</em>) – Path to file containing the transcription factor DNA binding motif data in the form of
+TF-gene-weight(0/1) or pandas dataframe.
+If set to none, the gene coexpression matrix is returned as a result network.</p></li>
+<li><p><strong>ppi_file</strong> (<em>str</em>) – Path to file containing the PPI data. or pandas dataframe.
+The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.</p></li>
+<li><p><strong>remove_missing</strong> (<em>bool</em>) – Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess=’legacy’.</p></li>
+<li><p><strong>keep_expression_matrix</strong> (<em>bool</em>) – Keeps the input expression matrix in the result Panda object.</p></li>
+<li><p><strong>modeProcess</strong> (<em>str</em>) – The input data processing mode.
+- ‘legacy’: refers to the processing mode in netZooPy&lt;=0.5
+- (Default)’union’: takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
+- ‘intersection’: intersects the input genes and TFs across priors and removes the missing TFs/genes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.return_panda_indegree">
+<span class="sig-name descname"><span class="pre">return_panda_indegree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.return_panda_indegree" title="Permalink to this definition"></a></dt>
+<dd><p>Computes indegree of PANDA network, only if save_memory = False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.return_panda_outdegree">
+<span class="sig-name descname"><span class="pre">return_panda_outdegree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.return_panda_outdegree" title="Permalink to this definition"></a></dt>
+<dd><p>computes outdegree of PANDA network, only if save_memory = False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.save_lioness_results">
+<span class="sig-name descname"><span class="pre">save_lioness_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/lioness/lioness.html#Lioness.save_lioness_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.save_lioness_results" title="Permalink to this definition"></a></dt>
+<dd><p>Saves LIONESS network.
+Uses self.save_fmt, self.save_dir to save the data
+into self.total_lioness_network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.save_panda_results">
+<span class="sig-name descname"><span class="pre">save_panda_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'panda.npy'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.save_panda_results" title="Permalink to this definition"></a></dt>
+<dd><p>Saves PANDA network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to save the network.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.lioness.lioness.Lioness.top_network_plot">
+<span class="sig-name descname"><span class="pre">top_network_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'panda_top_100.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_bipart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.lioness.lioness.Lioness.top_network_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Selects top genes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top</strong> (<em>int</em>) – Top number of genes to plot.</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – File to save the network plot.</p></li>
+<li><p><strong>plot_bipart</strong> (<em>bool</em>) – Plot the network as a bipartite layout.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="puma">
+<h2>Puma<a class="headerlink" href="#puma" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">netZooPy.puma.puma.</span></span><span class="sig-name descname"><span class="pre">Puma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppi_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mir_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modeProcess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">computing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'double'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_tmp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_expression_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/puma/puma.html#Puma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.puma.puma.Puma" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>Description:</dt><dd><p>Using PUMA to infer gene regulatory network.
+1. Reading in input data (expression data, motif prior, TF PPI data, miR)
+2. Computing coexpression network
+3. Normalizing networks
+4. Running PUMA algorithm
+5. Writing out PUMA network</p>
+</dd>
+<dt>Inputs:</dt><dd><blockquote>
+<div><p>object: Puma object.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Methods:</dt><dd><p>__init__                    : Intialize instance of Puma class.
+__remove_missing            : Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess=’legacy’.
+_normalize_network          : Standardizes the input data matrices.
+puma_loop                   : The PUMA algorithm.
+__pearson_results_data_frame: Saves PUMA network in edges format.
+save_puma_results           : Saves PUMA network.
+top_network_plot            : Selects top genes to plot.
+__shape_plot_network        : Creates network plot.
+__create_plot               : Runs network plot.
+return_puma_indegree        : computes indegree of puma network, only if save_memory = False.
+return_puma_outdegree       : computes outdegree of puma network, only if save_memory = False.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Run the PUMA algorithm, leave out motif and PPI data to use Pearson correlation network:
+from netZooPy.puma.puma import Puma
+puma_obj = Puma(‘../../tests/ToyData/ToyExpressionData.txt’, ‘../../tests/ToyData/ToyMotifData.txt’, ‘../../tests/ToyData/ToyPPIData.txt’,’../../tests/ToyData/ToyMiRList.txt’)</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Authors:</dt><dd><p>cychen, davidvi, alessandromarin</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple">
+<dt>Reference:</dt><dd><p>Kuijjer, Marieke L., et al. “PUMA: PANDA Using MicroRNA Associations.” BioRxiv (2019).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.__create_plot">
+<span class="sig-name descname"><span class="pre">__create_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unique_genes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'puma.png'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.__create_plot" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>Runs the plot.</p>
+</dd>
+<dt>Inputs:</dt><dd><p>unique_genes : Unique list of PUMA genes.
+links        : Edges of the subset PUMA network to the top genes.
+file         : File to save the network plot.
+plot_bipart  : Plot the network as a bipartite layout.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.split_label">
+<span class="sig-name descname"><span class="pre">split_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.split_label" title="Permalink to this definition"></a></dt>
+<dd><p>Splits the plot label over several lines for plotting purposes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.__pearson_results_data_frame">
+<span class="sig-name descname"><span class="pre">__pearson_results_data_frame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.__pearson_results_data_frame" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>Saves PUMA network in edges format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.__remove_missing">
+<span class="sig-name descname"><span class="pre">__remove_missing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.__remove_missing" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess=’legacy’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.__shape_plot_network">
+<span class="sig-name descname"><span class="pre">__shape_plot_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset_puma_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'puma.png'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.__shape_plot_network" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>Creates plot.</p>
+</dd>
+<dt>Inputs:</dt><dd><p>subset_puma_results : Reduced PUMA network to the top genes.
+file                : File to save the network plot.
+plot_bipart         : Plot the network as a bipartite layout.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma._normalize_network">
+<span class="sig-name descname"><span class="pre">_normalize_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/puma/puma.html#Puma._normalize_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.puma.puma.Puma._normalize_network" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>Standardizes the input data matrices.</p>
+</dd>
+<dt>Inputs:</dt><dd><p>x     : Input adjacency matrix.</p>
+</dd>
+<dt>Outputs:</dt><dd><p>normalized_matrix: Standardized adjacency matrix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.puma_loop">
+<span class="sig-name descname"><span class="pre">puma_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correlation_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppi_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">computing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/puma/puma.html#Puma.puma_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.puma.puma.Puma.puma_loop" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>Description:</dt><dd><p>The PUMA algorithm.</p>
+</dd>
+<dt>Inputs:</dt><dd><p>correlation_matrix: Input coexpression matrix.
+motif_matrix      : Input motif regulation prior network.
+ppi_matrix        : Input PPI matrix.
+computing         : ‘cpu’ uses Central Processing Unit (CPU) to run PANDA.</p>
+<blockquote>
+<div><p>‘gpu’ use the Graphical Processing Unit (GPU) to run PANDA.</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.t_function">
+<span class="sig-name descname"><span class="pre">t_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.t_function" title="Permalink to this definition"></a></dt>
+<dd><p>Continuous Tanimoto similarity function computed on the CPU.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.update_diagonal">
+<span class="sig-name descname"><span class="pre">update_diagonal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.update_diagonal" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the diagonal of the input matrix in the message passing computed on the CPU.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.gt_function">
+<span class="sig-name descname"><span class="pre">gt_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.gt_function" title="Permalink to this definition"></a></dt>
+<dd><p>Continuous Tanimoto similarity function computed on the GPU.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.gupdate_diagonal">
+<span class="sig-name descname"><span class="pre">gupdate_diagonal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#netZooPy.puma.puma.Puma.gupdate_diagonal" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the diagonal of the input matrix in the message passing computed on the GPU.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.return_puma_indegree">
+<span class="sig-name descname"><span class="pre">return_puma_indegree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/puma/puma.html#Puma.return_puma_indegree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.puma.puma.Puma.return_puma_indegree" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>computes indegree of PUMA network, only if save_memory = False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.return_puma_outdegree">
+<span class="sig-name descname"><span class="pre">return_puma_outdegree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/puma/puma.html#Puma.return_puma_outdegree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.puma.puma.Puma.return_puma_outdegree" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>computes outdegree of PUMA network, only if save_memory = False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.save_puma_results">
+<span class="sig-name descname"><span class="pre">save_puma_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'puma.npy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/puma/puma.html#Puma.save_puma_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.puma.puma.Puma.save_puma_results" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>Saves PUMA network.</p>
+</dd>
+<dt>Inputs:</dt><dd><p>path: Path to save the network.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="netZooPy.puma.puma.Puma.top_network_plot">
+<span class="sig-name descname"><span class="pre">top_network_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'puma_top_100.png'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/puma/puma.html#Puma.top_network_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.puma.puma.Puma.top_network_plot" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>Selects top genes.</p>
+</dd>
+<dt>Inputs:</dt><dd><p>top        : Top number of genes to plot.
+file       : File to save the network plot.
+plot_bipart: Plot the network as a bipartite layout.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="sambar">
+<h2>Sambar<a class="headerlink" href="#sambar" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="netZooPy.sambar.sambar">
+<span class="sig-prename descclassname"><span class="pre">netZooPy.sambar.</span></span><span class="sig-name descname"><span class="pre">sambar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mut_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/Users/violafanfani/Documents/uni-harvard/repos/netZooPy/netZooPy/sambar/mut.ucec.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">esize_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/Users/violafanfani/Documents/uni-harvard/repos/netZooPy/netZooPy/sambar/esizef.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genes_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/Users/violafanfani/Documents/uni-harvard/repos/netZooPy/netZooPy/sambar/genes.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gmtfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/Users/violafanfani/Documents/uni-harvard/repos/netZooPy/netZooPy/sambar/h.all.v6.1.symbols.gmt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normPatient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gmtMSigDB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subcangenes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'binomial'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linkagem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'complete'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/sambar/sambar.html#sambar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.sambar.sambar" title="Permalink to this definition"></a></dt>
+<dd><p>Runs SAMBAR and outputs the pt matrix, the mt matrix and the clustering matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mutfile</strong> (<em>matrix of mutations with genes as columns and samples as rows. Format CSV.</em>) – </p></li>
+<li><p><strong>esize_file</strong> (<em>file with genes and their length.</em>) – </p></li>
+<li><p><strong>genes_file</strong> (<em>file with list of cancer-associated genes.</em>) – </p></li>
+<li><p><strong>gmt_file</strong> (<em>genelist by pathway</em><em>, </em><em>format from MSigDB.</em>) – </p></li>
+<li><p><strong>normPatien</strong> (<em>Normalize mutation data by number of mutations in a sample.</em>) – </p></li>
+<li><p><strong>kmin</strong> (<em>Number of groups in the clustering.</em>) – </p></li>
+<li><p><strong>kmax</strong> (<em>Number of groups in the clustering.</em>) – </p></li>
+<li><p><strong>gmtMSigDB</strong> (<em>Whether the signature file comes from MSigDB</em><em> or </em><em>not.</em><em> (</em><em>Important for processing the file</em><em>)</em><em>.</em>) – </p></li>
+<li><p><strong>subcangenes</strong> (<em>Makes optional subsetting to cancer-associated genes.</em>) – </p></li>
+<li><p><strong>distance</strong> (<em>Similarity metric for the clustering. Default is binomial distance but any distance from scipy.spatial.distance can be used.</em>) – </p></li>
+<li><p><strong>linkagem</strong> (<em>Linkage method. Default is complete.</em>) – </p></li>
+<li><p><strong>cluster</strong> (<em>Whether the clustering has to be compute</em><em> or </em><em>the output will just be the pathway mutation scores.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>pt</strong> (<em>_</em>) – the pathway matrix.</p></li>
+<li><p><strong>groups</strong> (<em>_</em>) – the groups dataframe as python objects.</p></li>
+<li><p><strong>mt_out.csv</strong> (<em>_</em>) – processed gene mutation scores.</p></li>
+<li><p><strong>pt_out.csv</strong> (<em>_</em>) – pathway mutation scores</p></li>
+<li><p><strong>clustergroups.csv</strong> (<em>_</em>) – matrix of pertinence to a group in the clustering.</p></li>
+<li><p><strong>dist_matrix.csv</strong> (<em>_</em>) – Computation of the distance matrix is resource-consuming so the matrix is writen so it doesn’t have to be computed again.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Reference:</dt><dd><p>Kuijjer, Marieke Lydia, et al. “Cancer subtype identification using somatic mutation data.” British journal of cancer 118.11 (2018): 1492-1501.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Extra sambar functions</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="netZooPy.sambar.corgenelength">
+<span class="sig-prename descclassname"><span class="pre">netZooPy.sambar.</span></span><span class="sig-name descname"><span class="pre">corgenelength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cangenes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">esize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normbysample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subcangenes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/sambar/sambar.html#corgenelength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.sambar.corgenelength" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Description:</dt><dd><p>Function to normalize gene mutation scores by gene length.
+mut should be a dataframe of mutation scores with genes as columns and samples as rows.
+(VERY IMPORTANT, IF OTHERWISE MATRIX SHOULD BE TRANSPOSED OR IT WON’T WORK!!!)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mut</strong> (<em>Mutation scores.</em>) – </p></li>
+<li><p><strong>cangenes</strong> (<em>A set of cancer associated genes.</em>) – </p></li>
+<li><p><strong>esize</strong> (<em>A dataframe of gene lengths.</em>) – </p></li>
+<li><p><strong>normbysample</strong> (<em>True : Normalizes the gene mutation scores in a sample by the total mutations within the sample.</em>) – False: Deactivate normalization.</p></li>
+<li><p><strong>subcangenes</strong> (<em>True: Subsets mutation data to cancer-associated genes.</em>) – False: Takes all genes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>mut</strong> – Mutation scores normalized by gene length.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><p>_</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="netZooPy.sambar.convertgmt">
+<span class="sig-prename descclassname"><span class="pre">netZooPy.sambar.</span></span><span class="sig-name descname"><span class="pre">convertgmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gmtfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cangenes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gmtMSigDB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subcangenes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/sambar/sambar.html#convertgmt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.sambar.convertgmt" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>This function takes as input the name of a gmt file containing lists of genes associated to pathways.</dt><dd><p>It outputs an adjacency matrix of genes and pathways.
+It also subsets the genes to a list of cancer-associated genes.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gmtfile</strong> (<em>str</em>) – Path the gmt file.</p></li>
+<li><p><strong>cangenes</strong> (<em>list</em>) – A set of cancer associated genes.</p></li>
+<li><p><strong>gmtMSigDB</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true: gmt file from MSigDB . Defaults to True.</p></li>
+<li><p><strong>subcangenes</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true: Subsets mutation data to cancer-associated genes.</p></li>
+<li><p><strong>True.</strong> (<em>otherwise takes all genes. Defaults to</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>_</dt><dd><p>Adjacency matrix of genes and pathways.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>sign_matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="netZooPy.sambar.desparsify">
+<span class="sig-prename descclassname"><span class="pre">netZooPy.sambar.</span></span><span class="sig-name descname"><span class="pre">desparsify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mutdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exonsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gmtfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cangenes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normMut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gmtMSigDB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subcangenes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/sambar/sambar.html#desparsify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.sambar.desparsify" title="Permalink to this definition"></a></dt>
+<dd><p>Applies the sambar method to de-sparcify the mutation data using the pathway signatures in the gmtfile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mutdata</strong> – Mutation scores.</p></li>
+<li><p><strong>exonsize</strong> – A dataframe of gene lengths.</p></li>
+<li><p><strong>gmtfile</strong> – Path the gmt file.</p></li>
+<li><p><strong>cangenes</strong> – A set of cancer associated genes.</p></li>
+<li><p><strong>normbysample</strong> – True : Normalizes the gene mutation scores in a sample by the total mutations within the sample.
+False: Deactivate normalization.</p></li>
+<li><p><strong>gmtMSigDB</strong> – True : gmt file from MSigDB
+False: file not form MSigDB</p></li>
+<li><p><strong>subcangenes</strong> – True : Subsets mutation data to cancer-associated genes.
+False: Takes all genes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>mt</strong> (<em>_</em>) – Genes in both pathways and mutation data</p></li>
+<li><p><strong>pathway_scores</strong> (<em>_</em>) – Pathway scores.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="netZooPy.sambar.binomial_dist">
+<span class="sig-prename descclassname"><span class="pre">netZooPy.sambar.</span></span><span class="sig-name descname"><span class="pre">binomial_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/sambar/sambar.html#binomial_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.sambar.binomial_dist" title="Permalink to this definition"></a></dt>
+<dd><p>Implementation of the binomial dissimilarity funcion or Millar distance from the vegan:vegdist package in R.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>First vector to compare distance from.</em>) – </p></li>
+<li><p><strong>v</strong> (<em>Second vector to compare distance to.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bd</strong> – binomial dissimilarity.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><p>_</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="netZooPy.sambar.clustering">
+<span class="sig-prename descclassname"><span class="pre">netZooPy.sambar.</span></span><span class="sig-name descname"><span class="pre">clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linkagem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/netZooPy/sambar/sambar.html#clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#netZooPy.sambar.clustering" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the clustering for the pathways matrix and returns a dataframe with the groups with k clusters from kmin to kmax.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pt</strong> (<em>Pathway scores.</em>) – </p></li>
+<li><p><strong>kmin</strong> (<em>Min number of groups in the clustering.</em>) – </p></li>
+<li><p><strong>kmax</strong> (<em>Max number of groups in the clustering.</em>) – </p></li>
+<li><p><strong>distance</strong> (<em>Similarity metric for the clustering. Default is binomial distance but any distance from scipy.spatial.distance can be used.</em>) – </p></li>
+<li><p><strong>linkagem</strong> (<em>Linkage method. Default is complete.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>df</strong> – Cluster assignement dataframe.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><p>_</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cli.html" class="btn btn-neutral float-left" title="Command Line Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, netZoo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    /*.wy-side-nav-search, .wy-nav-top {
+      background: #fff0;
+      sidebartextcolor : #000000;
+    }*/
+    /* Sidebar */
+    /*.wy-nav-side {
+     background: #ffffff;
+    }*/
+
+    .wy-side-nav-search .wy-dropdown > a img.logo, .wy-side-nav-search > a img.logo {
+    width: 100pt;
+}
+  </style>
+
+
+</body>
+</html>

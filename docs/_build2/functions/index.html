@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Functions &mdash; netZooPy 0.9.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorials" href="../tutos/index.html" />
+    <link rel="prev" title="Changelog" href="../changelog.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> netZooPy
+            <img src="../_static/netZoo_logo_v14.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">The Animals (API)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#netzoopy-panda">netZooPy.panda</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#analyze-panda">analyze_panda</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-analyzepanda">class AnalyzePanda</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#top-network-plot">top_network_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shape-plot-network">shape_plot_network</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-plot">create_plot</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#run-panda">run_panda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#panda">panda</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-panda">class Panda</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#netzoopy-lioness">netZooPy.lioness</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run-lioness">run_lioness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lioness">lioness</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-lioness">class Lioness</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#analyze-lioness">analyze_lioness</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-analyzelioness">class AnalyzeLioness</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#lioness-for-puma">lioness_for_puma</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-lionesspuma">class LionessPuma</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#netzoopy-puma">netZooPy.puma</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run-puma">run_puma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#puma">puma</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-puma">class Puma</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutos/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">netZooPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/functions/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h1>
+<section id="netzoopy-panda">
+<h2>netZooPy.panda<a class="headerlink" href="#netzoopy-panda" title="Permalink to this headline"></a></h2>
+<section id="analyze-panda">
+<h3>analyze_panda<a class="headerlink" href="#analyze-panda" title="Permalink to this headline"></a></h3>
+<section id="class-analyzepanda">
+<h4>class AnalyzePanda<a class="headerlink" href="#class-analyzepanda" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> AnalyzePanda(Panda)
+ Network plot.
+</pre></div>
+</div>
+</section>
+<section id="top-network-plot">
+<h4>top_network_plot<a class="headerlink" href="#top-network-plot" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> top_network_plot(self, top = 100, file = &#39;panda_top_100.png&#39;)
+ Select top genes
+</pre></div>
+</div>
+</section>
+<section id="shape-plot-network">
+<h4>shape_plot_network<a class="headerlink" href="#shape-plot-network" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>__shape_plot_network(self, subset_panda_results, file = &#39;panda.png&#39;)
+Create plot
+</pre></div>
+</div>
+</section>
+<section id="create-plot">
+<h4>create_plot<a class="headerlink" href="#create-plot" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>__create_plot(self, unique_genes, links, file = &#39;panda.png&#39;)
+Run plot
+</pre></div>
+</div>
+</section>
+</section>
+<section id="run-panda">
+<h3>run_panda<a class="headerlink" href="#run-panda" title="Permalink to this headline"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Description:
+
+    Run PANDA algorithm from the command line.
+
+Usage:
+
+    -h, --help: help
+    -e, --expression: expression values
+    -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided
+    -p, --ppi: pair file of PPI edges
+    -o, --out: output file
+    -r, --rm_missing
+    -q, --lioness: output for Lioness single sample networks
+
+Example:
+
+    python run_panda.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -o test_panda.txt -q output_panda.txt
+</pre></div>
+</div>
+</section>
+<section id="panda">
+<h3>panda<a class="headerlink" href="#panda" title="Permalink to this headline"></a></h3>
+<section id="class-panda">
+<h4>class Panda<a class="headerlink" href="#class-panda" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Panda(object)
+
+Description:
+
+	Using PANDA to infer gene regulatory network.
+
+Usage:
+
+	1. Reading in input data (expression data, motif prior, TF PPI data)
+	2. Computing coexpression network
+	3. Normalizing networks
+	4. Running PANDA algorithm
+	5. Writing out PANDA network
+
+Authors: 
+
+cychen, davidvi, alessandromarin
+</pre></div>
+</div>
+<section id="init">
+<h5>init<a class="headerlink" href="#init" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>init__(self, expression_file, motif_file, ppi_file, save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False):
+    # =====================================================================
+    # Data loading
+    # =====================================================================
+</pre></div>
+</div>
+</section>
+<section id="remove-missing">
+<h5>remove_missing<a class="headerlink" href="#remove-missing" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>remove_missing(self)
+    Remove genes and tfs not present in all files.
+</pre></div>
+</div>
+</section>
+<section id="normalize-network">
+<h5>normalize_network<a class="headerlink" href="#normalize-network" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>normalize_network(self, x)
+</pre></div>
+</div>
+</section>
+<section id="panda-loop">
+<h5>panda_loop<a class="headerlink" href="#panda-loop" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>panda_loop(self, correlation_matrix, motif_matrix, ppi_matrix)
+    Panda algorithm.
+</pre></div>
+</div>
+<section id="t-function">
+<h6>t_function<a class="headerlink" href="#t-function" title="Permalink to this headline"></a></h6>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    t_function(x, y=None)
+T function.
+</pre></div>
+</div>
+</section>
+<section id="update-diagonal">
+<h6>update_diagonal<a class="headerlink" href="#update-diagonal" title="Permalink to this headline"></a></h6>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>update_diagonal(diagonal_matrix, num, alpha, step)
+    Update diagonal.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pearson-results-data-frame">
+<h5>pearson_results_data_frame<a class="headerlink" href="#pearson-results-data-frame" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pearson_results_data_frame(self)
+    Results to data frame.
+</pre></div>
+</div>
+</section>
+<section id="save-panda-results">
+<h5>save_panda_results<a class="headerlink" href="#save-panda-results" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>save_panda_results(self, path=&#39;panda.npy&#39;)
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h5>top_network_plot<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>top_network_plot(self, top = 100, file = &#39;panda_top_100.png&#39;)
+    Select top genes.
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h5>shape_plot_network<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>shape_plot_network(self, subset_panda_results, file = &#39;panda.png&#39;)
+    Create plot.
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h5>create_plot<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create_plot(self, unique_genes, links, file = &#39;panda.png&#39;)
+    Run plot.
+</pre></div>
+</div>
+<section id="split-label">
+<h6>split_label<a class="headerlink" href="#split-label" title="Permalink to this headline"></a></h6>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>split_label(label)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="return-panda-indegree">
+<h5>return_panda_indegree<a class="headerlink" href="#return-panda-indegree" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return_panda_indegree(self)
+    Return Panda indegree.
+</pre></div>
+</div>
+</section>
+<section id="return-panda-outdegree">
+<h5>return_panda_outdegree<a class="headerlink" href="#return-panda-outdegree" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return_panda_outdegree(self)
+    Return Panda outdegree.
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="netzoopy-lioness">
+<h2>netZooPy.lioness<a class="headerlink" href="#netzoopy-lioness" title="Permalink to this headline"></a></h2>
+<section id="run-lioness">
+<h3>run_lioness<a class="headerlink" href="#run-lioness" title="Permalink to this headline"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Description:
+
+    Run LIONESS algorithm from the command line.
+
+Usage:
+
+    -h, --help: help
+    -e, --expression: expression matrix (.npy)
+    -m, --motif: motif matrix, normalized (.npy)
+    -p, --ppi: ppi matrix, normalized (.npy)
+    -n, --npy: PANDA network (.npy)
+    -o, --out: output folder
+    -f, --format: output format (txt, npy, or mat)
+    start: to start from nth sample (optional)
+    end: to end at nth sample (optional, must with start)
+
+Example:
+
+    python run_lioness.py -e expression.npy -m motif.npy -p ppi.npy -n panda.npy -o /tmp -f npy 1 100
+</pre></div>
+</div>
+</section>
+<section id="lioness">
+<h3>lioness<a class="headerlink" href="#lioness" title="Permalink to this headline"></a></h3>
+<section id="class-lioness">
+<h4>class Lioness<a class="headerlink" href="#class-lioness" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Lioness(Panda)
+
+Description:
+
+   Using LIONESS to infer single-sample gene regulatory networks.
+
+Usage:
+
+   1. Reading in PANDA network and preprocessed middle data
+   2. Computing coexpression network
+   3. Normalizing coexpression network
+   4. Running PANDA algorithm
+   5. Writing out LIONESS networks
+
+Authors:
+
+   cychen, davidvi
+</pre></div>
+</div>
+<section id="id4">
+<h5>init<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>init__(self, obj, start=1, end=None, save_dir=&#39;lioness_output&#39;, save_fmt=&#39;npy&#39;)
+</pre></div>
+</div>
+</section>
+<section id="lioness-loop">
+<h5>lioness_loop<a class="headerlink" href="#lioness-loop" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>lioness_loop(self)
+</pre></div>
+</div>
+</section>
+<section id="save-lioness-results">
+<h5>save_lioness_results<a class="headerlink" href="#save-lioness-results" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>save_lioness_results(self, file=&#39;lioness.txt&#39;)
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="analyze-lioness">
+<h3>analyze_lioness<a class="headerlink" href="#analyze-lioness" title="Permalink to this headline"></a></h3>
+<section id="class-analyzelioness">
+<h4>class AnalyzeLioness<a class="headerlink" href="#class-analyzelioness" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AnalyzeLioness(Lioness)
+</pre></div>
+</div>
+<section id="id5">
+<h5>init<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>init__(self, lioness_data)
+Load variables from lioness.
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h5>top_network_plot<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>top_network_plot(self, column = 0, top = 100, file = &#39;lioness_top_100.png&#39;)
+Select top genes.
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="lioness-for-puma">
+<h3>lioness_for_puma<a class="headerlink" href="#lioness-for-puma" title="Permalink to this headline"></a></h3>
+<section id="class-lionesspuma">
+<h4>class LionessPuma<a class="headerlink" href="#class-lionesspuma" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>LionessPuma(Puma)
+
+Description:
+     Using LIONESS to infer single-sample gene regulatory networks.
+
+Usage:
+    1. Reading in PUMA network and preprocessed middle data
+    2. Computing coexpression network
+    3. Normalizing coexpression network
+    4. Running PUMA algorithm
+    5. Writing out LIONESS networks
+
+Authors:
+    cychen, davidvi
+</pre></div>
+</div>
+<section id="id7">
+<h5>init<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>init__(self, obj, start=1, end=None, save_dir=&#39;lioness_output&#39;, save_fmt=&#39;npy&#39;)
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h5>lioness_loop<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> lioness_loop(self)
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h5>save_lioness_results<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> save_lioness_results(self, file=&#39;lioness.txt&#39;)
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="netzoopy-puma">
+<h2>netZooPy.puma<a class="headerlink" href="#netzoopy-puma" title="Permalink to this headline"></a></h2>
+<section id="run-puma">
+<h3>run_puma<a class="headerlink" href="#run-puma" title="Permalink to this headline"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Description:
+    Run PUMA algorithm from the command line.
+
+Usage:
+    run_puma
+    -h, --help: help
+    -e, --expression: expression values
+    -m, --motif: pair file of motif edges, or Pearson correlation matrix when not provided
+    -p, --ppi: pair file of PPI edges
+    -i, --mir (required): miR file
+    -o, --out: output file
+    -r, --rm_missing
+    -q, --lioness: output for Lioness single sample networks
+
+ Example:
+     python run_puma.py -e ./ToyData/ToyExpressionData.txt -m ./ToyData/ToyMotifData.txt -p ./ToyData/ToyPPIData.txt -i ToyData/ToyMiRList.txt -o test_puma.txt -q output_lioness.txt
+</pre></div>
+</div>
+</section>
+<section id="puma">
+<h3>puma<a class="headerlink" href="#puma" title="Permalink to this headline"></a></h3>
+<section id="class-puma">
+<h4>class Puma<a class="headerlink" href="#class-puma" title="Permalink to this headline"></a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Puma(object)
+
+Description:
+    Using PUMA to infer gene regulatory network.
+
+Usage:
+    1. Reading in input data (expression data, motif prior, TF PPI data, miR)
+    2. Computing coexpression network
+    3. Normalizing networks
+    4. Running PUMA algorithm
+    5. Writing out PUMA network
+
+Authors:
+    cychen, davidvi, alessandromarin
+</pre></div>
+</div>
+<section id="id10">
+<h5>init<a class="headerlink" href="#id10" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>init__(self, expression_file, motif_file, ppi_file, mir_file, save_memory = False, save_tmp=True, remove_missing=False, keep_expression_matrix = False)
+# =====================================================================
+# Data loading
+# =====================================================================
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h5>remove_missing<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>remove_missing(self)
+Remove genes and tfs not present in all files.
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h5>normalize_network<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>normalize_network(self, x)
+</pre></div>
+</div>
+</section>
+<section id="puma-loop">
+<h5>puma_loop<a class="headerlink" href="#puma-loop" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>puma_loop(self, correlation_matrix, motif_matrix, ppi_matrix)
+Puma algorithm
+</pre></div>
+</div>
+<section id="id13">
+<h6>t_function<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h6>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>t_function(x, y=None)
+T function
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h6>update_diagonal<a class="headerlink" href="#id14" title="Permalink to this headline"></a></h6>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>update_diagonal(diagonal_matrix, num, alpha, step)
+Update diagoanl
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id15">
+<h5>pearson_results_data_frame<a class="headerlink" href="#id15" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pearson_results_data_frame(self)
+Results to data frame
+</pre></div>
+</div>
+</section>
+<section id="id16">
+<h5>pearson_results_data_frame<a class="headerlink" href="#id16" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pearson_results_data_frame(self)
+Results to data frame.
+</pre></div>
+</div>
+</section>
+<section id="save-puma-results">
+<h5>save_puma_results<a class="headerlink" href="#save-puma-results" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>save_puma_results(self, path=&#39;puma.npy&#39;)
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h5>top_network_plot<a class="headerlink" href="#id17" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>top_network_plot(self, top = 100, file = &#39;puma_top_100.png&#39;)
+Select top genes.
+</pre></div>
+</div>
+</section>
+<section id="id18">
+<h5>shape_plot_network<a class="headerlink" href="#id18" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>shape_plot_network(self, subset_puma_results, file = &#39;puma.png&#39;)
+Create plot
+</pre></div>
+</div>
+</section>
+<section id="id19">
+<h5>create_plot<a class="headerlink" href="#id19" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create_plot(self, unique_genes, links, file = &#39;puma.png&#39;)
+Run plot
+</pre></div>
+</div>
+<section id="id20">
+<h6>split_label<a class="headerlink" href="#id20" title="Permalink to this headline"></a></h6>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>split_label(label)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="return-puma-indegree">
+<h5>return_puma_indegree<a class="headerlink" href="#return-puma-indegree" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return_puma_indegree(self)
+Return Puma indegree
+</pre></div>
+</div>
+</section>
+<section id="return-puma-outdegree">
+<h5>return_puma_outdegree<a class="headerlink" href="#return-puma-outdegree" title="Permalink to this headline"></a></h5>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> return_puma_outdegree(self)
+ Return Puma outdegree
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../changelog.html" class="btn btn-neutral float-left" title="Changelog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutos/index.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, netZoo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    /*.wy-side-nav-search, .wy-nav-top {
+      background: #fff0;
+      sidebartextcolor : #000000;
+    }*/
+    /* Sidebar */
+    /*.wy-nav-side {
+     background: #ffffff;
+    }*/
+
+    .wy-side-nav-search .wy-dropdown > a img.logo, .wy-side-nav-search > a img.logo {
+    width: 100pt;
+}
+  </style>
+
+
+</body>
+</html>

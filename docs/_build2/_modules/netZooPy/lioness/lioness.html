@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>netZooPy.lioness.lioness &mdash; netZooPy 0.9.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> netZooPy
+            <img src="../../../_static/netZoo_logo_v14.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Installation guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../functions/cli.html">Command Line Interface</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../functions/api.html">The Animals (API)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Home</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../functions/index.html">Functions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutos/index.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">netZooPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>netZooPy.lioness.lioness</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for netZooPy.lioness.lioness</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">.timer</span> <span class="kn">import</span> <span class="n">Timer</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;../panda&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">netZooPy.panda.panda</span> <span class="kn">import</span> <span class="n">Panda</span>
+<span class="kn">from</span> <span class="nn">joblib.externals.loky</span> <span class="kn">import</span> <span class="n">set_loky_pickler</span>
+<span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">parallel_backend</span>
+<span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
+<span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">wrap_non_picklable_objects</span>
+<span class="kn">from</span> <span class="nn">netZooPy.panda.calculations</span> <span class="kn">import</span> <span class="n">compute_panda</span>
+
+<div class="viewcode-block" id="Lioness"><a class="viewcode-back" href="../../../functions/api.html#netZooPy.lioness.lioness.Lioness">[docs]</a><span class="k">class</span> <span class="nc">Lioness</span><span class="p">(</span><span class="n">Panda</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Using LIONESS to infer single-sample gene regulatory networks.</span>
+<span class="sd">        1. Reading in PANDA network and preprocessed middle data</span>
+<span class="sd">        2. Computing coexpression network</span>
+<span class="sd">        3. Normalizing coexpression network</span>
+<span class="sd">        4. Running PANDA algorithm</span>
+<span class="sd">        5. Writing out LIONESS networks</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">            obj             : object</span>
+<span class="sd">                PANDA object, generated with keep_expression_matrix=True.</span>
+<span class="sd">            computing       : str</span>
+<span class="sd">                &#39;cpu&#39; uses Central Processing Unit (CPU) to run PANDA</span>
+<span class="sd">                &#39;gpu&#39; use the Graphical Processing Unit (GPU) to run PANDA</span>
+<span class="sd">            precision       : str</span>
+<span class="sd">                &#39;double&#39; computes the regulatory network in double precision (15 decimal digits).</span>
+<span class="sd">                &#39;single&#39; computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.</span>
+<span class="sd">            start           : int</span>
+<span class="sd">                Index of first sample to compute the network.</span>
+<span class="sd">            end             : int</span>
+<span class="sd">                Index of last sample to compute the network.</span>
+<span class="sd">            save_dir        : str</span>
+<span class="sd">                Directory to save the networks.</span>
+<span class="sd">            save_fmt        : str</span>
+<span class="sd">                Save format.</span>
+<span class="sd">                - &#39;.npy&#39;: (Default) Numpy file.</span>
+<span class="sd">                - &#39;.txt&#39;: Text file.</span>
+<span class="sd">                - &#39;.mat&#39;: MATLAB file.</span>
+<span class="sd">            output          : str</span>
+<span class="sd">                - &#39;network&#39; returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network). For large sample sizes, this variable requires large RAM memory.</span>
+<span class="sd">                - &#39;gene_targeting&#39; returns gene targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).</span>
+<span class="sd">                - &#39;tf_targeting&#39; returns tf targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).</span>
+<span class="sd">            alpha            : float</span>
+<span class="sd">                learning rate, set to 0.1 by default but has to be changed manually to match the learning rate of the PANDA object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">        export_lioness_results : _</span>
+<span class="sd">            Depeding on the output argument, this can be either all the lioness </span>
+<span class="sd">            networks or their gene/tf targeting scores.</span>
+<span class="sd">        </span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    -----------</span>
+<span class="sd">        &gt;&gt;&gt; from netZooPy.lioness.lioness import Lioness</span>
+<span class="sd">        &gt;&gt;&gt; #To run the Lioness algorithm for single sample networks, first run PANDA using the keep_expression_matrix flag, then use Lioness as follows:</span>
+<span class="sd">        &gt;&gt;&gt; panda_obj = Panda(&#39;../../tests/ToyData/ToyExpressionData.txt&#39;, &#39;../../tests/ToyData/ToyMotifData.txt&#39;, &#39;../../tests/ToyData/ToyPPIData.txt&#39;, remove_missing=False, keep_expression_matrix=True)</span>
+<span class="sd">        &gt;&gt;&gt; lioness_obj = Lioness(panda_obj)</span>
+
+<span class="sd">        &gt;&gt;&gt; #Save Lioness results:</span>
+<span class="sd">        &gt;&gt;&gt; lioness_obj.save_lioness_results(&#39;Toy_Lioness.txt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; #Return a network plot for one of the Lioness single sample networks:</span>
+<span class="sd">        &gt;&gt;&gt; plot = AnalyzeLioness(lioness_obj)</span>
+<span class="sd">        &gt;&gt;&gt; plot.top_network_plot(column= 0, top=100, file=&#39;top_100_genes.png&#39;)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    Example lioness output:</span>
+<span class="sd">        TF, Gene and Motif order is identical to the panda output file.</span>
+
+<span class="sd">        - Sample1 Sample2 Sample3 Sample4\n</span>
+<span class="sd">        - -------------------------------\n</span>
+<span class="sd">        - -0.667452814003	-1.70433776179	-0.158129613892	-0.655795512803\n</span>
+<span class="sd">        - -0.843366539284	-0.733709815256	-0.84849895139	-0.915217389738\n</span>
+<span class="sd">        - 3.23445386464	2.68888472802	3.35809757371	3.05297381396\n</span>
+<span class="sd">        - 2.39500370135	1.84608635425	2.80179804094	2.67540878165\n</span>
+<span class="sd">        - -0.117475863987	0.494923925853	0.0518448588965	-0.0584810456421\n</span>
+
+<span class="sd">    Authors:</span>
+<span class="sd">        Cho-Yi Chen, David Vi, Daniel Morgan</span>
+
+<span class="sd">    References</span>
+<span class="sd">    -----------</span>
+
+<span class="sd">    .. [1] Kuijjer, Marieke Lydia, et al. &quot;Estimating sample-specific regulatory networks.&quot; </span>
+<span class="sd">        Iscience 14 (2019): 226-240.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">obj</span><span class="p">,</span>
+        <span class="n">computing</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+        <span class="n">precision</span><span class="o">=</span><span class="s2">&quot;double&quot;</span><span class="p">,</span>
+        <span class="n">ncores</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">save_dir</span><span class="o">=</span><span class="s2">&quot;lioness_output&quot;</span><span class="p">,</span>
+        <span class="n">save_fmt</span><span class="o">=</span><span class="s2">&quot;npy&quot;</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">=</span><span class="s2">&quot;network&quot;</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize instance of Lioness class and load data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Load data</span>
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Loading input data ...&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_panda_results</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">export_panda_results</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">expression_matrix</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">expression_matrix</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">motif_matrix</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">motif_matrix</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ppi_matrix</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">ppi_matrix</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">correlation_matrix</span>
+            <span class="k">if</span> <span class="n">precision</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correlation_matrix</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">motif_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">motif_matrix</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ppi_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ppi_matrix</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">computing</span> <span class="o">=</span> <span class="n">computing</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_cores</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ncores</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;panda_network&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">panda_network</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;puma_network&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">puma_network</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cannot find panda or puma network in object&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Cannot find panda or puma network in object&quot;</span><span class="p">)</span>
+            <span class="n">gene_names</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">gene_names</span>
+            <span class="n">tf_names</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">unique_tfs</span>
+            <span class="n">origmotif</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">motif_data</span>  <span class="c1"># save state of original motif matrix</span>
+            <span class="k">del</span> <span class="n">obj</span>
+
+        <span class="c1"># Get sample range to iterate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="p">)[</span>
+            <span class="n">start</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">end</span>
+        <span class="p">]</span>  <span class="c1"># sample indexes to include</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of total samples:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of computed samples:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexes</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of parallel cores:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cores</span><span class="p">)</span>
+
+        <span class="c1"># Create the output folder if not exists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">=</span> <span class="n">save_fmt</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">save_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span>
+        <span class="c1"># Run LIONESS</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cores</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">computing</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cores</span><span class="p">)(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__par_lioness_loop</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexes</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">computing</span> <span class="o">==</span> <span class="s2">&quot;gpu&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lioness_loop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1">#        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)</span>
+
+        <span class="c1"># create result data frame</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;network&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">origmotif</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+                <span class="n">total_tfs</span> <span class="o">=</span> <span class="n">tf_names</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">gene_names</span><span class="p">)</span>
+                <span class="n">total_genes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gene_names</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tf_names</span><span class="p">))]</span>
+                <span class="n">indDF</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">total_tfs</span><span class="p">,</span> <span class="n">total_genes</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tf&quot;</span><span class="p">,</span> <span class="s2">&quot;gene&quot;</span><span class="p">])</span>
+                <span class="n">indDF</span> <span class="o">=</span> <span class="n">indDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span><span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># if equal to None to be specific</span>
+                <span class="n">total_genes1</span> <span class="o">=</span> <span class="n">gene_names</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">gene_names</span><span class="p">)</span>
+                <span class="n">total_genes2</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gene_names</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gene_names</span><span class="p">))]</span>
+                <span class="n">indDF</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">total_genes1</span><span class="p">,</span> <span class="n">total_genes2</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;gene1&quot;</span><span class="p">,</span> <span class="s2">&quot;gene2&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">indDF</span> <span class="o">=</span> <span class="n">indDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span><span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_lioness_results</span> <span class="o">=</span> <span class="n">indDF</span>
+        <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;gene_targeting&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_lioness_results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">gene_names</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;tf_targeting&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_lioness_results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">tf_names</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_lioness_results</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__lioness_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize instance of Lioness class and load data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">            self.total_lioness_network: array</span>
+<span class="sd">                An edge-by-sample matrix containing sample-specific networks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for i in self.indexes:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running LIONESS for sample </span><span class="si">%d</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">i</span><span class="p">]</span>  <span class="c1"># all samples except i</span>
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Computing coexpression network:&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">computing</span> <span class="o">==</span> <span class="s2">&quot;gpu&quot;</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
+
+                <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expression_matrix</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">cp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                    <span class="n">cp</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span>
+                <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expression_matrix</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Normalizing networks:&quot;</span><span class="p">):</span>
+            <span class="n">correlation_matrix_orig</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">correlation_matrix</span>  <span class="c1"># save matrix before normalization</span>
+            <span class="p">)</span>
+            <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_network</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Inferring LIONESS network:&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">motif_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">correlation_matrix_orig</span>
+                <span class="n">subset_panda_network</span> <span class="o">=</span> <span class="n">compute_panda</span><span class="p">(</span>
+                    <span class="n">correlation_matrix</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ppi_matrix</span><span class="p">),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">motif_matrix</span><span class="p">),</span>
+                    <span class="n">computing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">computing</span><span class="p">,</span>
+                    <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">correlation_matrix</span>
+                <span class="n">subset_panda_network</span> <span class="o">=</span> <span class="n">correlation_matrix_orig</span>
+
+        <span class="c1"># For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q</span>
+        <span class="n">lioness_network</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">subset_panda_network</span>
+        <span class="p">)</span>
+        <span class="c1"># old</span>
+        <span class="c1">#lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network</span>
+
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span>
+            <span class="s2">&quot;Saving LIONESS network </span><span class="si">%d</span><span class="s2"> to </span><span class="si">%s</span><span class="s2"> using </span><span class="si">%s</span><span class="s2"> format:&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="s2">&quot;lioness.</span><span class="si">%d</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;txt&quot;</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">lioness_network</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;npy&quot;</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">lioness_network</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;mat&quot;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">savemat</span>
+
+                <span class="n">savemat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;PredNet&quot;</span><span class="p">:</span> <span class="n">lioness_network</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown format </span><span class="si">%s</span><span class="s2">! Use npy format instead.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span><span class="p">)</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">lioness_network</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">computing</span> <span class="o">==</span> <span class="s2">&quot;gpu&quot;</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">lioness_network</span><span class="p">)</span><span class="o">.</span><span class="n">tostring</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">lioness_network</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">computing</span> <span class="o">==</span> <span class="s2">&quot;gpu&quot;</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">lioness_network</span><span class="p">)</span><span class="o">.</span><span class="n">tostring</span><span class="p">(),</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">lioness_network</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span>
+
+    <span class="nd">@delayed</span>
+    <span class="nd">@wrap_non_picklable_objects</span>
+    <span class="k">def</span> <span class="nf">__par_lioness_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize instance of Lioness class and load data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">            self.total_lioness_network: array</span>
+<span class="sd">                An edge-by-sample matrix containing sample-specific networks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for i in self.indexes:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running LIONESS for sample </span><span class="si">%d</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">i</span><span class="p">]</span>  <span class="c1"># all samples except i</span>
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Computing coexpression network:&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">computing</span> <span class="o">==</span> <span class="s2">&quot;gpu&quot;</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
+
+                <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expression_matrix</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">cp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                    <span class="n">cp</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span>
+                <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expression_matrix</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Normalizing networks:&quot;</span><span class="p">):</span>
+            <span class="n">correlation_matrix_orig</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">correlation_matrix</span>  <span class="c1"># save matrix before normalization</span>
+            <span class="p">)</span>
+            <span class="n">correlation_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_network</span><span class="p">(</span><span class="n">correlation_matrix</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;Inferring LIONESS network:&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">motif_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">correlation_matrix_orig</span>
+                <span class="n">subset_panda_network</span> <span class="o">=</span> <span class="n">compute_panda</span><span class="p">(</span>
+                    <span class="n">correlation_matrix</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ppi_matrix</span><span class="p">),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">motif_matrix</span><span class="p">),</span>
+                    <span class="n">computing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">computing</span><span class="p">,</span>
+                    <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">correlation_matrix</span>
+                <span class="n">subset_panda_network</span> <span class="o">=</span> <span class="n">correlation_matrix_orig</span>
+
+        <span class="c1"># For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q</span>
+        <span class="c1">#lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network</span>
+
+        <span class="n">lioness_network</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">subset_panda_network</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span>
+            <span class="s2">&quot;Saving LIONESS network </span><span class="si">%d</span><span class="s2"> to </span><span class="si">%s</span><span class="s2"> using </span><span class="si">%s</span><span class="s2"> format:&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="s2">&quot;lioness.</span><span class="si">%d</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;txt&quot;</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">lioness_network</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;npy&quot;</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">lioness_network</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;mat&quot;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">savemat</span>
+
+                <span class="n">savemat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;PredNet&quot;</span><span class="p">:</span> <span class="n">lioness_network</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown format </span><span class="si">%s</span><span class="s2">! File will not be saved.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span><span class="p">)</span>
+                <span class="c1"># np.save(path, lioness_network)</span>
+        <span class="c1"># if i == 0:</span>
+        <span class="c1"># self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;network&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">lioness_network</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;gene_targeting&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lioness_network</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;tf_targeting&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lioness_network</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span>
+
+<div class="viewcode-block" id="Lioness.save_lioness_results"><a class="viewcode-back" href="../../../functions/api.html#netZooPy.lioness.lioness.Lioness.save_lioness_results">[docs]</a>    <span class="k">def</span> <span class="nf">save_lioness_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Saves LIONESS network.</span>
+<span class="sd">            Uses self.save_fmt, self.save_dir to save the data</span>
+<span class="sd">            into self.total_lioness_network</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self.lioness_network.to_csv(file, index=False, header=False, sep=&quot;\t&quot;)</span>
+        <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="s2">&quot;lioness.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;txt&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span>
+                <span class="n">fullpath</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span><span class="p">),</span>
+                <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">header</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;npy&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_fmt</span> <span class="o">==</span> <span class="s2">&quot;mat&quot;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">savemat</span>
+
+            <span class="n">savemat</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_lioness_network</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Lioness.export_lioness_table"><a class="viewcode-back" href="../../../functions/api.html#netZooPy.lioness.lioness.Lioness.export_lioness_table">[docs]</a>    <span class="k">def</span> <span class="nf">export_lioness_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_filename</span><span class="o">=</span><span class="s2">&quot;lioness_table.txt&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">            Saves LIONESS network with edge names. This saves a dataframe with the corresponding</span>
+<span class="sd">            header and indexes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ------------</span>
+<span class="sd">            output_filename: str</span>
+<span class="sd">                Path to save the network. Specify relative path</span>
+<span class="sd">                and format. Choose between .csv, .tsv and .txt. </span>
+<span class="sd">                (Defaults to .lioness_table.txt))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_lioness_results</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tf&#39;</span><span class="p">,</span><span class="s1">&#39;gene&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">output_filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;txt&quot;</span><span class="p">):</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">):</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;tsv&quot;</span><span class="p">):</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, netZoo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    /*.wy-side-nav-search, .wy-nav-top {
+      background: #fff0;
+      sidebartextcolor : #000000;
+    }*/
+    /* Sidebar */
+    /*.wy-nav-side {
+     background: #ffffff;
+    }*/
+
+    .wy-side-nav-search .wy-dropdown > a img.logo, .wy-side-nav-search > a img.logo {
+    width: 100pt;
+}
+  </style>
+
+
+</body>
+</html>
