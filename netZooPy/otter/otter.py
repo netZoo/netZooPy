@@ -3,26 +3,36 @@ from math import sqrt
 
 
 def otter(W, P, C, lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
-    """
-	Description:
-	    OTTER infers gene regulatory networks using TF DNA binding
+    """ 
+        OTTER infers gene regulatory networks using TF DNA binding
 	    motif (W), TF PPI (P), and gene coexpression (C) through
 	    minimzing the following objective:
 	        min f(W)
 	    with f(W) = (1-lam)/4*||WW' - P||^2 + (lam/4)*||W'W - C||^2 + (gamma/2)*||W||^2
-	Inputs:
-	    W     : TF-gene regulatory network based on TF motifs as a
-	            matrix of size (t,g), g=number of genes, t=number of TFs
-	    P     : TF-TF protein interaction network as a matrix of size (t,t)
-	    C     : gene coexpression as a matrix of size (g,g)
-	    lam   : it should be in [0,1].
-	    gamma : penalization term
-	    Iter  : number of iterations of the algorithm
-	    eta   : the learning rate
-	Outputs:
-	    W     : Predicted TF-gene complete regulatory network as an adjacency matrix of size (t,g).
-    Reference:
-        Weighill, Deborah, et al. "Gene Regulatory Network Inference as Relaxed Graph Matching." BioRxiv (2020).
+	Parameters
+    -----------
+	    W     : array
+            TF-gene regulatory network based on TF motifs as a
+	        matrix of size (t,g), g=number of genes, t=number of TFs
+	    P     : array
+            TF-TF protein interaction network as a matrix of size (t,t)
+	    C     : array
+            gene coexpression as a matrix of size (g,g)
+	    lam   : float
+            it should be in [0,1].
+	    gamma : float 
+            penalization term
+	    Iter  : int
+            number of iterations of the algorithm
+	    eta   : float 
+            the learning rate
+	Returns
+    ---------
+	    W     : array
+            Predicted TF-gene complete regulatory network as an adjacency matrix of size (t,g).
+    References
+    -------------
+        .. [1] Weighill, Deborah, et al. "Gene Regulatory Network Inference as Relaxed Graph Matching." BioRxiv (2020).
     """
     b1 = 0.9
     b2 = 0.999

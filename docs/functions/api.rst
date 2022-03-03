@@ -11,6 +11,24 @@ Panda
    :inherited-members:
    :private-members:
 
+.. autoclass:: netZooPy.panda.analyze_panda.AnalyzePanda
+   :members:
+   :undoc-members:
+   :private-members:
+
+Condor
+======
+
+.. autoclass:: netZooPy.condor.condor.condor_object
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :private-members:
+
+Other function
+~~~~~~~~~~~~~~~
+.. autofunction:: netZooPy.condor.run_condor
+
 Lioness
 =========
 
@@ -20,7 +38,12 @@ Lioness
    :undoc-members:
    :inherited-members:
    :private-members:
-   
+
+.. autoclass:: netZooPy.lioness.analyze_lioness.AnalyzeLioness
+   :members:
+   :undoc-members:
+   :private-members:
+
 Puma
 =====
 
@@ -36,6 +59,7 @@ Sambar
 .. autofunction:: netZooPy.sambar.sambar
 
 Extra sambar functions
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: netZooPy.sambar.corgenelength
 

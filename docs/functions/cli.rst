@@ -23,7 +23,7 @@ Commands
 
 .. click:: netZooPy.cli:cli
    :prog: netzoopy
-   :commands: panda,lioness
+   :commands: panda,lioness,condor
    :nested: full
 
 

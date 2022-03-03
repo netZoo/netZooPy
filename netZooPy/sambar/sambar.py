@@ -47,20 +47,24 @@ mut   = pkg_resources.resource_filename(__name__, 'mut.ucec.csv')
 
 def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
     """
-    Description:
         Function to normalize gene mutation scores by gene length.
         mut should be a dataframe of mutation scores with genes as columns and samples as rows. 
         (VERY IMPORTANT, IF OTHERWISE MATRIX SHOULD BE TRANSPOSED OR IT WON'T WORK!!!)
     
     Parameters
     --------------
-        mut         : Mutation scores.
-        cangenes    : A set of cancer associated genes.
-        esize       : A dataframe of gene lengths.
-        normbysample: True : Normalizes the gene mutation scores in a sample by the total mutations within the sample. 
-                      False: Deactivate normalization.
-        subcangenes : True: Subsets mutation data to cancer-associated genes.
-                      False: Takes all genes.
+        mut         : list
+            Mutation scores.
+        cangenes    : list
+            A set of cancer associated genes.
+        esize       : dataFrame
+            A dataframe of gene lengths.
+        normbysample: bool
+            - True : Normalizes the gene mutation scores in a sample by the total mutations within the sample. 
+            - False: Deactivate normalization.
+        subcangenes : bool
+            - True: Subsets mutation data to cancer-associated genes.
+            - False: Takes all genes.
 
     Returns	
     --------------
@@ -95,19 +99,25 @@ def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
     return mut[sorted(mut.columns)]
 
 def convertgmt(gmtfile, cangenes,gmtMSigDB=True,subcangenes=True):
-
-    """ This function takes as input the name of a gmt file containing lists of genes associated to pathways. 
+    """ 
+        This function takes as input the name of a gmt file containing lists of genes associated to pathways. 
         It outputs an adjacency matrix of genes and pathways. 
         It also subsets the genes to a list of cancer-associated genes. 
 
-    Args:
-        gmtfile (str): Path the gmt file.
-        cangenes (list): A set of cancer associated genes.
-        gmtMSigDB (bool, optional): If true: gmt file from MSigDB . Defaults to True.
-        subcangenes (bool, optional): If true: Subsets mutation data to cancer-associated genes.
-        otherwise takes all genes. Defaults to True.
+    Parameters
+    -----------
+        gmtfile:str 
+            Path the gmt file.
+        cangenes:list
+            A set of cancer associated genes.
+        gmtMSigDB : bool, optional
+            - If true: gmt file from MSigDB . Defaults to True.
+        subcangenes : bool, optional
+            - If true: Subsets mutation data to cancer-associated genes.
+            otherwise takes all genes. Defaults to True.
 
-    Returns:
+    Returns
+    --------
         sign_matrix: _
             Adjacency matrix of genes and pathways.
     """    
@@ -150,7 +160,8 @@ def convertgmt(gmtfile, cangenes,gmtMSigDB=True,subcangenes=True):
     return sign_matrix[sorted(sign_matrix.columns)]
 
 def desparsify(mutdata,exonsize,gmtfile,cangenes,normMut=True,gmtMSigDB=True,subcangenes=True):
-    """Applies the sambar method to de-sparcify the mutation data using the pathway signatures in the gmtfile.
+    """ 
+        Applies the sambar method to de-sparsify the mutation data using the pathway signatures in the gmtfile.
         
     Args:
         mutdata     : Mutation scores.

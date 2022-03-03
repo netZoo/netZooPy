@@ -129,6 +129,7 @@ class Panda(object):
             start=start,
             end=end
         )
+        print(modeProcess,motif_file,expression_file,ppi_file,save_memory,remove_missing,keep_expression_matrix)
         if hasattr(self, "export_panda_results"):
             return
 
@@ -151,7 +152,8 @@ class Panda(object):
         # Clean up useless variables to release memory
         # =====================================================================
         self.tfs, self.genes = self.unique_tfs, self.gene_names
-        if save_memory:
+
+        if (save_memory==True):
             print("Clearing motif and ppi data, unique tfs, and gene names for speed")
             del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
 
@@ -290,6 +292,7 @@ class Panda(object):
                 - (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                 - 'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
         """
+
         # if modeProcess=="legacy":
         # =====================================================================
         # Data loading
@@ -385,6 +388,7 @@ class Panda(object):
 
         if modeProcess == "legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
+            print('new case')
         if modeProcess == "legacy" and remove_missing==False:
             if expression_file is not None:
                 self.gene_names = (
@@ -548,9 +552,6 @@ class Panda(object):
             np.tile(self.gene_names, (len(self.gene_names), 1)).transpose().flatten()
         )
         self.flat_panda_network = self.panda_network.transpose().flatten()
-        print(genes_1)
-        print(genes_2)
-        print((self.flat_panda_network).shape)
         self.export_panda_results = pd.DataFrame(
             {"tf": genes_1, "gene": genes_2, "force": self.flat_panda_network}
         )

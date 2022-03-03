@@ -33,6 +33,7 @@ def test_panda():
         keep_expression_matrix=bool(lioness_file),
         modeProcess="intersection",
     )
+   
     panda_obj.save_panda_results(output_file)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)

@@ -5,6 +5,7 @@ import getopt
 import click
 from netZooPy.panda.panda import Panda
 from netZooPy.lioness import Lioness
+from netZooPy.condor import condor_object
 
 #############################################################################
 # PANDA #####################################################################
@@ -92,7 +93,7 @@ def panda(expression, motif, ppi, output, computing, precision, save_memory, sav
               help='precision option')
 @click.option('--ncores', type=int, show_default=True, default=1,
               help='Number of cores. Lioness CPU parallelizes over ncores')
-@click.option('--save_memory', is_flag=True, show_default=True,
+@click.option('--save_memory', is_flag=True, show_default=False,
               help='panda option. When true the result network is weighted adjacency matrix of size (nTFs, nGenes).\
                   when false The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.')
 @click.option('--save_tmp', is_flag=True, show_default=True,
@@ -134,9 +135,63 @@ def lioness(expression, motif, ppi, output_panda, output_lioness, fmt, computing
 
     # Run PANDA
     print('Start Panda run ...')
-    panda_obj = Panda(expression, motif, ppi, computing=computing, save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=True, save_memory=save_memory, modeProcess=mode_process, start=start, end=end)
-    panda_obj.save_panda_results(output_panda)
+    
+    panda_obj = Panda(expression, motif, ppi, computing=computing, save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=True, save_memory=save_memory, modeProcess=mode_process, start=start, end=end)
     print('Panda saved. Computing Lioness...')
     Lioness(panda_obj, computing=computing, precision=precision,ncores=ncores, save_dir=output_lioness, save_fmt=fmt, output = output_type, alpha = alpha)
     print('All done!')
     
+
+
+@click.command()
+@click.option('-n', '--network_file', 'network', type=str, required=True,
+              help='Path to file encoding an edgelist.')
+@click.option('--sep', type=str, show_default=True, default=',',
+              help='network file separator')
+@click.option('--index_col', type=int, show_default=True, default=0,
+              help='Column that stores the index of the edgelist. E.g. None, 0...')
+@click.option('--header', type=int, show_default=True, default=0,
+              help='Row that stores the header of the edgelist. E.g. None, 0...')
+@click.option('--initial_method', type=str, show_default=True, default='LCS',
+              help='Method to determine intial community assignment. (By default Multilevel method)')
+@click.option('--initial_project', is_flag=True, show_default=True,
+              help='Whether to project the network onto one of the bipartite sets for\
+                    the initial community detection.')       
+@click.option('--com_num', type=str, show_default=True, default='def',
+              help='Max number of communities. It is recomended to leave this to default,\
+                   otherwise if the initial community assignement is bigger the program will crash.')
+@click.option('--delta_qmin', type=str, show_default=True, default='def',
+              help='Difference modularity threshold for stopping the iterative process.')
+@click.option('--resolution', type=int, show_default=True, default=1,
+              help='Not yet implemented')
+@click.option('--tar_output', type=str, show_default=True, default='tar_memb.txt',
+              help='Filename for saving the tar node final membership.')
+@click.option('--reg_output', type=str, show_default=True, default='reg_memb.txt',
+              help='Filename for saving the reg node final membership.')
+def condor(
+    network_file,
+    sep=",",
+    index_col=0,
+    header=0,
+    initial_method="LCS",
+    initial_project=False,
+    com_num="def",
+    delta_qmin="def",
+    resolution=1,
+    tar_output="tar_memb.txt",
+    reg_output="reg_memb.txt",
+):
+    """
+        Computation of the whole condor process. It creates a condor object and runs all the steps of BRIM on it. The function outputs
+        Note: The edgelist is assumed to contain a bipartite network. The program will relabel the nodes so that the edgelist represents a bipartite network anyway.
+        It is on the user to know that the network they are using is suitable for the method.
+        
+        tar and reg final memberships are saved to csv
+    """
+
+    co = condor_object(network_file, sep, index_col, header)
+    co.initial_community(initial_method, initial_project)
+    co.brim(delta_qmin, com_num, resolution)
+    co.tar_memb.to_csv(tar_output)
+    co.reg_memb.to_csv(reg_output)
+
