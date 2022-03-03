@@ -32,7 +32,7 @@ def otter(W, P, C, lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
             Predicted TF-gene complete regulatory network as an adjacency matrix of size (t,g).
     References
     -------------
-        .. [1] Weighill, Deborah, et al. "Gene Regulatory Network Inference as Relaxed Graph Matching." BioRxiv (2020).
+        .. [1] Weighill, Deborah, et al. "Gene Regulatory Network Inference as Relaxed Graph Matching." AAAI Conference (2021).
     """
     b1 = 0.9
     b2 = 0.999
