@@ -40,7 +40,7 @@ def test_panda():
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
     # 0.b Intersection from command line
-    cmd.panda.callback(expression_data, motif, ppi, output_file, 'cpu','double','True','False','False','False','intersection',0.1,1,None)
+    cmd.panda.callback(expression_data, motif, ppi, output_file, rm_missing = rm_missing, keep_expr=bool(lioness_file),mode_process='intersection', save_memory = True)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
@@ -100,7 +100,7 @@ def test_panda():
 
     # 1.b Union from command line
 
-    cmd.panda.callback(expression_data, motif, ppi, output_file, 'cpu','double','True','False','False','False','union',0.1,1,None)
+    cmd.panda.callback(expression_data, motif, ppi, output_file, rm_missing = rm_missing, keep_expr=bool(lioness_file),mode_process='union', save_memory = True)
 
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file, sep=" ", header=None)

@@ -100,20 +100,20 @@ def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
 
 def convertgmt(gmtfile, cangenes,gmtMSigDB=True,subcangenes=True):
     """ 
-        This function takes as input the name of a gmt file containing lists of genes associated to pathways. 
-        It outputs an adjacency matrix of genes and pathways. 
-        It also subsets the genes to a list of cancer-associated genes. 
+    This function takes as input the name of a gmt file containing lists of genes associated to pathways. 
+    It outputs an adjacency matrix of genes and pathways. 
+    It also subsets the genes to a list of cancer-associated genes. 
 
     Parameters
     -----------
-        gmtfile:str 
+        gmtfile: str 
             Path the gmt file.
         cangenes:list
             A set of cancer associated genes.
         gmtMSigDB : bool, optional
-            - If true: gmt file from MSigDB . Defaults to True.
+            If true: gmt file from MSigDB . Defaults to True.
         subcangenes : bool, optional
-            - If true: Subsets mutation data to cancer-associated genes.
+            If true: Subsets mutation data to cancer-associated genes.
             otherwise takes all genes. Defaults to True.
 
     Returns

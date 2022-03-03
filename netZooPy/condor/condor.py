@@ -40,6 +40,34 @@ class condor_object:
             - reg_names: list of the nodes in the first column.
             - tar_names: list of the nodes in the second column.
             - index_dict: dictionary keeping track of the indices in the "graph" variable and the actual names of the nodes.
+    
+        warning:
+            Condor uses iGraph for the node assignment. For the initialization of the
+            assignment, there is some stochasticity involved, that can be somehow controlled 
+            by setting the python random seed.
+            
+            For instance, running condor twice
+            on the same dataset, in the same python process, might result in slightly different assignments. 
+            To avoid this behavior, you can set the seed ( random.seed(0) ) before calling 
+            condor.
+
+                >>> import random
+                >>> random.seed(1)
+                >>> c1 = condor(...)
+                >>> random.seed(1)
+                >>> c2 = condor(...)
+
+            In this case c1 and c2 are exactly the same.
+
+            On the contrary, if condor is called twice during two different python calls, you will 
+            have the exact same results, as the random seed will have resetted. 
+            Instead, the stochasticity of the initial assignment can be kept by setting 
+            a random seed at the beginning
+
+                >>> import random
+                >>> random.seed(random.randint(1,10000000)) 
+                >>> condor(...)
+    
     """
 
     def __init__(
@@ -210,14 +238,15 @@ class condor_object:
                 self.reg_memb = R0
 
     def bipartite_modularity(self, B, m, R, T):
-        """ Computation of the bipartite modularity as described in [1]
-            
+        """ Computation of the bipartite modularity as described in 
+        Michael J. Barber. Modularity and community detection in bipartite networks.
+
         Parameters
         ------------
             B        : array
                 modularity matrix.
             m        : array
-                sum of the weights (or number of edges in the unweighted case.
+                sum of the weights (or number of edges in the unweighted case).
             R        : array
                 community assignement matrix for reg nodes.
             T        : array
@@ -236,7 +265,7 @@ class condor_object:
 
         References
         -----------
-        .. [1] Michael J. Barber. Modularity and community detection in bipartite networks.
+        .. [1]__ Michael J. Barber. Modularity and community detection in bipartite networks.
 
         """
 

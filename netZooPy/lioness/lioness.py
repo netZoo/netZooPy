@@ -22,6 +22,7 @@ class Lioness(Panda):
 
     Parameters
     ----------
+
             obj             : object
                 PANDA object, generated with keep_expression_matrix=True.
             computing       : str
@@ -50,13 +51,14 @@ class Lioness(Panda):
 
     Returns
     --------
-        export_lioness_results : _
-            Depeding on the output argument, this can be either all the lioness 
-            networks or their gene/tf targeting scores.
-        
+    export_lioness_results : _
+        Depeding on the output argument, this can be either all the lioness 
+        networks or their gene/tf targeting scores.
 
-    Examples
-    -----------
+    Notes
+    -------
+    Example on how to use Lioness and plot the network
+
         >>> from netZooPy.lioness.lioness import Lioness
         >>> #To run the Lioness algorithm for single sample networks, first run PANDA using the keep_expression_matrix flag, then use Lioness as follows:
         >>> panda_obj = Panda('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt', remove_missing=False, keep_expression_matrix=True)
@@ -67,9 +69,6 @@ class Lioness(Panda):
         >>> #Return a network plot for one of the Lioness single sample networks:
         >>> plot = AnalyzeLioness(lioness_obj)
         >>> plot.top_network_plot(column= 0, top=100, file='top_100_genes.png')
-
-    Notes
-    -------
 
     Example lioness output:
         TF, Gene and Motif order is identical to the panda output file.
@@ -82,14 +81,15 @@ class Lioness(Panda):
         - 2.39500370135	1.84608635425	2.80179804094	2.67540878165\n
         - -0.117475863987	0.494923925853	0.0518448588965	-0.0584810456421\n
 
-    Authors:
-        Cho-Yi Chen, David Vi, Daniel Morgan
+        
 
     References
     -----------
 
-    .. [1] Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." 
+    .. [1]__ Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." 
         Iscience 14 (2019): 226-240.
+    
+    Authors: Cho-Yi Chen, David Vi, Daniel Morgan
     """
 
     def __init__(

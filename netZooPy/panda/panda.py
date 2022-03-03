@@ -1,5 +1,4 @@
 from __future__ import print_function
-
 import math
 import time
 import pandas as pd
@@ -10,7 +9,8 @@ from netZooPy.panda import calculations as calc
 
 
 class Panda(object):
-    """Using PANDA to infer gene regulatory network.
+    """ 
+    Using PANDA to infer gene regulatory network.
         1. Reading in input data (expression data, motif prior, TF PPI data)
         2. Computing coexpression network
         3. Normalizing networks
@@ -76,10 +76,9 @@ class Panda(object):
     Notes
     ------
 
-    Toy data:
-        The example gene expression data that we have available here contains gene expression profiles 
-        for different samples in the columns. Of note, this is just a small subset of a larger gene 
-        expression dataset. We provided these "toy" data so that the user can test the method.
+    Toy data:The example gene expression data that we have available here contains gene expression profiles 
+    for different samples in the columns. Of note, this is just a small subset of a larger gene 
+    expression dataset. We provided these "toy" data so that the user can test the method.
 
 
     Sample PANDA results:\b
@@ -90,13 +89,12 @@ class Panda(object):
         - E2F1  AACSL	1.0	3.685316051\n
         - EGR1  AACSL	0.0	-0.695698519643
 
-    Authors: 
-        Cho-Yi Chen, David Vi, Alessandro Marin, Marouen Ben Guebila, Daniel Morgan
-
     References
     ----------
-    .. [1] Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." 
+    .. [1]__ Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." 
         PloS one 8.5 (2013): e64832.
+
+    Authors: Cho-Yi Chen, David Vi, Alessandro Marin, Marouen Ben Guebila, Daniel Morgan
        
     """
 
@@ -504,10 +502,10 @@ class Panda(object):
     def panda_loop(
         self, correlation_matrix, motif_matrix, ppi_matrix, computing="cpu", alpha=0.1
     ):
-        """The PANDA algorithm.
+        """ The PANDA algorithm.
 
         Parameters
-        -----------
+        ----------
             correlation_matrix: array
                 Input coexpression matrix.
             motif_matrix      : array
@@ -562,7 +560,7 @@ class Panda(object):
         """ Saves PANDA network.
 
         Parameters
-        -----------
+        ----------
             path: str
                 Path to save the network.
         """
@@ -586,7 +584,7 @@ class Panda(object):
         """ Selects top genes.
 
         Parameters
-        -----------
+        ----------
             top        : int
                 Top number of genes to plot.
             file       : str
@@ -622,7 +620,8 @@ class Panda(object):
     ):
         """ Creates plot.
 
-        Parameters:
+        Parameters
+        -----------
             subset_panda_results : array
                 Reduced PANDA network to the top genes.
             file                 : str
@@ -661,7 +660,7 @@ class Panda(object):
         """ Runs the plot.
 
         Parameters
-        -----------
+        ----------
             unique_genes : list
                 Unique list of PANDA genes.
             links        : list
@@ -672,7 +671,7 @@ class Panda(object):
                 Plot the network as a bipartite layout.
 
         Notes
-        -------
+        -----
             split_label: Splits the plot label over several lines for plotting purposes.
         """
         import networkx as nx

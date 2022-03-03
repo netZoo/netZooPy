@@ -40,24 +40,33 @@ from netZooPy.condor import condor_object
 @click.option('--alpha', type=float, default=0.1, show_default=True,
               help='panda and lioness first sample')
 @click.option('--start', type=int, default=1, show_default=True,
-              help='panda and lioness first sample')
+              help='panda first sample')
 @click.option('--end', type=int, default=None, show_default=True,
-              help='panda and lioness last sample')
-def panda(expression, motif, ppi, output, computing, precision, save_memory, save_tmp, rm_missing, keep_expr, mode_process, alpha, start, end):
-    """Run panda using expression, motif and ppi data. 
+              help='panda last sample')
+def panda(expression, motif, ppi, output, computing='cpu', precision='double', save_memory=False, save_tmp=False, rm_missing=False, keep_expr=False, mode_process='union', alpha=0.1, start=1, end=None):
+    """ Run panda using expression, motif and ppi data. 
     Use flags to modify the function behavior. By default, boolean flags are false.
     Output is a text file, with the TF, Gene, Motif, Force columns, where TF and Gene 
     are the nodes of the network considered, Motif is the prior and force is 
     the actual panda score.
+    
+    warning: To keep the command line call clean, we have set all booleans to false as default. To set a boolean to True,
+    from command line you just have to add the respective flag
+        >>> netzoopy panda ....  --rm_missing --save_tmp
+    In this case rm_missing and save_tmp are set to True.
+    To replicate the Panda class default behavior pass --save_memory and --save_tmp
+
 
     Example:
 
             netzoopy panda -e tests/puma/ToyData/ToyExpressionData.txt -m tests/puma/ToyData/ToyMotifData.txt -p tests/puma/ToyData/ToyPPIData.txt -o test_panda.txt
-    
+
+
     Reference:
 
         Glass, Kimberly, et al. "Passing messages between biological networks to refine predicted interactions." PloS one 8.5 (2013): e64832.
-   
+
+
     """
     print('Input data:')
     print('Expression:', expression)
