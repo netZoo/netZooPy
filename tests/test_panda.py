@@ -3,7 +3,8 @@ import os
 from netZooPy.panda.panda import Panda
 import pandas as pd
 import numpy as np
-
+import subprocess
+import netZooPy.command_line as cmd
 
 def test_panda():
     # print(os.getcwd())
@@ -18,6 +19,10 @@ def test_panda():
     gt_file_inter = "tests/panda/inter_test_panda.txt"
     gt_file_rm = "tests/panda/rm_test_panda.txt"
 
+    ## Test command line call
+    result = subprocess.run(["netzoopy", "panda", "--help"], capture_output=False)
+    assert result.returncode == 0
+
     # 0. Intersection
     panda_obj = Panda(
         expression_data,
@@ -28,7 +33,14 @@ def test_panda():
         keep_expression_matrix=bool(lioness_file),
         modeProcess="intersection",
     )
+   
     panda_obj.save_panda_results(output_file)
+    res = pd.read_csv(output_file, sep=" ", header=None)
+    gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+
+    # 0.b Intersection from command line
+    cmd.panda.callback(expression_data, motif, ppi, output_file, rm_missing = rm_missing, keep_expr=bool(lioness_file),mode_process='intersection', save_memory = True)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
@@ -84,6 +96,16 @@ def test_panda():
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+
+
+    # 1.b Union from command line
+
+    cmd.panda.callback(expression_data, motif, ppi, output_file, rm_missing = rm_missing, keep_expr=bool(lioness_file),mode_process='union', save_memory = True)
+
+    res = pd.read_csv(output_file, sep=" ", header=None)
+    gt = pd.read_csv(gt_file, sep=" ", header=None)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+
 
     # 2. In-degree and out-degree
     panda_obj = Panda(
@@ -164,9 +186,7 @@ def test_panda():
             + ".txt"
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
-        pd.testing.assert_frame_equal(
-            res, gt, rtol=1e-5, check_exact=False
-        )
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
         # PPI
         i = i + 1
         panda_obj = Panda(
@@ -188,9 +208,7 @@ def test_panda():
             + ".txt"
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
-        pd.testing.assert_frame_equal(
-            res, gt, rtol=1e-5, check_exact=False
-        )
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
         # Expression
         i = i + 1
         panda_obj = Panda(
@@ -212,9 +230,7 @@ def test_panda():
             + ".txt"
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
-        pd.testing.assert_frame_equal(
-            res, gt, rtol=1e-5, check_exact=False
-        )
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
         # Expression and PPI
         i = i + 1
         panda_obj = Panda(
@@ -236,6 +252,4 @@ def test_panda():
             + ".txt"
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
-        pd.testing.assert_frame_equal(
-            res, gt, rtol=1e-5, check_exact=False
-        )
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
