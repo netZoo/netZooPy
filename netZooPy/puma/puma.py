@@ -70,7 +70,7 @@ class Puma(object):
     References
     ----------
 
-    ..[1]__ Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." BioRxiv (2019).
+    ..[1]__ Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." OUP Bioinformatics (2019).
 
         Authors:cychen, davidvi, alessandromarin
     """
