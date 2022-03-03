@@ -113,7 +113,7 @@ html_theme_options ={
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_logo = "_static/netZoo_logo_v14.png"
+html_logo = "_static/netZoo_logo_v14_nobcg.png"
 html_theme_options = {
     'canonical_url': '',
     'logo_only': False,
