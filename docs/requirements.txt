@@ -1,3 +1,4 @@
+-e ../
 releases
 recommonmark
 numpydoc
