@@ -3,7 +3,7 @@ Changelog
 ==========
 
 
-0.9.2 (2022-02-25)
+0.9.2 (2022-03-04)
 ------------------
 - added command line interface (panda, lioness)
 - updating documentation
