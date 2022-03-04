@@ -39,3 +39,8 @@ pt_out.csv
 reg_memb.txt
 tar_memb.txt
 gt_panda*.txt
+
+
+!tests/lioness
+!tests/lioness/*
+.DS_Store

@@ -12,36 +12,34 @@ import matplotlib.pyplot as plt
 
 class AnalyzeLioness(Lioness):
     """
-    Description:
         Plots LIONESS network.
 
-    Inputs:
-        Panda: LIONESS object.
+    Parameters
+    ------------
+        lioness_data: object
+            lioness object.
     
-    Methods:
-        __init__            : Intialize instance of AnalyzePanda class.
-        top_network_plot    : Selects top genes.
     """
     def __init__(self, lioness_data):
         """
-        Description:
+        
             Intialize instance of AnalyzeLioness class and load variables.
-
-        Inputs:
-            lioness_data : LIONESS object 
         """
         self.export_panda_results = lioness_data.export_panda_results
         self.lioness_results = lioness_data.export_lioness_results
         return None
     def top_network_plot(self, index = 0, top = 100, file = 'lioness_top_100.png'):
         """
-        Description:
-            Selects top genes.
+            Network of top genes.
 
-        Inputs:
-            column: Index of sample to plot.
-            top   : Top number of genes to plot.
-            file  : File to save the network plot.
+        Parameters
+        -----------
+            index: int (defaults to 0)
+                Index of sample to plot.
+            top   : int (defaults to 100)
+                Top number of genes to plot.
+            file  : str
+                File to save the network plot.
         """
         self.export_panda_results[['force']] = self.lioness_results.iloc[index,:]
         plot = AnalyzePanda(self)

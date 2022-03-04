@@ -6,26 +6,18 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class AnalyzePanda(Panda):
+  
     """
-    Description:
         Plots PANDA network.
 
-    Inputs:
-        Panda: PANDA object.
-    
-    Methods:
-        __init__            : Intialize instance of AnalyzePanda class.
-        top_network_plot    : Selects top genes.
-        __shape_plot_network: Creates plot.
-        __create_plot       : Runs plot.
+    Parameters
+    -----------
+        panda_data : object
+            PANDA object 
     """
     def __init__(self, panda_data):
         """
-        Description:
             Intialize instance of AnalyzePanda class.
-
-        Inputs:
-            panda_data : PANDA object 
         """
         if not hasattr(panda_data,'export_panda_results'):
             print()
@@ -39,12 +31,14 @@ class AnalyzePanda(Panda):
 
     def top_network_plot(self, top = 100, file = 'panda_top_100.png'):
         """
-        Description:
             Selects top genes.
 
-        Inputs:
-            top : Top number of genes to plot.
-            file: File to save the network plot.
+        Parameters
+        -----------
+            top : int (Defaults to 100)
+                Top number of genes to plot.
+            file: str (Defaults to panda_top_100.png)
+                File to save the network plot.
         """
         subset_panda_results = self.panda_results.sort_values(by=['force'], ascending=False)
         subset_panda_results = subset_panda_results[subset_panda_results.tf != subset_panda_results.gene]
@@ -54,12 +48,14 @@ class AnalyzePanda(Panda):
 
     def __shape_plot_network(self, subset_panda_results, file = 'panda.png'):
         """
-        Description:
             Creates plot.
 
-        Inputs:
-            subset_panda_results : Reduced PANDA network to the top genes.
-            file                 : File to save the network plot.
+        Parameters
+        ___________
+            subset_panda_results : array
+                Reduced PANDA network to the top genes.
+            file                 : str (Defaults to panda.png)
+                File to save the network plot.
         """
         #reshape data for networkx
         unique_genes = list(set(list(subset_panda_results['tf'])+list(subset_panda_results['gene'])))
@@ -78,13 +74,16 @@ class AnalyzePanda(Panda):
 
     def __create_plot(self, unique_genes, links, file = 'panda.png'):
         """
-        Description:
-            Runs the plot.
+            Plot panda network on specified genes and edges
 
-        Inputs:
-            unique_genes : Unique list of PANDA genes.
-            links        : Edgdes of the subset PANDA network to the top genes.
-            file         : File to save the network plot.
+        Parameters
+        ___________
+            unique_genes : list
+                Unique list of PANDA genes.
+            links        : edges
+                Edgdes of the subset PANDA network to the top genes.
+            file         : str (Defaults to panda.png)
+                File to save the network plot.
         """
         #plot
         g = nx.Graph()
