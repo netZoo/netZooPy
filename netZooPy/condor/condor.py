@@ -3,7 +3,6 @@ import pandas as pd
 from igraph import *
 from .timer import Timer
 
-
 class condor_object:
     """
     Initialization of the condor object. The function gets a network
@@ -100,6 +99,8 @@ class condor_object:
             self.net = dataframe
 
         # Forces the edgelist to induce a bipartite network by renaming the columns.
+        cnames = self.net.columns
+        self.net = self.net.astype({cnames[0]: str, cnames[1]: str})
         self.net.iloc[:, 0] = "reg_" + self.net.iloc[:, 0]
         self.net.iloc[:, 1] = "tar_" + self.net.iloc[:, 1]
         # self.net.columns = ["V1","V2","weight"]
@@ -116,6 +117,7 @@ class condor_object:
                 print("Unweighted network. Weights initialized as 1.")
                 self.net["weight"] = 1
 
+            self.net.columns = ["V1", "V2", "weight"]
             # Creates iGraph object from the DataFrame.
             self.graph = Graph.DataFrame(self.net, directed=False)
 
