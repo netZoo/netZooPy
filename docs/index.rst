@@ -13,7 +13,10 @@ Home
 
 netZooPy is a catalog of methods for the reconstruction and analysis of gene regulatory networks.
 
-netZooPy has started as a merge of the following repositories and forks:
+Available animals are: (gpu)PANDA, (gpu)LIONESS, (gpu)PUMA, SAMBAR, CONDOR, OTTER, and DRAGON.
+
+
+netZooPy has merged of the following repositories and forks:
 
 - `pypanda <https://github.com/davidvi/pypanda>`_ from David Van Ijzendorn, 
 
@@ -23,13 +26,9 @@ netZooPy has started as a merge of the following repositories and forks:
 
 - Genis Calderer's `pysambar <https://github.com/genis/pysambar>`_ and `pycondor <https://github.com/genis/pycondr>`_
 
-Contents
-========
 
-.. toctree::
-   :hidden:
-
-   self
+Getting started
+------------------
 
 .. toctree::
 
@@ -37,15 +36,33 @@ Contents
 
 .. toctree::
 
-   functions/index
+   tutos/index
+
+Documentation
+-------------
+
+Netzoopy also has a command line interface that allows to run the animal methods
+from the command line, for example: 
+
+.. code-block::
+
+   netzoopy panda --e expression.txt --m motif.txt --p ppi.txt --o output_panda.txt
+
+Check the documentation below for a full list of options.
+
+.. toctree::
+   functions/cli
 
 .. toctree::
 
-   tutos/index
+   functions/api
+
 
 .. toctree::
 
    changelog
+
+
 
 Indices and tables
 ==================

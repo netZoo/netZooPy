@@ -1,8 +1,11 @@
 # Installation guide
 
-To install netZooPy on your computer, please check the following requirements:
+You can install netZooPy through pip or through conda. Below, you will find 
+all the steps and requirements for both cases.
 
-## Requirements
+## PIP installation
+
+### Requirements
 
 - Python 3
 
@@ -20,7 +23,7 @@ In addition to the following pip packages:
 
 - python-igraph
 
-## Install
+### Install
 
 - `git clone https://github.com/netZoo/netZooPy.git`
 
@@ -30,7 +33,7 @@ In addition to the following pip packages:
 
 - Then you can import netZooPy in your code through `import netZooPy`
 
-## Troubleshooting
+### Troubleshooting
 
 - If you experience installation issues with igraph on MacOs. Please install igraph through `brew install igraph`.
 
@@ -39,3 +42,14 @@ In addition to the following pip packages:
   Refer to the igraph instrallation [manual](https://igraph.org/python/#pyinstallosx)
 
 - To report any installation issue or function bug, please report through opening an [issue](https://github.com/netZoo/netZooPy/issues) on github.
+
+
+## Conda installation
+
+On anaconda.org you will find the conda recipes for all platforms. We recommend using conda environments to keep your analyses self-contained and reproducible.
+
+To install netzoopy through conda:
+
+```bash
+conda install -c netzoo -c conda-forge netzoopy
+```

@@ -1,1 +1,6 @@
+-e .
 releases
+recommonmark
+numpydoc
+myst-parser
+sphinx-click

@@ -12,40 +12,67 @@ from netZooPy.puma.calculations import compute_puma
 
 class Puma(object):
     """
-    Description:
-        Using PUMA to infer gene regulatory network.
+    Using PUMA to infer gene regulatory network.
         1. Reading in input data (expression data, motif prior, TF PPI data, miR)
         2. Computing coexpression network
         3. Normalizing networks
         4. Running PUMA algorithm
         5. Writing out PUMA network
 
-    Inputs:
-        object: Puma object.
+    Parameters
+    ------------
 
-     Methods:
-        __init__                    : Intialize instance of Puma class.
-        __remove_missing            : Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
-        _normalize_network          : Standardizes the input data matrices.
-        puma_loop                   : The PUMA algorithm.
-        __pearson_results_data_frame: Saves PUMA network in edges format.
-        save_puma_results           : Saves PUMA network.
-        top_network_plot            : Selects top genes to plot.
-        __shape_plot_network        : Creates network plot.
-        __create_plot               : Runs network plot.
-        return_puma_indegree        : computes indegree of puma network, only if save_memory = False.
-        return_puma_outdegree       : computes outdegree of puma network, only if save_memory = False.
+            expression_file : str
+                Path to file containing the gene expression data.
+            motif_file      : str
+                Path to file containing the regulation prior. This can be a miRNA-Gene predicted network from TargetScan/miRanda.
+                However, this can be combined with transcription factor DNA binding motif data in the form of TF-gene-weight(0/1) to estimate gene regulation by TF and miRNA.
+                If set to none, the gene coexpression matrix is returned as a result network.
+            ppi_file        : str
+                Path to file containing the TF PPI data. This can be provided as 'None' if no TF data is given and PUMA will estimate a miRNA-Gene networks.
+            mir_file        : str
+                Path to file containing miRNA list.
+            computing       : str
+                - 'cpu' uses Central Processing Unit (CPU) to run PANDA.
+                - 'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
+            precision       : str
+                'double' computes the regulatory network in double precision (15 decimal digits).
+                'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+            save_memory     : bool
+                True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
+                False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PUMA edge.
+            save_tmp        : bool
+                Save temporary variables.
+            remove_missing  : bool
+                Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
+            keep_expression_matrix: bool
+                Keeps the input expression matrix in the result Puma object.
+            modeProcess     : str
+                The input data processing mode.
+                - 'legacy': refers to the processing mode in netZooPy<=0.5
+                - (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
+                - 'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
+            alpha           : float
+                Learning rate (default: 0.1)
+            start           : int
+                first sample of expression (default 1)
+            end             : int
+                last sample of expression (default None)
 
-    Example:
+    Examples
+    --------
         Run the PUMA algorithm, leave out motif and PPI data to use Pearson correlation network:
         from netZooPy.puma.puma import Puma
         puma_obj = Puma('../../tests/ToyData/ToyExpressionData.txt', '../../tests/ToyData/ToyMotifData.txt', '../../tests/ToyData/ToyPPIData.txt','../../tests/ToyData/ToyMiRList.txt')
 
-     Authors:
-       cychen, davidvi, alessandromarin
+     
 
-    Reference:
-        Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." BioRxiv (2019).
+    References
+    ----------
+
+    ..[1]__ Kuijjer, Marieke L., et al. "PUMA: PANDA Using MicroRNA Associations." OUP Bioinformatics (2019).
+
+        Authors:cychen, davidvi, alessandromarin
     """
 
     def __init__(
@@ -66,33 +93,7 @@ class Puma(object):
         end=None,
     ):
         """
-        Description:
             Intialize instance of Puma class and load data.
-
-        Inputs:
-            expression_file : Path to file containing the gene expression data.
-            motif_file      : Path to file containing the regulation prior. This can be a miRNA-Gene predicted network from TargetScan/miRanda.
-                              However, this can be combined with transcription factor DNA binding motif data in the form of TF-gene-weight(0/1) to estimate gene regulation by TF and miRNA.
-                              If set to none, the gene coexpression matrix is returned as a result network.
-            ppi_file        : Path to file containing the TF PPI data. This can be provided as 'None' if no TF data is given and PUMA will estimate a miRNA-Gene networks.
-            mir_file        : Path to file containing miRNA list.
-            computing       : 'cpu' uses Central Processing Unit (CPU) to run PANDA.
-                              'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
-            precision       : 'double' computes the regulatory network in double precision (15 decimal digits).
-                              'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
-
-            save_memory     : True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
-                              False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PUMA edge.
-            save_tmp        : Save temporary variables.
-            remove_missing  : Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
-            keep_expression_matrix: Keeps the input expression matrix in the result Puma object.
-            modeProcess     : The input data processing mode.
-                              'legacy': refers to the processing mode in netZooPy<=0.5
-                              (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
-                              'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
-            alpha           : Learning rate (default: 0.1)
-            start           : first sample of expression (default 1)
-            end             : last sample of expression (default None)
         """
         # =====================================================================
         # Data loading
@@ -220,7 +221,6 @@ class Puma(object):
 
     def __remove_missing(self):
         """
-        Description:
             Removes the gens and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
         """
         if self.expression_data is not None:
@@ -269,14 +269,17 @@ class Puma(object):
 
     def _normalize_network(self, x):
         """
-        Description:
             Standardizes the input data matrices.
 
-        Inputs:
-            x     : Input adjacency matrix.
+        Parameters
+        ----------
+            x     : array
+                Input adjacency matrix.
 
-        Outputs:
-            normalized_matrix: Standardized adjacency matrix.
+        Returns
+        --------
+            normalized_matrix: array
+                Standardized adjacency matrix.
         """
         return calc.normalize_network(x)
 
@@ -284,21 +287,20 @@ class Puma(object):
         self, correlation_matrix, motif_matrix, ppi_matrix, computing="cpu", alpha=0.1
     ):
         """
-        Description:
-            The PUMA algorithm.
+        The PUMA algorithm.
 
-        Inputs:
-            correlation_matrix: Input coexpression matrix.
-            motif_matrix      : Input motif regulation prior network.
-            ppi_matrix        : Input PPI matrix.
-            computing         : 'cpu' uses Central Processing Unit (CPU) to run PANDA.
-                                'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
+        Parameters
+        ------------
+            correlation_matrix: array
+                Input coexpression matrix.
+            motif_matrix      : array
+                Input motif regulation prior network.
+            ppi_matrix        : array
+                Input PPI matrix.
+            computing         : str
+                - 'cpu' uses Central Processing Unit (CPU) to run PANDA.
+                - 'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
 
-        Methods:
-            t_function      : Continuous Tanimoto similarity function computed on the CPU.
-            update_diagonal : Updates the diagonal of the input matrix in the message passing computed on the CPU.
-            gt_function     : Continuous Tanimoto similarity function computed on the GPU.
-            gupdate_diagonal: Updates the diagonal of the input matrix in the message passing computed on the GPU.
         """
 
         puma_loop_time = time.time()
@@ -327,7 +329,6 @@ class Puma(object):
 
     def __pearson_results_data_frame(self):
         """
-        Description:
             Saves PUMA network in edges format.
         """
         genes_1 = np.tile(self.gene_names, (len(self.gene_names), 1)).flatten()
@@ -343,11 +344,12 @@ class Puma(object):
 
     def save_puma_results(self, path="puma.npy"):
         """
-        Description:
-            Saves PUMA network.
+        Saves PUMA network.
 
-        Inputs:
-            path: Path to save the network.
+        Parameters
+        -------------
+            path: str
+                Path to save the network.
         """
         with Timer("Saving PUMA network to %s ..." % path):
             # Because there are two modes of operation (save_memory), save to file will be different
@@ -367,13 +369,14 @@ class Puma(object):
 
     def top_network_plot(self, top=100, file="puma_top_100.png"):
         """
-        Description:
-            Selects top genes.
+        Selects top genes and plot network
 
-        Inputs:
-            top        : Top number of genes to plot.
-            file       : File to save the network plot.
-            plot_bipart: Plot the network as a bipartite layout.
+        Parameters
+        ----------
+            top        : int
+                Top number of genes to plot.
+            file       : str
+                File to save the network plot.
         """
         if not hasattr(self, "export_puma_results"):
             raise AttributeError(
@@ -396,13 +399,13 @@ class Puma(object):
 
     def __shape_plot_network(self, subset_puma_results, file="puma.png"):
         """
-        Description:
-            Creates plot.
+        Creates plot.
 
-        Inputs:
-            subset_puma_results : Reduced PUMA network to the top genes.
-            file                : File to save the network plot.
-            plot_bipart         : Plot the network as a bipartite layout.
+        Paramters:
+            subset_puma_results : array
+                Reduced PUMA network to the top genes.
+            file                : str
+                File to save the network plot.
         """
         # reshape data for networkx
         unique_genes = list(
@@ -429,17 +432,17 @@ class Puma(object):
 
     def __create_plot(self, unique_genes, links, file="puma.png"):
         """
-        Description:
-            Runs the plot.
+        Runs the plot.
 
-        Inputs:
-            unique_genes : Unique list of PUMA genes.
-            links        : Edges of the subset PUMA network to the top genes.
-            file         : File to save the network plot.
-            plot_bipart  : Plot the network as a bipartite layout.
+        Parameters
+        -----------
+            unique_genes : list
+                Unique list of PUMA genes.
+            links        : list
+                Edges of the subset PUMA network to the top genes.
+            file         : str
+                File to save the network plot.
 
-        Methods:
-            split_label: Splits the plot label over several lines for plotting purposes.
         """
         import networkx as nx
         import matplotlib.pyplot as plt
@@ -462,13 +465,17 @@ class Puma(object):
 
         def split_label(label):
             """
-            Description: Splits the plot label over several lines for plotting purposes.
+            Splits the plot label over several lines for plotting purposes.
 
-            Inputs:
-                label: Input label text.
+            Parameters
+            ----------
+                label: str
+                    Input label text.
 
-            Outputs:
-                label: Output label text divided over several lines.
+            Returns
+            -------
+                label: str
+                    Output label text divided over several lines.
             """
             ll = len(label)
             if ll > 6:
@@ -499,8 +506,7 @@ class Puma(object):
 
     def return_puma_indegree(self):
         """
-        Description:
-            computes indegree of PUMA network, only if save_memory = False.
+        Computes indegree of PUMA network, only if save_memory = False.
         """
         # subset_indegree = self.export_puma_results.loc[:,['gene','force']]
         subset_indegree = self.puma_results.loc[:, ["gene", "force"]]
@@ -509,8 +515,7 @@ class Puma(object):
 
     def return_puma_outdegree(self):
         """
-        Description:
-            computes outdegree of PUMA network, only if save_memory = False.
+        Computes outdegree of PUMA network, only if save_memory = False.
         """
         export_puma_results_pd = pd.DataFrame(
             self.export_puma_results, columns=["tf", "gene", "motif", "force"]
