@@ -147,6 +147,7 @@ def lioness(expression, motif, ppi, output_panda, output_lioness, fmt, computing
     
     panda_obj = Panda(expression, motif, ppi, computing=computing, save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=True, save_memory=save_memory, modeProcess=mode_process, start=start, end=end)
     print('Panda saved. Computing Lioness...')
+    panda_obj.save_panda_results(output_panda)
     Lioness(panda_obj, computing=computing, precision=precision,ncores=ncores, save_dir=output_lioness, save_fmt=fmt, output = output_type, alpha = alpha)
     print('All done!')
     
