@@ -19,6 +19,7 @@ requirements:
     - python-igraph>=0.9.6
     - joblib>=1.1.0
     - statsmodels>=0.12.2
+    - click
   run:
     - numpy>=1.19.2
     - python {{ python }}
@@ -28,6 +29,7 @@ requirements:
     - python-igraph>=0.9.6
     - joblib>=1.1.0
     - statsmodels>=0.12.2
+    - click
 
 test:
   commands:
