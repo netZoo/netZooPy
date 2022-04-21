@@ -43,7 +43,7 @@ class Lioness(Panda):
                 - '.txt': Text file.
                 - '.mat': MATLAB file.
             output          : str
-                - 'network' returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network). For large sample sizes, this variable requires large RAM memory.
+                - 'network' returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network is the unlabeled variable and lioness_obj.export_lioness_results is the row-labeled variable). For large sample sizes, this variable requires large RAM memory.
                 - 'gene_targeting' returns gene targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
                 - 'tf_targeting' returns tf targeting scores for all networks in a single gene-by-sample matrix (lioness_obj.total_lioness_network).
             alpha            : float
