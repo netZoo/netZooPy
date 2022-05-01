@@ -236,8 +236,8 @@ def condor(
 @click.option('--save_memory', is_flag=True, show_default=False,
               help='panda option. When true the result network is weighted adjacency matrix of size (nTFs, nGenes).\
                   when false The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.')
-@click.option('--save_tmp', is_flag=True, show_default=True,
-              help='panda option')
+@click.option('--save_coexpression', is_flag=True, show_default=True,
+              help='save ')
 @click.option('--rm_missing', is_flag=True, show_default=False,
               help='Removes the genes and TFs that are not present in one of the priors. Works only if modeProcess=legacy')
 @click.option('--mode_process', type=str, default='union', show_default=True,
@@ -247,7 +247,7 @@ def condor(
               help='panda and lioness first sample')
 @click.option('--output_type', type=str, default='txt', show_default=True,
               help='Output type. Now unused')
-def tigress(expression, priors_table, ppi, output_lioness, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha):
+def tigress(expression, priors_table, ppi, output_lioness, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha):
     """Run Lioness to extract single-sample networks.
     First runs panda using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
@@ -269,6 +269,6 @@ def tigress(expression, priors_table, ppi, output_lioness, fmt, computing, preci
     print('Initialise tigress...')
     tigress_obj = Tigress(expression, priors_table, ppi, output_folder=output_lioness, mode_process=mode_process)
     print('Running tigress computations ...')
-    tigress_obj.run_tigress(keep_coexpression=False, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha)
+    tigress_obj.run_tigress(keep_coexpression=save_coexpression, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha)
     print('All done!')
 

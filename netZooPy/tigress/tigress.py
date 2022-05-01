@@ -240,10 +240,8 @@ class Tigress(Panda):
         if not os.path.exists(self.output_folder+'single_panda/'):
             os.makedirs(self.output_folder+'single_panda/')
         sample_lioness = self._run_lioness_coexpression(correlation_complete, sample, keep_coexpression = keep_coexpression, save_memory = save_memory, online_coexpression = online_coexpression, computing = computing_lioness, coexpression_folder = coexpression_folder)
-
+        print(sample_lioness)
         final_panda, motif_data = self._run_panda_coexpression(sample_lioness, sample, computing = computing_panda, alpha = alpha, save_single=True)
-        
-
 
     def _save_single_panda_net(self, net, prior, sample, prefix, pivot = False):
 
@@ -263,12 +261,10 @@ class Tigress(Panda):
 
     def _run_lioness_coexpression(self, coexpression, sample, keep_coexpression = False,save_memory = True, online_coexpression = False, computing = 'cpu', cores = 1, coexpression_folder = 'coexpression/'):
         
-        touse = set(self.samples).difference(set(sample))
+        touse = set(self.samples).difference(set([sample]))
         names = self.expression_data.index.tolist()
-
-        print(self.expression_data)
-        print(touse)
         correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
+
         
         
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
@@ -277,10 +273,13 @@ class Tigress(Panda):
         )
 
         if (keep_coexpression):
+            cfolder = self.output_folder+coexpression_folder
+            if not os.path.exists(cfolder):
+                os.makedirs(cfolder)
             if (save_memory):
                 np.savetxt(coexpression_folder+'coexpression_'+sample+'.txt', lioness_network)
             else:
-                pd.DataFrame(lioness_network, columns=self.universe_genes, index = self.universe_genes).to_csv(coexpression_folder+'coexpression_'+sample+'.txt', sep = ' ')
+                pd.DataFrame(lioness_network, columns=self.universe_genes, index = self.universe_genes).to_csv(cfolder+'coexpression_'+sample+'.txt', sep = ' ')
         
         return(lioness_network)
 
@@ -291,10 +290,11 @@ class Tigress(Panda):
 
         panda_loop_time = time.time()
         
+        #panda works with all normalised networks
         final = calc.compute_panda(
             self._normalize_network(net.values),
-            self.ppi_data.astype(float).values,
-            motif_data.astype(float).values,
+            self._normalize_network(self.ppi_data.astype(float).values),
+            self._normalize_network(motif_data.astype(float).values),
             computing=computing,
             alpha=alpha,
         )

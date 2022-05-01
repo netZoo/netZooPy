@@ -113,7 +113,6 @@ class Panda(object):
         alpha=0.1,
         start=1,
         end=None,
-        alternative_coexpression = None, 
     ):
         """ Intialize instance of Panda class and load data.
         """
@@ -137,13 +136,7 @@ class Panda(object):
         # =====================================================================
 
         with Timer("Normalizing networks ..."):
-            if alternative_coexpression:
-                # here we have to check that we have a consistent number of genes
-                # maybe we have to decide whether saving coexpressions makes sense.
-                ac = np.load(alternative_coexpression)
-                self.correlation_matrix = alternative_coexpression
-            else:
-                self.correlation_matrix = self._normalize_network(self.correlation_matrix)
+            self.correlation_matrix = self._normalize_network(self.correlation_matrix)
             with np.errstate(invalid="ignore"):  # silly warning bothering people
                 self.motif_matrix = self._normalize_network(
                     self.motif_matrix_unnormalized
