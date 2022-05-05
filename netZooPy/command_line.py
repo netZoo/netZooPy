@@ -247,19 +247,11 @@ def condor(
               help='panda and lioness first sample')
 @click.option('--output_type', type=str, default='txt', show_default=True,
               help='Output type. Now unused')
-def tigress(expression, priors_table, ppi, output_lioness, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha):
-    """Run Lioness to extract single-sample networks.
-    First runs panda using expression, motif and ppi data. 
-    Then runs lioness and puts results in the output_lioness folder.
-    Use flags to modify the function behavior. By default, boolean flags are false.
-
-    Example:
-
-            netzoopy tigress -e tests/puma/ToyData/ToyExpressionData.txt  -op test_panda.txt -ol lioness/
-    
-    Reference:
-        Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
-    
+@click.option('--th_motifs', type=int, show_default=True, default=3,
+              help='Threshold for the motifs. Reads motif only once if possible.')      
+def tigress(expression, priors_table, ppi, output_lioness, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs):
+    """Run Lioness to extract single-sample coexpression networks. 
+    Then run Panda on each sample with sample-specific priors.
     """
     
     print('Input data:')
@@ -269,6 +261,6 @@ def tigress(expression, priors_table, ppi, output_lioness, fmt, computing, preci
     print('Initialise tigress...')
     tigress_obj = Tigress(expression, priors_table, ppi, output_folder=output_lioness, mode_process=mode_process)
     print('Running tigress computations ...')
-    tigress_obj.run_tigress(keep_coexpression=save_coexpression, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha)
+    tigress_obj.run_tigress(keep_coexpression=save_coexpression, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs)
     print('All done!')
 

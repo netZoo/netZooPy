@@ -138,6 +138,10 @@ class Tigress(Panda):
         self.priors_tfs = None
         self.priors_genes = None
 
+        # dictionaries mapping sample:prior_file and prior_file:[samples]
+        self.sample2prior_dict = None
+        self.prior2sample_dict = None
+
         # SORTED LIST OF TFS AND GENES
         self.universe_tfs = None
         self.universe_genes = None
@@ -154,17 +158,18 @@ class Tigress(Panda):
 
         # Read the sample-prior table. We need to know what samples we are using
         with Timer("Reading sample-prior configuration..."):
-            self.samples, self.priors_dict = io.read_priors_table(self.priors_table_file)
+            self.samples, self.sample2prior_dict, self.prior2sample_dict = io.read_priors_table(self.priors_table_file)
             self.n_samples = len(self.samples)
             # prepare universe of names in the priors. We won't be reading all of them 
             # first, because we might want to use too many motif priors
-
             (
                 self.priors_tfs,
                 self.priors_genes,
             ) = io.read_motif_universe(
-                self.priors_dict, mode=self.mode_priors
+                self.sample2prior_dict, mode=self.mode_priors
             )
+
+            
 
         with Timer("Reading expression data..."):
             # Read expression
@@ -188,11 +193,10 @@ class Tigress(Panda):
         self.tf2idx = {x: i for i, x in enumerate(self.universe_tfs)}
 
         # sort the gene expression and ppi data
-        print('genes')
         self.expression_data = self.expression_data.loc[self.universe_genes,:]
         self.ppi_data = self.ppi_data.loc[self.universe_tfs,self.universe_tfs]
     
-    def run_tigress(self, keep_coexpression = False,save_memory = False, online_coexpression = False, coexpression_folder = 'coexpression/', computing_lioness = 'cpu', computing_panda = 'cpu', cores = 1, alpha = 0.1 , precision = 'single'):
+    def run_tigress(self, keep_coexpression = False,save_memory = False, online_coexpression = False, coexpression_folder = 'coexpression/', computing_lioness = 'cpu', computing_panda = 'cpu', cores = 1, alpha = 0.1 , precision = 'single', th_motifs = 3):
         
         """Tigress algorithm
 
@@ -205,6 +209,8 @@ class Tigress(Panda):
             computing_panda (str, optional): computing for single sample panda. Defaults to 'cpu'.
             cores (int, optional): cores. Defaults to 1.
             alpha (float, optional): _description_. Defaults to 0.1.
+            th_motifs (int, optional): if the number of motif files is lower than the threshold, each will be loaded
+            only once.
         """
 
         tigress_start = time.time()
@@ -222,16 +228,27 @@ class Tigress(Panda):
         self.expression_data = self.expression_data.loc[self.universe_genes,:].astype(atype)
         correlation_complete = self.expression_data.T.corr()
         
-        # Now for each sample we compute the lioness network from correlations and 
-        # the panda using the motif and ppi tables
 
-        for s,sample in enumerate(self.samples):
-            sample_start = time.time()
-            # first run lioness on coexpression
-            self._tigress_loop(correlation_complete, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
+        if th_motifs>len(self.prior2sample_dict.keys()):
+            for p,ss in self.prior2sample_dict.items():
+                # read the motif data and sort it
+                motif_data = self._get_motif(p)
+                for s,sample in enumerate(ss):
+                    sample_start = time.time()
+                    # first run lioness on coexpression
+                    self._tigress_loop(correlation_complete, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
+
+        else:
+            # Now for each sample we compute the lioness network from correlations and 
+            # the panda using the motif and ppi tables
+            for s,sample in enumerate(self.samples):
+                sample_start = time.time()
+                # first run lioness on coexpression
+                motif_data = self._get_motif(self.sample2prior_dict[sample])
+                self._tigress_loop(correlation_complete, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
 
 
-    def _tigress_loop(self, correlation_complete, sample, keep_coexpression = False, save_memory = True, online_coexpression = False, computing_lioness = 'cpu', coexpression_folder = './coexpression/' , computing_panda = 'cpu', alpha = 0.1):
+    def _tigress_loop(self, correlation_complete, motif_data, sample, keep_coexpression = False, save_memory = True, online_coexpression = False, computing_lioness = 'cpu', coexpression_folder = './coexpression/' , computing_panda = 'cpu', alpha = 0.1):
         
         if keep_coexpression:
             if not os.path.exists(self.output_folder+coexpression_folder):
@@ -240,8 +257,8 @@ class Tigress(Panda):
         if not os.path.exists(self.output_folder+'single_panda/'):
             os.makedirs(self.output_folder+'single_panda/')
         sample_lioness = self._run_lioness_coexpression(correlation_complete, sample, keep_coexpression = keep_coexpression, save_memory = save_memory, online_coexpression = online_coexpression, computing = computing_lioness, coexpression_folder = coexpression_folder)
-        print(sample_lioness)
-        final_panda, motif_data = self._run_panda_coexpression(sample_lioness, sample, computing = computing_panda, alpha = alpha, save_single=True)
+
+        final_panda= self._run_panda_coexpression(sample_lioness,motif_data, sample, computing = computing_panda, alpha = alpha, save_single=True)
 
     def _save_single_panda_net(self, net, prior, sample, prefix, pivot = False):
 
@@ -255,8 +272,8 @@ class Tigress(Panda):
             tab['motif'] = prior.flatten()
             tab.to_csv(prefix+sample+'.txt', sep = '\t', index = False, columns = ['tf', 'gene','motif','force'])
 
-    def _get_motif(self, sample):
-        motif_data = io.read_motif(self.priors_dict[sample], tf_names = list(self.universe_tfs), gene_names = list(self.universe_genes), pivot = True)
+    def _get_motif(self, motif_fn):
+        motif_data = io.read_motif(motif_fn, tf_names = list(self.universe_tfs), gene_names = list(self.universe_genes), pivot = True)
         return(motif_data)
 
     def _run_lioness_coexpression(self, coexpression, sample, keep_coexpression = False,save_memory = True, online_coexpression = False, computing = 'cpu', cores = 1, coexpression_folder = 'coexpression/'):
@@ -283,18 +300,15 @@ class Tigress(Panda):
         
         return(lioness_network)
 
-    def _run_panda_coexpression(self, net, sample, computing = 'cpu', alpha = 0.1, save_single = False):
+    def _run_panda_coexpression(self, net, motif, sample, computing = 'cpu', alpha = 0.1, save_single = False):
         
-        # read the motif data and sort it
-        motif_data = self._get_motif(sample)
-
         panda_loop_time = time.time()
         
         #panda works with all normalised networks
         final = calc.compute_panda(
             self._normalize_network(net.values),
             self._normalize_network(self.ppi_data.astype(float).values),
-            self._normalize_network(motif_data.astype(float).values),
+            self._normalize_network(motif.astype(float).values),
             computing=computing,
             alpha=alpha,
         )
@@ -302,6 +316,6 @@ class Tigress(Panda):
 
         if save_single:
 
-            self._save_single_panda_net(final, motif_data.values, sample, prefix = self.output_folder+'single_panda/', pivot = False)
-        return(final, motif_data)
+            self._save_single_panda_net(final, motif.values, sample, prefix = self.output_folder+'single_panda/', pivot = False)
+        return(final)
 

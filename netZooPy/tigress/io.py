@@ -62,9 +62,13 @@ def read_priors_table(table_filename, sample_col = 'sample', prior_col = 'prior'
         sys.exit('No unique sample-prior assignment, there are duplicated sample columns')
 
     samples = df[sample_col].values.tolist()
-    prior_dict = {i[1]:i[2] for i in df.itertuples()}
+    sample2prior_dict = {i[1]:i[2] for i in df.itertuples()}
 
-    return(samples,  prior_dict)
+    prior2sample_dict = {}
+    for p,tab in df.groupby(prior_col):
+        prior2sample_dict[p] = tab.loc[:,sample_col].values.tolist()
+
+    return(samples,  sample2prior_dict,  prior2sample_dict)
 
 def read_motif(motif_fn, tf_names = None, gene_names = None, pivot = True):
     """ Read a motif edgelist, generates
@@ -206,7 +210,6 @@ def prepare_expression(expression_filename, samples = None):
             "Duplicate gene symbols detected. Consider averaging before running PANDA"
         )
 
-    print(expression_data)
     return(expression_data, expression_genes)
 
 def read_motif_universe(priors_dict, mode = 'union', tf_col = 0, gene_col = 1):
