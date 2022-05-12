@@ -160,6 +160,7 @@ class Tigress(Panda):
         with Timer("Reading sample-prior configuration..."):
             self.samples, self.sample2prior_dict, self.prior2sample_dict = io.read_priors_table(self.priors_table_file)
             self.n_samples = len(self.samples)
+
             # prepare universe of names in the priors. We won't be reading all of them 
             # first, because we might want to use too many motif priors
             (
@@ -193,7 +194,7 @@ class Tigress(Panda):
         self.tf2idx = {x: i for i, x in enumerate(self.universe_tfs)}
 
         # sort the gene expression and ppi data
-        self.expression_data = self.expression_data.loc[self.universe_genes,:]
+        self.expression_data = self.expression_data.loc[self.universe_genes,self.samples]
         self.ppi_data = self.ppi_data.loc[self.universe_tfs,self.universe_tfs]
     
     def run_tigress(self, keep_coexpression = False,save_memory = False, online_coexpression = False, coexpression_folder = 'coexpression/', computing_lioness = 'cpu', computing_panda = 'cpu', cores = 1, alpha = 0.1 , precision = 'single', th_motifs = 3):
@@ -227,6 +228,8 @@ class Tigress(Panda):
 
         self.expression_data = self.expression_data.loc[self.universe_genes,:].astype(atype)
         correlation_complete = self.expression_data.T.corr()
+        # we automatically multiply the correlation with the number of samples
+        correlation_complete = correlation_complete * self.get_n_matrix(self.expression_data)
         
 
         if th_motifs>len(self.prior2sample_dict.keys()):
@@ -280,13 +283,15 @@ class Tigress(Panda):
         
         touse = set(self.samples).difference(set([sample]))
         names = self.expression_data.index.tolist()
-        correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
-
         
+
+        correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
         
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
-        lioness_network = (self.n_samples * coexpression) - (
-                (self.n_samples - 1) * correlation_matrix
+        # coexpression has been already multiplied by N all
+
+        lioness_network = coexpression - (
+                (self.get_n_matrix(self.expression_data.loc[:, touse])) * correlation_matrix
         )
 
         if (keep_coexpression):
@@ -319,3 +324,15 @@ class Tigress(Panda):
             self._save_single_panda_net(final, motif.values, sample, prefix = self.output_folder+'single_panda/', pivot = False)
         return(final)
 
+    def get_n_matrix(self,df):
+        # This should be outside of the class
+        """Get number of samples for each correlation value
+
+        Args:
+            df (pd.DataFrame): expression with nan values
+        """
+        
+        N = len(df.columns)
+        nn = N-df.isna().sum(axis = 1).values[:,np.newaxis]
+        nr = np.repeat(nn,len(nn), axis = 1)
+        return(np.minimum(nr,nr.T))
