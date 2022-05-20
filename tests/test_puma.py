@@ -12,7 +12,7 @@ def test_puma():
     lioness_file = ""
     rm_missing = False
     output_file = "travis_test_puma.txt"
-    gt_file = "tests/puma/test_puma.txt"
+    gt_file = "tests/puma/matlablike_test_puma.txt"
 
     # 1. Vanilla panda
     puma_obj = Puma(
