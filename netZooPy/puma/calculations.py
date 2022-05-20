@@ -62,7 +62,7 @@ def compute_puma_cpu(
         ppi_matrix += alpha * ppi
 
         # Alessandro
-        TFCoopDiag = ppi_matrix.diagonal()
+        TFCoopDiag = ppi_matrix.diagonal().copy()
         ppi_matrix[s1] = TFCoopInit[s1]
         ppi_matrix[:, s1] = TFCoopInit[:, s1]
         np.fill_diagonal(ppi_matrix, TFCoopDiag)
