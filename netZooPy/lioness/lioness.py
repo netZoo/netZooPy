@@ -104,7 +104,6 @@ class Lioness(Panda):
         save_fmt="npy",
         output="network",
         alpha=0.1,
-        ignorena = False, 
     ):
         """ Initialize instance of Lioness class and load data.
         """
@@ -203,24 +202,16 @@ class Lioness(Panda):
             if self.computing == "gpu":
                 import cupy as cp
                 
-                if ignorena:
-                    # this allows to measure correlation ignoring NA
-                    correlation_matrix = self.expression_data.iloc[:, idx].corr()
-                else:
-                    correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
-                    if cp.isnan(correlation_matrix).any():
-                        cp.fill_diagonal(correlation_matrix, 1)
-                        correlation_matrix = cp.nan_to_num(correlation_matrix)
-                    correlation_matrix = cp.asnumpy(correlation_matrix)
+                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                if cp.isnan(correlation_matrix).any():
+                    cp.fill_diagonal(correlation_matrix, 1)
+                    correlation_matrix = cp.nan_to_num(correlation_matrix)
+                correlation_matrix = cp.asnumpy(correlation_matrix)
             else:
-                if ignorena:
-                    # this allows to measure correlation ignoring NA
-                    correlation_matrix = self.expression_data.iloc[:, idx].corr()
-                else:
-                    correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                    if np.isnan(correlation_matrix).any():
-                        np.fill_diagonal(correlation_matrix, 1)
-                        correlation_matrix = np.nan_to_num(correlation_matrix)
+                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                if np.isnan(correlation_matrix).any():
+                    np.fill_diagonal(correlation_matrix, 1)
+                    correlation_matrix = np.nan_to_num(correlation_matrix)
 
         with Timer("Normalizing networks:"):
             correlation_matrix_orig = (
