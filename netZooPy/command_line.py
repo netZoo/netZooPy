@@ -5,7 +5,7 @@ import getopt
 import click
 from netZooPy.panda.panda import Panda
 from netZooPy.lioness import Lioness
-from netZooPy.tigress import Tigress
+from netZooPy.ligress import Ligress
 from netZooPy.condor import condor_object
 
 #############################################################################
@@ -249,7 +249,7 @@ def condor(
               help='Output type. Now unused')
 @click.option('--th_motifs', type=int, show_default=True, default=3,
               help='Threshold for the motifs. Reads motif only once if possible.')      
-def tigress(expression, priors_table, ppi, output_lioness, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs):
+def ligress(expression, priors_table, ppi, output_lioness, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs):
     """Run Lioness to extract single-sample coexpression networks. 
     Then run Panda on each sample with sample-specific priors.
     """
@@ -258,9 +258,9 @@ def tigress(expression, priors_table, ppi, output_lioness, fmt, computing, preci
     print('Expression:', expression)
 
     # read expression data, prepare ppi+motif+expression universes
-    print('Initialise tigress...')
-    tigress_obj = Tigress(expression, priors_table, ppi, output_folder=output_lioness, mode_process=mode_process)
-    print('Running tigress computations ...')
-    tigress_obj.run_tigress(keep_coexpression=save_coexpression, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs)
+    print('Initialise ligress...')
+    ligress_obj = Ligress(expression, priors_table, ppi, output_folder=output_lioness, mode_process=mode_process)
+    print('Running ligress computations ...')
+    ligress_obj.run_ligress(keep_coexpression=save_coexpression, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs)
     print('All done!')
 
