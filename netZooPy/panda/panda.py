@@ -113,6 +113,7 @@ class Panda(object):
         alpha=0.1,
         start=1,
         end=None,
+        with_header=False
     ):
         """ Intialize instance of Panda class and load data.
         """
@@ -125,7 +126,8 @@ class Panda(object):
             remove_missing,
             keep_expression_matrix,
             start=start,
-            end=end
+            end=end,
+            with_header=with_header
         )
         print(modeProcess,motif_file,expression_file,ppi_file,save_memory,remove_missing,keep_expression_matrix)
         if hasattr(self, "export_panda_results"):
@@ -265,6 +267,7 @@ class Panda(object):
         keep_expression_matrix,
         start=1,
         end=None,
+        with_header = False,
     ):
         """ Processes data files into data matrices.
 
@@ -272,7 +275,9 @@ class Panda(object):
         ----------
 
             expression_file : str
-                Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
+                Path to file containing the gene expression data or pandas dataframe. 
+                By default, the expression file does not have a header, and the cells ares separated by a tab.
+                Pass `with_header=True` if the expression data includes the sample names 
             motif_file : str 
                 Path to file containing the transcription factor DNA binding motif data in the form of
                 TF-gene-weight(0/1) or pandas dataframe.
@@ -289,6 +294,8 @@ class Panda(object):
                 - 'legacy': refers to the processing mode in netZooPy<=0.5
                 - (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                 - 'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
+            with_header: bool
+                pass True when the expression file has a header with the sample names
         """
 
         # if modeProcess=="legacy":
@@ -325,12 +332,19 @@ class Panda(object):
 
         if type(expression_file) is str:
             with Timer("Loading expression data ..."):
-                self.expression_data = pd.read_csv(
-                    expression_file, sep="\t", header=None, index_col=0
-                )
+                if with_header:
+                    # Read data with header
+                    self.expression_data = pd.read_csv(
+                        expression_file, sep="\t", index_col=0
+                    )
+                else:
+                    self.expression_data = pd.read_csv(
+                        expression_file, sep="\t", header=None, index_col=0
+                    )
 
                 self.expression_data = self.expression_data.iloc[:, (start-1):end]
                 self.expression_genes = self.expression_data.index.tolist()
+                self.expression_samples = self.expression_data.columns.astype(str)
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
@@ -341,6 +355,7 @@ class Panda(object):
                     )
                 self.expression_data = expression_file.iloc[:, (start-1):end]  # pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
                 self.expression_genes = self.expression_data.index.tolist()
+                self.expression_samples = self.expression_data.columns.astype(str)
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
             else:
