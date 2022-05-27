@@ -61,7 +61,7 @@ def read_priors_table(table_filename, sample_col = 'sample', prior_col = 'prior'
     if len(df.drop_duplicates(subset = [sample_col]))!=len(df):
         sys.exit('No unique sample-prior assignment, there are duplicated sample columns')
 
-    samples = df[sample_col].values.tolist()
+    samples = df[sample_col].astype(str).values.tolist()
     sample2prior_dict = {i[1]:i[2] for i in df.itertuples()}
 
     prior2sample_dict = {}

@@ -243,7 +243,7 @@ class Ligress(Panda):
             tab.set_index('tf').to_csv(prefix+sample+'.csv')
         else:
             tab = pd.melt(tab, id_vars='tf', value_vars=tab.columns,var_name='gene', value_name='force')
-            tab['motif'] = prior.flatten()
+            tab['motif'] = prior.flatten(order = 'F')
             tab.to_csv(prefix+sample+'.txt', sep = '\t', index = False, columns = ['tf', 'gene','motif','force'])
 
     def _get_motif(self, motif_fn):
@@ -291,7 +291,6 @@ class Ligress(Panda):
         print("Running panda took: %.2f seconds!" % (time.time() - panda_loop_time))
 
         if save_single:
-
             self._save_single_panda_net(final, motif.values, sample, prefix = self.output_folder+'single_panda/', pivot = False)
         return(final)
 

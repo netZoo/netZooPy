@@ -1,6 +1,18 @@
 ==========
 Changelog
 ==========
+0.9.5 (2022-05-24)
+------------------
+
+- Added output with sample names in Lioness
+- ligress sample names are setup as strings
+- correct order of motif prior in ligress
+
+0.9.4 (2022-05-20)
+------------------
+
+- First ligress release
+- solved puma bug
 
 
 0.9.2 (2022-03-04)
