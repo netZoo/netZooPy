@@ -46,3 +46,5 @@ gt_panda*.txt
 .DS_Store
 
 */debug*
+
+.vscode/*
