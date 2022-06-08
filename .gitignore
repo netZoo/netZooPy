@@ -44,3 +44,5 @@ gt_panda*.txt
 !tests/lioness
 !tests/lioness/*
 .DS_Store
+
+*/debug*

@@ -230,12 +230,14 @@ def condor(
 @click.option('-e', '--expression', 'expression', type=str, required=True,
               help='Path to file containing the gene expression data. By default, \
                   the expression file does not have a header, and the cells are separated by a tab.')
-@click.option('-p', '--ppi', 'ppi', type=str, required=True,
-              help='PPI filename.')
 @click.option('-pt', '--priors-table', 'priors_table', type=str, required=True,
               help='Path to file containing the sample-prior table.' )
 @click.option('-ol', '--out-lioness', 'output_lioness', type=str, required=True,
               help='Output lioness folder')
+@click.option('-p','--ppi', type=str, show_default=True, default=None,
+              help='PPI table file. Sample-PPI table')
+@click.option('--ppitable', type=str, show_default=True, default='',
+              help='PPI table file. Sample-PPI table')
 @click.option('--fmt', type=str, show_default=True, default='npy',
               help='Lioness network files output format. Choose one between .npy,.txt,.mat')
 @click.option('--computing', type=str, show_default=True, default='cpu',
@@ -260,7 +262,7 @@ def condor(
               help='Output type. Now unused')
 @click.option('--th_motifs', type=int, show_default=True, default=3,
               help='Threshold for the motifs. Reads motif only once if possible.')      
-def ligress(expression, priors_table, ppi, output_lioness, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs):
+def ligress(expression, priors_table, ppi,output_lioness,ppitable, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs):
     """Run Lioness to extract single-sample coexpression networks. 
     Then run Panda on each sample with sample-specific priors.
     """
@@ -270,8 +272,12 @@ def ligress(expression, priors_table, ppi, output_lioness, fmt, computing, preci
 
     # read expression data, prepare ppi+motif+expression universes
     print('Initialise ligress...')
-    ligress_obj = Ligress(expression, priors_table, ppi, output_folder=output_lioness, mode_process=mode_process)
+    if ppitable!="":
+        ligress_obj = Ligress(expression, priors_table, ppi_table_file=ppitable, output_folder=output_lioness, mode_process=mode_process)
+    else:
+        ligress_obj = Ligress(expression, priors_table, ppi_file = ppi, output_folder=output_lioness, mode_process=mode_process)
+     
     print('Running ligress computations ...')
-    ligress_obj.run_ligress(keep_coexpression=save_coexpression, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs)
+    ligress_obj.run_ligress(keep_coexpression=save_coexpression,cores=ncores, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs)
     print('All done!')
 
