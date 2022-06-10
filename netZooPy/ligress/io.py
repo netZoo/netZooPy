@@ -9,20 +9,41 @@ import numpy as np
 from netZooPy.panda import calculations as calc
 import sys
 
+def check_expression_integrity(df):
+    """Check data integrity
+    - Number of NA
 
-def read_ppi(ppi_fn):
+    Args:
+        df (dataframe): gene expression dataframe
+    """
 
+    # check that for each
+    if (df.isna().sum(axis = 1)>(len(df.columns)-3)).any():
+        sys.exit('Too many nan in gene expression (need more than 1 sample to compute coexpression)')
+
+def read_ppi(ppi_fn, tf_list = None):
+    """Read PPI network
+
+    Args:
+        ppi_fn (str): ppi network filename
+    """
     with open(ppi_fn, 'r') as f:
         ppi_data = pd.read_csv(f, sep="\t", header=None)
         ppi_data.columns = ['tf1','tf2','exists']
 
     # get all tfs from first and second column
-    ppi_tfs = sorted(set(ppi_data.iloc[:,0].values.tolist()).union(set(ppi_data.iloc[:,1].values.tolist())))
+    if tf_list:
+        ppi_tfs = tf_list
+        ppi_data = ppi_data[(ppi_data.tf1.isin(ppi_tfs)) & (ppi_data.tf2.isin(ppi_tfs))]
+    else:
+        ppi_tfs = sorted(set(ppi_data.iloc[:,0].values.tolist()).union(set(ppi_data.iloc[:,1].values.tolist())))
+    
     # create adjacency matrix
     df = pd.DataFrame(np.eye(len(ppi_tfs)), index=ppi_tfs, columns=ppi_tfs)
     z = ppi_data.pivot_table(columns='tf2',index = 'tf1',values = 'exists', fill_value=0)
     df = df.add(z, fill_value=0).add(z.T, fill_value=0)
     df = 1*(df>0)
+    # return adjacency matrix and tfs list
     return(df, ppi_tfs)
 
 
@@ -46,7 +67,7 @@ def read_priors_table(table_filename, sample_col = 'sample', prior_col = 'prior'
             list of samples that are defined
         prior_dict: dict
             dictionary sample:prior_filename
-    """    
+    """
 
     with open(table_filename, 'r') as f:
         df = pd.read_csv(table_filename, usecols=[sample_col, prior_col])
@@ -78,13 +99,17 @@ def read_motif(motif_fn, tf_names = None, gene_names = None, pivot = True):
         tf_names (_type_, optional): list of tf_names to be used. Defaults to None.
         gene_names (_type_, optional): list of gene_names to be used. Defaults to None.
         pivot (bool): if true returns a pivot tfs X genes table. Otherwise keeps the edgelist
+    Returns:
+        piv/df: motif as edgelist or pivot table
+        tftoadd: list of tf missing compared to the universe
+        genetoadd: list of genes missing compared to universe
     """
 
     with open(motif_fn, 'r') as f:
         df = pd.read_csv(f, sep= '\t', header = None)
 
-    tftoadd = None
-    genetoadd = None
+    tftoadd = {}
+    genetoadd = {}
 
     presenttf = df.iloc[:,0].unique()
     presentgene = df.iloc[:,1].unique()
@@ -92,7 +117,6 @@ def read_motif(motif_fn, tf_names = None, gene_names = None, pivot = True):
     ngenes = len(presentgene)
 
     if isinstance(tf_names, list):
-        
         # Check how many are removed
         dtf = len(set(presenttf).difference(set(tf_names)))
         if (dtf!=0):
@@ -100,10 +124,8 @@ def read_motif(motif_fn, tf_names = None, gene_names = None, pivot = True):
 
         # tfs to add
         tftoadd = set(tf_names).difference(set(presenttf))
-
     if isinstance(gene_names, list):
     
-
         # Check how many are removed
         dgene = len(set(presentgene).difference(set(gene_names)))
         if (dgene!=0):
@@ -112,18 +134,22 @@ def read_motif(motif_fn, tf_names = None, gene_names = None, pivot = True):
         # genes to add
         genetoadd = set(gene_names).difference(set(presentgene))
 
-    print('hello')
     # now if one or both tftoadd/genetoadd are not None, we add rows with zeros at the end
     if (tftoadd or genetoadd):
-        print('here')
+        usetfs = list(tftoadd)
+        usegenes = (genetoadd)
         # if one of the two is None, add all the existing ones
-        if tftoadd==None:
-            tftoadd = presenttf
-        if genetoadd==None:
-            genetoadd = presentgene
+        if len(tftoadd)==0:
+            usetfs = [presenttf[0]]
+        if len(genetoadd)==0:
+            usegenes = [presentgene[0]]
 
-        toadd = pd.DataFrame(tftoadd, columns = [0]).merge(pd.DataFrame(genetoadd, columns = [1]), how='cross')
+        # Here we add the nodes to the dataframe, by adding edges with zero values
+        # If there are no tfs/genes to add, only the first one is used. This allows 
+        # to add nodes to the edgelist without adding too many zero edges.
+        toadd = pd.DataFrame(usetfs, columns = [0]).merge(pd.DataFrame(usegenes, columns = [1]), how='cross')
         toadd[2] = 0
+
 
         df = pd.concat([df,toadd])
 
@@ -133,15 +159,15 @@ def read_motif(motif_fn, tf_names = None, gene_names = None, pivot = True):
             piv = piv.loc[tf_names,:]
         if isinstance(gene_names, list):
             piv = piv.loc[:,gene_names]
-        return(piv)
+        return(piv, list(tftoadd), list(genetoadd))
     else:
         if isinstance(tf_names, list):
             df = df[df[0].isin(tf_names)]
         if isinstance(gene_names, list):
             df = df[df[1].isin(gene_names)]
-        return(df)
+        return(df, list(tftoadd), list(genetoadd))
 
-def read_expression(expression_fn, header = 0, usecols = None):
+def read_expression(expression_fn, header = 0, usecols = None, nrows = None):
     """Read expression data.
 
     Parameters
@@ -155,11 +181,11 @@ def read_expression(expression_fn, header = 0, usecols = None):
     """
     with open(expression_fn, 'r') as f:
         if expression_fn.endswith('.txt'):
-            df = pd.read_csv(f, sep = '\t', usecols = usecols, index_col=0)
+            df = pd.read_csv(f, sep = '\t', usecols = usecols, index_col=0, nrows=nrows)
         elif expression_fn.endswith('.csv'):
-            df = pd.read_csv(f, sep = ' ', usecols = usecols, index_col=0)
+            df = pd.read_csv(f, sep = ' ', usecols = usecols, index_col=0, nrows=nrows)
         elif expression_fn.endswith('.tsv'):
-            df = pd.read_csv(f, sep = '\t', usecols = usecols, index_col=0)
+            df = pd.read_csv(f, sep = '\t', usecols = usecols, index_col=0, nrows=nrows)
         else:
             sys.exit("Format of expression filename not recognised %s" %str(expression_fn))
     
@@ -186,16 +212,18 @@ def prepare_expression(expression_filename, samples = None):
     """    
     # expression file is properly annotated with the sample name and 
     # a list of sample of interest is passed
-    
+    print(samples)
     if type(expression_filename) is str:
-        if (isinstance(sample, list)):
-            expression_data = read_expression(expression_filename, usecols = samples)
+        columns = read_expression(expression_filename, nrows = 1)
+        usecols = samples.copy()
+        usecols.insert(0,columns.index.name)
+        if (isinstance(samples, list)):
+            expression_data = read_expression(expression_filename, usecols = usecols)
         else:
             expression_data = read_expression(expression_filename)
 
         
     elif isinstance(expression_filename, pd.DataFrame):
-
         expression_data = expression_filename.loc[:,samples]
 
     else: 
@@ -209,6 +237,8 @@ def prepare_expression(expression_filename, samples = None):
         print(
             "Duplicate gene symbols detected. Consider averaging before running PANDA"
         )
+
+    check_expression_integrity(expression_data)
 
     return(expression_data, expression_genes)
 

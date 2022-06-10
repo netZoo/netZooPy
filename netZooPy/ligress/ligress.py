@@ -77,7 +77,8 @@ class Ligress(Panda):
         self,
         expression_file,
         priors_table_file,
-        ppi_file,
+        ppi_table_file=None,
+        ppi_file = None,
         mode_process="union",
         mode_priors="union",
         prior_tf_col=0,
@@ -88,7 +89,12 @@ class Ligress(Panda):
 
         self.expression_file = expression_file
         self.priors_table_file = priors_table_file
+        self.ppi_table_file = ppi_table_file
         self.ppi_file = ppi_file
+        if self.ppi_file:
+            self.ppi_mode = 'motif'
+        else:
+            self.ppi_mode = 'sample'
         self.mode_process = mode_process
         self.mode_priors = mode_priors
         self.prior_tf_col = prior_tf_col
@@ -132,26 +138,43 @@ class Ligress(Panda):
             self.samples, self.sample2prior_dict, self.prior2sample_dict = io.read_priors_table(self.priors_table_file)
             self.n_samples = len(self.samples)
 
+            if self.ppi_mode=='sample':
+                self.samples_ppi, self.sample2ppi_dict, self.ppi2sample_dict = io.read_priors_table(self.ppi_table_file, sample_col = 'sample', prior_col = 'prior')
+                #TODO: add check that samples ppi == samples motif
+
             # prepare universe of names in the priors. We won't be reading all of them 
             # first, because we might want to use too many motif priors
+
+            # from motif data
             (
                 self.priors_tfs,
                 self.priors_genes,
             ) = io.read_motif_universe(
                 self.sample2prior_dict, mode=self.mode_priors
             )
-
             
+            #from ppi data
+            # if ppi table file is specified
+            with Timer("Loading PPI data ..."):
+                if self.ppi_mode=='sample':
+                    (
+                        self.ppi_tfs,
+                    ) = io.read_ppi_universe(
+                        self.sample2ppi_dict, mode=self.mode_priors
+                    )
+                    self.ppi_data = None
+                else:
+                    # read ppi
+                    self.ppi_data, self.ppi_tfs = io.read_ppi(self.ppi_file)
+
 
         with Timer("Reading expression data..."):
             # Read expression
             self.expression_data, self.expression_genes = io.prepare_expression(
-                self.expression_file, self.samples
+                self.expression_file, samples=self.samples
             )
 
-        with Timer("Loading PPI data ..."):
-            # read ppi
-            self.ppi_data, self.ppi_tfs = io.read_ppi(self.ppi_file)
+
 
         # depending on the strategy for 
         if self.mode_process=='intersection':
@@ -166,7 +189,9 @@ class Ligress(Panda):
 
         # sort the gene expression and ppi data
         self.expression_data = self.expression_data.loc[self.universe_genes,self.samples]
-        self.ppi_data = self.ppi_data.loc[self.universe_tfs,self.universe_tfs]
+
+        if self.ppi_mode=='motif':
+            self.ppi_data = self.ppi_data.loc[self.universe_tfs,self.universe_tfs]
     
     def run_ligress(self, keep_coexpression = False,save_memory = False, online_coexpression = False, coexpression_folder = 'coexpression/', computing_lioness = 'cpu', computing_panda = 'cpu', cores = 1, alpha = 0.1 , precision = 'single', th_motifs = 3):
         
@@ -202,15 +227,15 @@ class Ligress(Panda):
         # we automatically multiply the correlation with the number of samples
         correlation_complete = correlation_complete * self.get_n_matrix(self.expression_data)
         
-
         if th_motifs>len(self.prior2sample_dict.keys()):
             for p,ss in self.prior2sample_dict.items():
                 # read the motif data and sort it
-                motif_data = self._get_motif(p)
+                motif_data, tftoadd, genetoadd = self._get_motif(p)
                 for s,sample in enumerate(ss):
                     sample_start = time.time()
+                    ppi_data = self._get_ppi(sample, missing_tf = tftoadd)
                     # first run lioness on coexpression
-                    self._ligress_loop(correlation_complete, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
+                    self._ligress_loop(correlation_complete, ppi_data, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
 
         else:
             # Now for each sample we compute the lioness network from correlations and 
@@ -218,12 +243,27 @@ class Ligress(Panda):
             for s,sample in enumerate(self.samples):
                 sample_start = time.time()
                 # first run lioness on coexpression
-                motif_data = self._get_motif(self.sample2prior_dict[sample])
-                self._ligress_loop(correlation_complete, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
+                motif_data, tftoadd, genetoadd = self._get_motif(self.sample2prior_dict[sample])
+                ppi_data = self._get_ppi(sample, missing_tf = tftoadd)
+                self._ligress_loop(correlation_complete, ppi_data, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
 
 
-    def _ligress_loop(self, correlation_complete, motif_data, sample, keep_coexpression = False, save_memory = True, online_coexpression = False, computing_lioness = 'cpu', coexpression_folder = './coexpression/' , computing_panda = 'cpu', alpha = 0.1):
-        
+    def _ligress_loop(self, correlation_complete, ppi_data, motif_data, sample, keep_coexpression = False, save_memory = True, online_coexpression = False, computing_lioness = 'cpu', coexpression_folder = './coexpression/' , computing_panda = 'cpu', alpha = 0.1):
+        """Runs ligress on one sample. For now all samples are saved separately.
+
+        Args:
+            correlation_complete (_type_): _description_
+            ppi_data (_type_): _description_
+            motif_data (_type_): _description_
+            sample (_type_): _description_
+            keep_coexpression (bool, optional): _description_. Defaults to False.
+            save_memory (bool, optional): _description_. Defaults to True.
+            online_coexpression (bool, optional): _description_. Defaults to False.
+            computing_lioness (str, optional): _description_. Defaults to 'cpu'.
+            coexpression_folder (str, optional): _description_. Defaults to './coexpression/'.
+            computing_panda (str, optional): _description_. Defaults to 'cpu'.
+            alpha (float, optional): _description_. Defaults to 0.1.
+        """
         if keep_coexpression:
             if not os.path.exists(self.output_folder+coexpression_folder):
                 os.makedirs(self.output_folder+coexpression_folder)
@@ -232,7 +272,8 @@ class Ligress(Panda):
             os.makedirs(self.output_folder+'single_panda/')
         sample_lioness = self._run_lioness_coexpression(correlation_complete, sample, keep_coexpression = keep_coexpression, save_memory = save_memory, online_coexpression = online_coexpression, computing = computing_lioness, coexpression_folder = coexpression_folder)
 
-        final_panda= self._run_panda_coexpression(sample_lioness,motif_data, sample, computing = computing_panda, alpha = alpha, save_single=True)
+        final_panda= self._run_panda_coexpression(sample_lioness,ppi_data, motif_data, sample, computing = computing_panda, alpha = alpha, save_single=True)
+        #return(final_panda)
 
     def _save_single_panda_net(self, net, prior, sample, prefix, pivot = False):
 
@@ -247,12 +288,25 @@ class Ligress(Panda):
             tab.to_csv(prefix+sample+'.txt', sep = '\t', index = False, columns = ['tf', 'gene','motif','force'])
 
     def _get_motif(self, motif_fn):
-        motif_data = io.read_motif(motif_fn, tf_names = list(self.universe_tfs), gene_names = list(self.universe_genes), pivot = True)
-        return(motif_data)
+        motif_data,tftoadd, genetoadd = io.read_motif(motif_fn, tf_names = list(self.universe_tfs), gene_names = list(self.universe_genes), pivot = True)
+        return(motif_data, tftoadd,genetoadd)
+
+    def _get_ppi(self, sample, missing_tf = None):
+        if (self.ppi_mode == 'sample'):
+            data = io.read_ppi(self.sample2ppi_dict[sample], self.universe_tfs)
+        else:
+            data = self.ppi_data
+            # if there are missing tf, the ppi is all null and 
+            if missing_tf:
+                data.loc[missing_tf,:]=0
+                data.loc[:,missing_tf]=0
+                #data.loc[missing_tf,missing_tf] = np.eye(len(missing_tf))
+
+        return(data)
 
     def _run_lioness_coexpression(self, coexpression, sample, keep_coexpression = False,save_memory = True, online_coexpression = False, computing = 'cpu', cores = 1, coexpression_folder = 'coexpression/'):
         
-        touse = set(self.samples).difference(set([sample]))
+        touse = list(set(self.samples).difference(set([sample])))
         names = self.expression_data.index.tolist()
         
 
@@ -276,14 +330,18 @@ class Ligress(Panda):
         
         return(lioness_network)
 
-    def _run_panda_coexpression(self, net, motif, sample, computing = 'cpu', alpha = 0.1, save_single = False):
+    def _run_panda_coexpression(self, net, ppi, motif, sample, computing = 'cpu', alpha = 0.1, save_single = False):
         
         panda_loop_time = time.time()
         
         #panda works with all normalised networks
+        if (len(ppi.index)!=np.sum(ppi.index==motif.index)):
+            sys.exit('PPI and motif tfs are not matching. DEBUG!')
+        if (len(net.index)!=np.sum(motif.columns==net.index)):
+            sys.exit('coexpression and motif genes are not matching. DEBUG!')
         final = calc.compute_panda(
             self._normalize_network(net.values),
-            self._normalize_network(self.ppi_data.astype(float).values),
+            self._normalize_network(ppi.values),
             self._normalize_network(motif.astype(float).values),
             computing=computing,
             alpha=alpha,

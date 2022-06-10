@@ -1,5 +1,6 @@
 sample,prior
 c1,tests/puma/ToyData/ToyMotifData.txt
-c3,tests/puma/ToyData/ToyMotifData.txt
-c5,tests/puma/ToyData/ToyMotifData.txt
+c2,tests/puma/ToyData/ToyMotifData.txt
+c3,tests/puma/ToyData/ToyMotifData_remove_ARID3A_AHR.txt
 c4,tests/puma/ToyData/ToyMotifData.txt
+c5,tests/puma/ToyData/ToyMotifData_remove_ARID3A_AHR.txt

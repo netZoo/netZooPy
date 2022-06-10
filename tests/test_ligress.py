@@ -13,23 +13,21 @@ def test_lioness():
     # 1. First generate temporary PANDA files as inputs for Lioness
     ppi = "tests/puma/ToyData/ToyPPIData.txt"
     priors_table = "tests/ligress/prior_tab.csv"
-    expression_data = "tests/ligress/expression_with_header.txt"
+    expression_data = "tests/ligress/expression_with_header_fm.txt"
     output_folder = "ligress/"
     c1_file = "tests/ligress/coexpression_c1.txt"
-    c3_file = "tests/ligress/coexpression_c3.txt"
+    c3_file = "tests/ligress/coexpression_c5.txt"
     p1_file = "tests/ligress/c1.txt"
-    p3_file = "tests/ligress/c3.txt"
+    p3_file = "tests/ligress/c5.txt"
     output_c1 = "ligress/coexpression/coexpression_c1.txt"
-    output_c3 = "ligress/coexpression/coexpression_c3.txt"
+    output_c3 = "ligress/coexpression/coexpression_c5.txt"
     output_p1 = "ligress/single_panda/c1.txt"
-    output_p3 = "ligress/single_panda/c3.txt"
+    output_p3 = "ligress/single_panda/c5.txt"
 
 
     # read expression data, prepare ppi+motif+expression universes
-    ligress_obj = Ligress(expression_data, priors_table, ppi, output_folder=output_folder, mode_process='intersection')
-    ligress_obj.run_ligress(keep_coexpression=True)
-    print('All done!')
-
+    ligress_obj = Ligress(expression_data, priors_table, ppi_file = ppi, output_folder=output_folder, mode_process='intersection')
+    ligress_obj.run_ligress(keep_coexpression=True, save_memory=False, cores =1 ,computing_panda='cpu',alpha = 0.1, precision = 'double', th_motifs = 3)
     # Compare correlations
     c1df = pd.read_csv(c1_file, sep = ' ', index_col = 0)
     c3df = pd.read_csv(c3_file, sep = ' ', index_col = 0)
@@ -58,6 +56,6 @@ def test_lioness():
     p1odf = pd.read_csv(output_p1, sep = '\t', index_col = 0)
     p3odf = pd.read_csv(output_p3, sep = '\t', index_col = 0)
 
-    pd.testing.assert_frame_equal(p1df, p1odf, rtol=5e-1,  check_exact=False)
-    pd.testing.assert_frame_equal(p3df, p3odf, rtol=5e-1,  check_exact=False)
-    
+    pd.testing.assert_frame_equal(p1df, p1odf, rtol=5e-1,  atol= 99e-3, check_exact=False)
+    pd.testing.assert_frame_equal(p3df, p3odf, rtol=5e-1,  atol= 99e-2, check_exact=False)
+
