@@ -171,7 +171,7 @@ class Ligress(Panda):
         with Timer("Reading expression data..."):
             # Read expression
             self.expression_data, self.expression_genes = io.prepare_expression(
-                self.expression_file, self.samples
+                self.expression_file, samples=self.samples
             )
 
 

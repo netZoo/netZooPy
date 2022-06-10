@@ -9,6 +9,17 @@ import numpy as np
 from netZooPy.panda import calculations as calc
 import sys
 
+def check_expression_integrity(df):
+    """Check data integrity
+    - Number of NA
+
+    Args:
+        df (dataframe): gene expression dataframe
+    """
+
+    # check that for each
+    if (df.isna().sum(axis = 1)>(len(df.columns)-3)).any():
+        sys.exit('Too many nan in gene expression (need more than 1 sample to compute coexpression)')
 
 def read_ppi(ppi_fn, tf_list = None):
     """Read PPI network
@@ -156,7 +167,7 @@ def read_motif(motif_fn, tf_names = None, gene_names = None, pivot = True):
             df = df[df[1].isin(gene_names)]
         return(df, list(tftoadd), list(genetoadd))
 
-def read_expression(expression_fn, header = 0, usecols = None):
+def read_expression(expression_fn, header = 0, usecols = None, nrows = None):
     """Read expression data.
 
     Parameters
@@ -170,11 +181,11 @@ def read_expression(expression_fn, header = 0, usecols = None):
     """
     with open(expression_fn, 'r') as f:
         if expression_fn.endswith('.txt'):
-            df = pd.read_csv(f, sep = '\t', usecols = usecols, index_col=0)
+            df = pd.read_csv(f, sep = '\t', usecols = usecols, index_col=0, nrows=nrows)
         elif expression_fn.endswith('.csv'):
-            df = pd.read_csv(f, sep = ' ', usecols = usecols, index_col=0)
+            df = pd.read_csv(f, sep = ' ', usecols = usecols, index_col=0, nrows=nrows)
         elif expression_fn.endswith('.tsv'):
-            df = pd.read_csv(f, sep = '\t', usecols = usecols, index_col=0)
+            df = pd.read_csv(f, sep = '\t', usecols = usecols, index_col=0, nrows=nrows)
         else:
             sys.exit("Format of expression filename not recognised %s" %str(expression_fn))
     
@@ -201,16 +212,18 @@ def prepare_expression(expression_filename, samples = None):
     """    
     # expression file is properly annotated with the sample name and 
     # a list of sample of interest is passed
-    
+    print(samples)
     if type(expression_filename) is str:
-        if (isinstance(sample, list)):
-            expression_data = read_expression(expression_filename, usecols = samples)
+        columns = read_expression(expression_filename, nrows = 1)
+        usecols = samples.copy()
+        usecols.insert(0,columns.index.name)
+        if (isinstance(samples, list)):
+            expression_data = read_expression(expression_filename, usecols = usecols)
         else:
             expression_data = read_expression(expression_filename)
 
         
     elif isinstance(expression_filename, pd.DataFrame):
-
         expression_data = expression_filename.loc[:,samples]
 
     else: 
@@ -224,6 +237,8 @@ def prepare_expression(expression_filename, samples = None):
         print(
             "Duplicate gene symbols detected. Consider averaging before running PANDA"
         )
+
+    check_expression_integrity(expression_data)
 
     return(expression_data, expression_genes)
 
