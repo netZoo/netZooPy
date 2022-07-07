@@ -6,3 +6,4 @@ scipy
 python-igraph
 joblib
 statsmodels
+click

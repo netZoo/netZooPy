@@ -1,7 +1,41 @@
 ==========
 Changelog
 ==========
+0.9.6 (2022-06-10)
+------------------
 
+- Ligress filters PPI according to input motif
+
+
+0.9.5 (2022-05-24)
+------------------
+
+- Added output with sample names in Lioness
+- ligress sample names are setup as strings
+- correct order of motif prior in ligress
+
+0.9.4 (2022-05-20)
+------------------
+
+- First ligress release
+- solved puma bug
+
+
+0.9.2 (2022-03-04)
+------------------
+- added command line interface (panda, lioness)
+- updating documentation
+
+0.9.0 (2022-02-11)
+------------------
+- we fixed the panda-lioness and puma-lioness behavior ( panda was passing the updated motif to lioness ). The results are now compatible with the ones of netzooR.
+- removed py3.6 support
+- updated version on anaconda.org
+
+0.8.0 (2021-06-08)
+-------------------
+- support for Python v3.9 
+- addition of DRAGON + unit tests +tutorial and many bug fixes that Daniel and Marouen have been doing as a user requests
 
 0.7.2 (2020-07-18)
 ------------------

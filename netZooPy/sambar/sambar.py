@@ -47,22 +47,29 @@ mut   = pkg_resources.resource_filename(__name__, 'mut.ucec.csv')
 
 def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
     """
-    Description:
         Function to normalize gene mutation scores by gene length.
         mut should be a dataframe of mutation scores with genes as columns and samples as rows. 
         (VERY IMPORTANT, IF OTHERWISE MATRIX SHOULD BE TRANSPOSED OR IT WON'T WORK!!!)
     
-    Inputs:
-        mut         : Mutation scores.
-        cangenes    : A set of cancer associated genes.
-        esize       : A dataframe of gene lengths.
-        normbysample: True : Normalizes the gene mutation scores in a sample by the total mutations within the sample. 
-                      False: Deactivate normalization.
-        subcangenes : True: Subsets mutation data to cancer-associated genes.
-                      False: Takes all genes.
+    Parameters
+    --------------
+        mut         : list
+            Mutation scores.
+        cangenes    : list
+            A set of cancer associated genes.
+        esize       : dataFrame
+            A dataframe of gene lengths.
+        normbysample: bool
+            - True : Normalizes the gene mutation scores in a sample by the total mutations within the sample. 
+            - False: Deactivate normalization.
+        subcangenes : bool
+            - True: Subsets mutation data to cancer-associated genes.
+            - False: Takes all genes.
 
-    Outputs:
-        mut         : Mutation scores normalized by gene length.
+    Returns	
+    --------------
+        mut:_         
+            Mutation scores normalized by gene length.
     """
     #Subsets mutation data to cancer-associated genes.
     if(subcangenes):
@@ -92,23 +99,29 @@ def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
     return mut[sorted(mut.columns)]
 
 def convertgmt(gmtfile, cangenes,gmtMSigDB=True,subcangenes=True):
-    """
-    Description:
-        This function takes as input the name of a gmt file containing lists of genes associated to pathways. 
-        It outputs an adjacency matrix of genes and pathways. 
-        It also subsets the genes to a list of cancer-associated genes. 
+    """ 
+    This function takes as input the name of a gmt file containing lists of genes associated to pathways. 
+    It outputs an adjacency matrix of genes and pathways. 
+    It also subsets the genes to a list of cancer-associated genes. 
 
-    Inputs:
-        gmtfile    : Path the gmt file.
-        cangenes   : A set of cancer associated genes.
-        gmtMSigDB  : True : gmt file from MSigDB 
-                     False: file not form MSigDB
-        subcangenes: True : Subsets mutation data to cancer-associated genes.
-                     False: Takes all genes.
+    Parameters
+    -----------
+        gmtfile: str 
+            Path the gmt file.
+        cangenes:list
+            A set of cancer associated genes.
+        gmtMSigDB : bool, optional
+            If true: gmt file from MSigDB . Defaults to True.
+        subcangenes : bool, optional
+            If true: Subsets mutation data to cancer-associated genes.
+            otherwise takes all genes. Defaults to True.
 
-    Outputs:
-        sign_matrix: Adjacency matrix of genes and pathways.
-    """
+    Returns
+    --------
+        sign_matrix: _
+            Adjacency matrix of genes and pathways.
+    """    
+
     file = open(gmtfile) # Loads the gmt file
     pw = file.readlines() #Reads file into list of strings
 
@@ -147,11 +160,10 @@ def convertgmt(gmtfile, cangenes,gmtMSigDB=True,subcangenes=True):
     return sign_matrix[sorted(sign_matrix.columns)]
 
 def desparsify(mutdata,exonsize,gmtfile,cangenes,normMut=True,gmtMSigDB=True,subcangenes=True):
-    """
-    Description:
-        Applies the sambar method to de-sparcify the mutation data using the pathway signatures in the gmtfile.
+    """ 
+        Applies the sambar method to de-sparsify the mutation data using the pathway signatures in the gmtfile.
         
-    Inputs:
+    Args:
         mutdata     : Mutation scores.
         exonsize    : A dataframe of gene lengths.
         gmtfile     : Path the gmt file.
@@ -162,10 +174,12 @@ def desparsify(mutdata,exonsize,gmtfile,cangenes,normMut=True,gmtMSigDB=True,sub
                       False: file not form MSigDB
         subcangenes : True : Subsets mutation data to cancer-associated genes.
                       False: Takes all genes.
-
-    Outputs:
-        mt            : Genes in both pathways and mutation data.
-        pathway_scores: Pathway scores.
+    Returns
+    -------
+    mt : _
+        Genes in both pathways and mutation data
+    pathway_scores : _
+        Pathway scores.
     """
     tinit = time.time()  
     
@@ -208,16 +222,17 @@ def desparsify(mutdata,exonsize,gmtfile,cangenes,normMut=True,gmtMSigDB=True,sub
     return mt,pathway_scores
 
 def binomial_dist(u,v):
-    """
-    Description:
-        Implementation of the binomial dissimilarity funcion or Millar distance from the vegan:vegdist package in R.
+    """Implementation of the binomial dissimilarity funcion or Millar distance from the vegan:vegdist package in R.
 
-    Inputs:
+    Parameters
+    ----------
         u : First vector to compare distance from.
         v : Second vector to compare distance to.
 
-    Outputs:
-        bd: binomial dissimilarity.
+    Returns
+    -------
+        bd: _
+            binomial dissimilarity.
     """
     np.seterr(divide='ignore', invalid='ignore') #The following steps raise divide by zero errors. This avoids the error to show up as it is not a problem since it is processed afterwards.
     x,y= u,v
@@ -231,19 +246,20 @@ def binomial_dist(u,v):
     return bd
 
 def clustering(pt, kmin,kmax,distance,linkagem):
-    """
-    Description:
-        Computes the clustering for the pathways matrix and returns a dataframe with the groups with k clusters from kmin to kmax.
+    """Computes the clustering for the pathways matrix and returns a dataframe with the groups with k clusters from kmin to kmax.
 
-    Inputs:
+    Parameters
+    ----------
         pt      : Pathway scores.
         kmin    : Min number of groups in the clustering.
         kmax    : Max number of groups in the clustering.
         distance: Similarity metric for the clustering. Default is binomial distance but any distance from scipy.spatial.distance can be used.
         linkagem: Linkage method. Default is complete.
 
-    Outputs:
-        df      : Cluster assignement dataframe.    
+    Returns
+    -------
+        df: _
+            Cluster assignement dataframe.    
     """
     tinit = time.time()
     if(distance=="binomial"):
@@ -265,11 +281,10 @@ def clustering(pt, kmin,kmax,distance,linkagem):
     return df.transpose()
 
 def sambar(mut_file=mut,esize_file=esize,genes_file=genes,gmtfile=sign,normPatient=True,kmin=2,kmax=4,gmtMSigDB=True,subcangenes=True,distance="binomial",linkagem="complete",cluster=True):
-    """
-    Description:
-        Runs SAMBAR and outputs the pt matrix, the mt matrix and the clustering matrix.
+    """Runs SAMBAR and outputs the pt matrix, the mt matrix and the clustering matrix.
 
-    Inputs:
+    Parameters
+    ------------------
         mutfile    : matrix of mutations with genes as columns and samples as rows. Format CSV.
         esize_file : file with genes and their length.
         genes_file : file with list of cancer-associated genes.
@@ -282,13 +297,20 @@ def sambar(mut_file=mut,esize_file=esize,genes_file=genes,gmtfile=sign,normPatie
         linkagem   : Linkage method. Default is complete.
         cluster    : Whether the clustering has to be compute or the output will just be the pathway mutation scores.
     
-    Outputs:
-        pt               : the pathway matrix.
-        groups           : the groups dataframe as python objects.
-        mt_out.csv       : processed gene mutation scores.
-        pt_out.csv       : pathway mutation scores
-        clustergroups.csv: matrix of pertinence to a group in the clustering.
-        dist_matrix.csv  : Computation of the distance matrix is resource-consuming so the matrix is writen so it doesn't have to be computed again.
+    Returns	
+    -------
+        pt :_
+             the pathway matrix.
+        groups :_
+            the groups dataframe as python objects.
+        mt_out.csv :_
+            processed gene mutation scores.
+        pt_out.csv:_ 
+            pathway mutation scores
+        clustergroups.csv: _
+            matrix of pertinence to a group in the clustering.
+        dist_matrix.csv  : _
+            Computation of the distance matrix is resource-consuming so the matrix is writen so it doesn't have to be computed again.
 
     Reference:
         Kuijjer, Marieke Lydia, et al. "Cancer subtype identification using somatic mutation data." British journal of cancer 118.11 (2018): 1492-1501.

@@ -17,9 +17,9 @@ jobs:
       - name: "Setup Conda"
         uses: s-weigand/setup-conda@v1
         with:
-          update-conda: true
+          update-conda: false
           python-version: ${{ matrix.python-version }}
-          conda-channels: anaconda, conda-forge, bioconda
+          conda-channels: anaconda,conda-forge,bioconda
       - name: "Install Conda development packages"
         run: |
           conda install conda-build

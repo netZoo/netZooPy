@@ -19,7 +19,7 @@ def t_function(x, y=None):
         Continuous Tanimoto similarity function computed on the CPU.
 
     Inputs:
-                x: First object to measure the distance from. If only this matrix is provided, then the distance is meausred between the columns of x.
+        x: First object to measure the distance from. If only this matrix is provided, then the distance is meausred between the columns of x.
         y: Second object to measure the distance to.
 
     Ouputs:
@@ -28,6 +28,7 @@ def t_function(x, y=None):
     if y is None:
         a_matrix = np.dot(x, x.T)
         s = np.square(x).sum(axis=1)
+        # here the all zero entries for the motifs become nan
         a_matrix /= np.sqrt(s + s.reshape(-1, 1) - np.abs(a_matrix))
     else:
         a_matrix = np.dot(x, y)
@@ -90,6 +91,7 @@ def compute_panda_cpu(
         motif_matrix *= 1 - alpha
         motif_matrix += alpha * W
         # Update ppi_matrix
+        # When motif is all zero, this goes to nan
         ppi = t_function(motif_matrix)  # t_func(X, X.T)
         ppi = update_diagonal(ppi, num_tfs, alpha, step)
         ppi_matrix *= 1 - alpha
@@ -103,6 +105,8 @@ def compute_panda_cpu(
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
 
+    if math.isnan(hamming):
+        print('Warning: NaN value for Hamming distance')
     return motif_matrix
 
 
