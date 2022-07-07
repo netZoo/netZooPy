@@ -25,7 +25,7 @@ class Puma(object):
             expression_file : str
                 Path to file containing the gene expression data.
             motif_file      : str
-                Path to file containing the regulation prior. This can be a miRNA-Gene predicted network from TargetScan/miRanda.
+                Path to file containing the regulation prior as a tab-separated file without a header. This can be a miRNA-Gene predicted network from TargetScan/miRanda.
                 However, this can be combined with transcription factor DNA binding motif data in the form of TF-gene-weight(0/1) to estimate gene regulation by TF and miRNA.
                 If set to none, the gene coexpression matrix is returned as a result network.
             ppi_file        : str
