@@ -1,4 +1,4 @@
-,tar,com
+,tar,community
 0,tar_Andromeda.glaucophylla,3
 1,tar_Aronia.melanocarpa,4
 2,tar_Calopogon.pulchellus,7
