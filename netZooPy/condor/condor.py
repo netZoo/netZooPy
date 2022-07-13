@@ -413,12 +413,11 @@ class condor_object:
 
             self.modularity = Qnow
 
-
         self.tar_memb = pd.DataFrame(
-            list(zip(list(gn), [T[i, :].argmax() for i in range(0, len(gn))]))
+            list(zip(list(gn), [T0[i, :].argmax() for i in range(0, len(gn))]))
         )
         self.reg_memb = pd.DataFrame(
-            list(zip(list(rg), [R[i, :].argmax() for i in range(0, len(rg))]))
+            list(zip(list(rg), [R0[i, :].argmax() for i in range(0, len(rg))]))
         )
         self.tar_memb.columns = ["tar", "community"]
         self.reg_memb.columns = ["reg", "community"]
