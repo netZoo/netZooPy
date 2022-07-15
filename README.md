@@ -6,6 +6,7 @@
 [![tutorials](https://img.shields.io/badge/netZooPy-tutorials-9cf)](https://github.com/netZoo/netZooPy/tree/master/tutorials)
 [![alt-version](https://anaconda.org/netzoo/netzoopy/badges/version.svg)](https://anaconda.org/netzoo/netzoopy)
 [![Netbooks](https://img.shields.io/badge/netZooPy-netBooks-ff69b4)](http://netbooks.networkmedicine.org/)
+[![discussions](https://img.shields.io/badge/netZooPy-discussions-orange)](https://github.com/netZoo/netZooPy/discussions)
 
 netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.7 + Python v3.8 + Python v3.9)
 
