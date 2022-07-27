@@ -25,7 +25,7 @@ class Panda(object):
                 Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
             motif_file : str 
                 Path to file containing the transcription factor DNA binding motif data in the form of
-                TF-gene-weight(0/1) or pandas dataframe.
+                TF-gene-weight(0/1) as a tab-separated file without a header or pandas dataframe.
                 If set to none, the gene coexpression matrix is returned as a result network.
             ppi_file : str
                 Path to file containing the PPI data. or pandas dataframe. 
