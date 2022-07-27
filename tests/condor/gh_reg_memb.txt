@@ -1,4 +1,4 @@
-,reg,com
+,reg,community
 0,reg_Adela.purpurea,0
 1,reg_Andrena.alleghaniensis,1
 2,reg_Andrena.bradleyi,2
