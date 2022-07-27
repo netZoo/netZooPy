@@ -91,6 +91,7 @@ class Puma(object):
         alpha=0.1,
         start=1,
         end=None,
+        df_correlation_matrix = None
     ):
         """
             Intialize instance of Puma class and load data.
@@ -125,7 +126,12 @@ class Puma(object):
         # =====================================================================
         with Timer("Calculating coexpression network ..."):
             if self.expression_data is None:
-                self.correlation_matrix = np.identity(self.num_genes, dtype=int)
+                if df_correlation_matrix is None:
+                    self.correlation_matrix = np.identity(self.num_genes, dtype=int)
+                else:
+                    #if a gene is missing from the correlation matrix will have NaN in the matrix
+                    self.correlation_matrix = df_correlation_matrix.reindex(index=self.gene_names,columns = self.gene_names).values
+
             else:
                 self.correlation_matrix = np.corrcoef(self.expression_data)
             if np.isnan(self.correlation_matrix).any():
@@ -201,6 +207,7 @@ class Puma(object):
                     np.save("./tmp/expression.npy", self.expression_data.values)
                 np.save("./tmp/motif.normalized.npy", self.motif_matrix)
                 np.save("./tmp/ppi.normalized.npy", self.ppi_matrix)
+                np.save("./tmp/correlation_matrix.npy", self.correlation_matrix)
 
         # Clean up useless variables to release memory
         if keep_expression_matrix:
