@@ -389,14 +389,13 @@ class Lioness(Panda):
                 fullpath,
                 np.transpose(self.total_lioness_network),
                 delimiter="\t",
-                header = False,
             )
         elif fullpath.endswith("npy"):
             np.save(fullpath, np.transpose(self.total_lioness_network))
         elif fullpath.endswith("mat"):
             from scipy.io import savemat
-
-            savemat(fullpath, np.transpose(self.total_lioness_network))
+            mdic = {"results": np.transpose(self.total_lioness_network), "label": "lioness"}
+            savemat(fullpath, mdic)
         else:
             print('Trying to save lioness output. Format %s not recognised' %str(fullpath))
         return None
