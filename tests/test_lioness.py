@@ -7,7 +7,7 @@ import numpy as np
 import glob
 import subprocess
 import netZooPy.command_line as cmd
-
+from scipy.io import savemat,loadmat
 
 def test_lioness():
     print("Start lioness test!")
@@ -20,6 +20,9 @@ def test_lioness():
     output_file = "panda.npy"
     gt_file = "tests/panda/test_panda.txt"
     output_table = "lioness_output/toy-lioness-py.txt"
+    output_results_txt = "lioness_output/toy-lioness-res.txt"
+    output_results_npy = "lioness_output/toy-lioness-res.npy"
+    output_results_mat = "lioness_output/toy-lioness-res.mat"
     toy_r_file = 'tests/lioness/toy-lioness-first4-1.txt'
 
     panda_obj = Panda(
@@ -38,8 +41,19 @@ def test_lioness():
     lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 4, save_single=True)
     panda_obj.save_panda_results('panda_remove.txt')
     lioness_obj.export_lioness_table(output_table)
+    lioness_obj.save_lioness_results(output_results_mat)
+    lioness_obj.save_lioness_results(output_results_npy)
+    lioness_obj.save_lioness_results(output_results_txt)
 
-    # Check that the correlation matrix for Panda and Lioness are the same (there is no update by Panda or Lioness)
+    # First, check that all save results are the same
+    res_txt = np.loadtxt(output_results_txt)
+    res_npy = np.load(output_results_npy)
+    res_mat = loadmat(output_results_mat)['results']
+    np.allclose(res_txt,res_npy)
+    np.allclose(res_npy, res_mat)
+
+    # Check that the correlation matrix for Panda and Lioness are the same 
+    # (there is no update by Panda or Lioness)
     np.allclose(panda_obj.correlation_matrix, lioness_obj.correlation_matrix)
     np.allclose(panda_obj.motif_matrix, lioness_obj.motif_matrix)
     np.allclose(panda_obj.ppi_matrix, lioness_obj.ppi_matrix)
