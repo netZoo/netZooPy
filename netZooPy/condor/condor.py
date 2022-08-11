@@ -28,6 +28,7 @@ class condor_object:
         dataframe: dataFrame
             Pandas DataFrame containing the edgelist. Use as alternative
             to filename
+        silent: Silent mode, will not print anything on console.
 
     Returns
     ---------
@@ -70,7 +71,7 @@ class condor_object:
     """
 
     def __init__(
-        self, network_file=None, sep=",", index_col=0, header=0, dataframe=None
+        self, network_file=None, sep=",", index_col=0, header=0, dataframe=None,silent=False
     ):
 
         # Checks that either a dataframe or a path to an edgelist are provided, and not to both at the same time.
@@ -104,8 +105,9 @@ class condor_object:
         self.net.iloc[:, 0] = "reg_" + self.net.iloc[:, 0]
         self.net.iloc[:, 1] = "tar_" + self.net.iloc[:, 1]
         # self.net.columns = ["V1","V2","weight"]
+        self.silent = silent
 
-        with Timer("Object creation:"):
+        with Timer("Object creation:",self.silent):
             # Checks that the DataFrame gives rise to a well-defined bipartite network.
             assert not self.net.isnull().any().any(), "NaN values detected."
             assert not (
@@ -139,7 +141,7 @@ class condor_object:
             self.tar_memb = None
             self.Qcoms = None
 
-    def initial_community(self, method="LCS", project=False):
+    def initial_community(self, method="LDN", project=False,resolution=1):
         """
             Computation of the initial community structure based on unipartite methods.
 
@@ -149,8 +151,6 @@ class condor_object:
             method : str
                 Method to determine intial community assignment.
                     - "LCS": Multilevel method.
-                    - "LEC": Leading Eigenvector method.
-                    - "FG" : Fast Greedy method.
                     - "LDN": Leiden method
             project: bool
                 Whether to apply the initial community structure on the bipartite network
@@ -164,28 +164,20 @@ class condor_object:
 
         weights_id = self.net.columns[2]
         if project:
-            with Timer("Initial community structure with projection:"):
+            with Timer("Initial community structure with projection:",self.silent):
 
                 # Obtains bipartite projection onto target subset.
                 projected_graph = self.graph.bipartite_projection(which=1)
 
                 if method == "LCS":
                     vc = Graph.community_multilevel(projected_graph, weights=weights_id)
-                if method == "LEC":
-                    vc = Graph.community_leading_eigenvector(
-                        projected_graph, weights=weights_id
-                    )
-                if method == "FG":
-                    vc = Graph.community_fastgreedy(
-                        projected_graph, weights=weights_id
-                    ).as_clustering()
                 if method == "LDN":
                     vc = Graph.community_leiden(
-                        projected_graph, weights=weights_id
-                    ).as_clustering()
+                        projected_graph, objective_function='modularity',resolution_parameter=resolution, weights=weights_id
+                    )
 
                 self.modularity = vc.modularity
-                print("Initial modularity: ", self.modularity)
+                if not self.silent: print("Initial modularity: ", self.modularity)
 
                 tar_index = [i.index for i in self.graph.vs.select(type_in=[1])]
                 # By the ordering on the indices, the target nodes indices begin at len(co.reg_names)
@@ -206,24 +198,16 @@ class condor_object:
 
                 # Sort of the same as above but without projecting. The bipartite network is treated as a unipartite network.
         else:
-            with Timer("Initial community structure without projection:"):
+            with Timer("Initial community structure without projection:",self.silent):
                 if method == "LCS":
                     vc = Graph.community_multilevel(self.graph, weights=weights_id)
-                if method == "LEC":
-                    vc = Graph.community_leading_eigenvector(
-                        self.graph, weights=weights_id
-                    )
-                if method == "FG":
-                    vc = Graph.community_fastgreedy(
-                        self.graph, weights=weights_id
-                    ).as_clustering()
                 if method == "LDN":
                     vc = Graph.community_leiden(
-                        self.graph, weights=weights_id
-                    ).as_clustering()
+                        self.graph,objective_function='modularity',resolution_parameter=resolution, weights=weights_id
+                    )
 
                 self.modularity = vc.modularity
-                print("Initial modularity: ", self.modularity)
+                if not self.silent: print("Initial modularity: ", self.modularity)
 
                 tar_index = [i.index for i in self.graph.vs.select(type_in=[1])]
                 tar_memb = [vc.membership[i] for i in tar_index]
@@ -238,6 +222,7 @@ class condor_object:
                 R0 = pd.DataFrame(zip(reg_index, reg_memb))
                 R0.columns = ["index", "community"]
                 self.reg_memb = R0
+
 
     def bipartite_modularity(self, B, m, R, T):
         """ Computation of the bipartite modularity as described in 
@@ -278,7 +263,7 @@ class condor_object:
         self.modularity = Q
         return Q
 
-    def matrices(self, c):
+    def matrices(self, c,resolution):
         """ Computation of modularity matrix and initial community matrix.
 
         Parameters
@@ -302,7 +287,7 @@ class condor_object:
 
         """
 
-        with Timer("Matrix computation:"):
+        with Timer("Matrix computation:",self.silent):
 
             # Dimensions of the matrix
             p = len(self.tar_names)
@@ -322,7 +307,7 @@ class condor_object:
             dj = A.sum(0)
             # Computes sum of edges and bimodularity matrix.
             m = float(sum(ki))
-            B = A - ((ki @ dj) / m)
+            B = A - resolution*((ki @ dj) / m)
 
             # d = self.index_dict
 
@@ -357,8 +342,8 @@ class condor_object:
                 Difference modularity threshold for stopping the iterative process
             c        : int
                 max number of communities.
-            resolution: int
-                Not yet implemented option
+            resolution: float
+                
         
         Notes
         ---------
@@ -375,14 +360,14 @@ class condor_object:
         if c == "def":
             c = int(len(self.tar_memb["community"].unique()) * 1.2)
 
-        B, m, T0, R0, gn, rg = self.matrices(c)
+        B, m, T0, R0, gn, rg = self.matrices(c,resolution)
 
 
         # Default deltaQmin.
         if deltaQmin == "def":
             deltaQmin = min(1 / m, 1e-5)
 
-        with Timer("BRIM: "):
+        with Timer("BRIM: ",self.silent):
             Qnow = 0
             deltaQ = 1
             p, q = B.shape
@@ -406,19 +391,18 @@ class condor_object:
                 Qthen = Qnow
                 Qnow = self.bipartite_modularity(B, m, R, T)
                 deltaQ = Qnow - Qthen
-                print(Qnow)
+                if not self.silent: print(Qnow)
 
             self.modularity = Qnow
 
-
         self.tar_memb = pd.DataFrame(
-            list(zip(list(gn), [T[i, :].argmax() for i in range(0, len(gn))]))
+            list(zip(list(gn), [T0[i, :].argmax() for i in range(0, len(gn))]))
         )
         self.reg_memb = pd.DataFrame(
-            list(zip(list(rg), [R[i, :].argmax() for i in range(0, len(rg))]))
+            list(zip(list(rg), [R0[i, :].argmax() for i in range(0, len(rg))]))
         )
-        self.tar_memb.columns = ["tar", "com"]
-        self.reg_memb.columns = ["reg", "com"]
+        self.tar_memb.columns = ["tar", "community"]
+        self.reg_memb.columns = ["reg", "community"]
 
     def qscores(self):
         """
@@ -454,7 +438,7 @@ def run_condor(
     sep=",",
     index_col=0,
     header=0,
-    initial_method="LCS",
+    initial_method="LDN",
     initial_project=False,
     com_num="def",
     deltaQmin="def",
@@ -462,6 +446,7 @@ def run_condor(
     return_output=False,
     tar_output="tar_memb.txt",
     reg_output="reg_memb.txt",
+    silent = False
 ):
     """
         Computation of the whole condor process. It creates a condor object and runs all the steps of BRIM on it. The function outputs
@@ -480,7 +465,7 @@ def run_condor(
         header: int
             Row that stores the header of the edgelist. E.g. None, 0...
         initial_method: str
-            Method to determine intial community assignment. (By default Multilevel method).
+            Method to determine intial community assignment. (By default Leiden method).
         initial_project: bool
             Whether to project the network onto one of the bipartite sets for the initial community detection.
         com_num: int
@@ -495,16 +480,17 @@ def run_condor(
             Filename for saving the tar node final membership.
         reg_output: str
             Filename for saving the reg node final membership.
+        silent: Run in silent mode
 
     Returns
     --------
         Files "tar_memb.txt" and "reg_memb.txt" encoding the final tar and reg node membership.
     """
 
-    co = condor_object(network_file, sep, index_col, header)
-    co.initial_community(initial_method, initial_project)
+    co = condor_object(network_file, sep, index_col, header,dataframe=None,silent=silent)
+    co.initial_community(method=initial_method, project=initial_project,resolution=resolution)
 
-    co.brim(deltaQmin, com_num, resolution)
+    co.brim(deltaQmin, c=com_num, resolution=resolution)
     co.tar_memb.to_csv(tar_output)
     co.reg_memb.to_csv(reg_output)
     
