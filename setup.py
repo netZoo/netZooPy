@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='netZooPy',
-    version='0.9.6',
+    version='0.9.7',
     description='Python implementation of netZoo.',
     url='https://github.com/netZoo/netZooPy',
     author='netZoo team',

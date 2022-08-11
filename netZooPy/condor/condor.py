@@ -488,7 +488,9 @@ def run_condor(
     """
 
     co = condor_object(network_file, sep, index_col, header,dataframe=None,silent=silent)
+
     co.initial_community(method=initial_method, project=initial_project,resolution=resolution)
+
 
     co.brim(deltaQmin, c=com_num, resolution=resolution)
     co.tar_memb.to_csv(tar_output)
