@@ -42,7 +42,7 @@ class AnalyzeLioness(Lioness):
                 File to save the network plot.
         """
         # we added 2 to the index to account for TF and Gene columns
-        self.export_panda_results[['force']] = self.lioness_results.iloc[0,index+2]
+        self.export_panda_results[['force']] = self.lioness_results.iloc[:,index+2]
         plot = AnalyzePanda(self)
         plot.top_network_plot(top, file)
         return None
