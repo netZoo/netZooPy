@@ -109,4 +109,4 @@ def test_lioness():
     assert np.allclose(gt, res)
      
     # 4. testing results dimensions (for AnalyzeLioness)
-    assert lioness_obj.export_lioness_results.shape == [1000000,52]
+    assert lioness_obj.export_lioness_results.shape == [87000,4]
