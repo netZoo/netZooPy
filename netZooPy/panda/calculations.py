@@ -164,13 +164,10 @@ def normalize_network(x):
         normalized_matrix: Standardized adjacency matrix.
     """
     norm_col = zscore(x, ddof=1, axis=0)
-    if x.shape[0] == x.shape[1]:
-        norm_row = norm_col.T
-    else:
-        norm_row = zscore(x, ddof=1, axis=1)
+    norm_row = zscore(x, ddof=1, axis=1)
     # Alessandro: replace nan values
     normalized_matrix = (norm_col + norm_row) / math.sqrt(2)
-    norm_total = (x - np.mean(x)) / np.std(x)  # NB zscore(x) is not the same
+    norm_total = (x - np.mean(x)) / np.std(x, ddof=1)  # NB zscore(x) is not the same
     nan_col = np.isnan(norm_col)
     nan_row = np.isnan(norm_row)
     normalized_matrix[nan_col] = (norm_row[nan_col] + norm_total[nan_col]) / math.sqrt(
