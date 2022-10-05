@@ -107,4 +107,6 @@ def test_lioness():
     gt = np.load("tests/lioness/lioness.1.npy")
     # Compare to ground truth
     assert np.allclose(gt, res)
-    
+     
+    # 4. testing results dimensions (for AnalyzeLioness)
+    assert lioness_obj.export_lioness_results.shape == (87000,4)

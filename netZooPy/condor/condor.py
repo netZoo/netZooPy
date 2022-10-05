@@ -141,7 +141,7 @@ class condor_object:
             self.tar_memb = None
             self.Qcoms = None
 
-    def initial_community(self, method="LCS", project=False):
+    def initial_community(self, method="LDN", project=False,resolution=1):
         """
             Computation of the initial community structure based on unipartite methods.
 
@@ -151,8 +151,6 @@ class condor_object:
             method : str
                 Method to determine intial community assignment.
                     - "LCS": Multilevel method.
-                    - "LEC": Leading Eigenvector method.
-                    - "FG" : Fast Greedy method.
                     - "LDN": Leiden method
             project: bool
                 Whether to apply the initial community structure on the bipartite network
@@ -173,18 +171,10 @@ class condor_object:
 
                 if method == "LCS":
                     vc = Graph.community_multilevel(projected_graph, weights=weights_id)
-                if method == "LEC":
-                    vc = Graph.community_leading_eigenvector(
-                        projected_graph, weights=weights_id
-                    )
-                if method == "FG":
-                    vc = Graph.community_fastgreedy(
-                        projected_graph, weights=weights_id
-                    ).as_clustering()
                 if method == "LDN":
                     vc = Graph.community_leiden(
-                        projected_graph, weights=weights_id
-                    ).as_clustering()
+                        projected_graph, objective_function='modularity',resolution_parameter=resolution, weights=weights_id
+                    )
 
                 self.modularity = vc.modularity
                 if not self.silent: print("Initial modularity: ", self.modularity)
@@ -211,18 +201,10 @@ class condor_object:
             with Timer("Initial community structure without projection:",self.silent):
                 if method == "LCS":
                     vc = Graph.community_multilevel(self.graph, weights=weights_id)
-                if method == "LEC":
-                    vc = Graph.community_leading_eigenvector(
-                        self.graph, weights=weights_id
-                    )
-                if method == "FG":
-                    vc = Graph.community_fastgreedy(
-                        self.graph, weights=weights_id
-                    ).as_clustering()
                 if method == "LDN":
                     vc = Graph.community_leiden(
-                        self.graph, weights=weights_id
-                    ).as_clustering()
+                        self.graph,objective_function='modularity',resolution_parameter=resolution, weights=weights_id
+                    )
 
                 self.modularity = vc.modularity
                 if not self.silent: print("Initial modularity: ", self.modularity)
@@ -456,7 +438,7 @@ def run_condor(
     sep=",",
     index_col=0,
     header=0,
-    initial_method="LCS",
+    initial_method="LDN",
     initial_project=False,
     com_num="def",
     deltaQmin="def",
@@ -483,7 +465,7 @@ def run_condor(
         header: int
             Row that stores the header of the edgelist. E.g. None, 0...
         initial_method: str
-            Method to determine intial community assignment. (By default Multilevel method).
+            Method to determine intial community assignment. (By default Leiden method).
         initial_project: bool
             Whether to project the network onto one of the bipartite sets for the initial community detection.
         com_num: int
@@ -506,9 +488,11 @@ def run_condor(
     """
 
     co = condor_object(network_file, sep, index_col, header,dataframe=None,silent=silent)
-    co.initial_community(initial_method, initial_project)
 
-    co.brim(deltaQmin, com_num, resolution)
+    co.initial_community(method=initial_method, project=initial_project,resolution=resolution)
+
+
+    co.brim(deltaQmin, c=com_num, resolution=resolution)
     co.tar_memb.to_csv(tar_output)
     co.reg_memb.to_csv(reg_output)
     

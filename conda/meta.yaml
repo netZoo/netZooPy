@@ -20,6 +20,7 @@ requirements:
     - joblib>=1.1.0
     - statsmodels>=0.12.2
     - click
+    - pandas
   run:
     - numpy>=1.19.2
     - python {{ python }}
@@ -30,6 +31,7 @@ requirements:
     - joblib>=1.1.0
     - statsmodels>=0.12.2
     - click
+    - pandas
 
 test:
   commands:
