@@ -3,7 +3,6 @@ import math
 import time
 from tkinter.messagebox import RETRY
 import pandas as pd
-from scipy.stats import zscore
 from .timer import Timer
 import numpy as np
 from netZooPy.panda.panda import Panda

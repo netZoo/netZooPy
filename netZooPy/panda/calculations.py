@@ -163,7 +163,7 @@ def normalize_network(x):
     Outputs:
         normalized_matrix: Standardized adjacency matrix.
     """
-    norm_col = zscore(x, axis=0)
+    norm_col = zscore(x, ddof=1, axis=0)
     if x.shape[0] == x.shape[1]:
         norm_row = norm_col.T
     else:
