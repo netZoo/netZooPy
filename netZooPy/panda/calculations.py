@@ -51,7 +51,7 @@ def update_diagonal(diagonal_matrix, num, alpha, step):
         step           : The current step in the algorithm.
     """
     np.fill_diagonal(diagonal_matrix, np.nan)
-    diagonal_std = np.nanstd(diagonal_matrix, axis=0)
+    diagonal_std = np.nanstd(diagonal_matrix, axis=0, ddof=0)
     diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
     np.fill_diagonal(diagonal_matrix, diagonal_fill)
     return diagonal_matrix
