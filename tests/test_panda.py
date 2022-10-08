@@ -254,3 +254,60 @@ def test_panda():
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
         pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+
+
+        print("Start Panda run ...")
+        ppi = "tests/puma/ToyData/ToyPPIData.txt"
+        motif = "tests/puma/ToyData/ToyMotifData.txt"
+        expression_data = "tests/puma/ToyData/ToyExpressionData.txt"
+        lioness_file = ""
+        rm_missing = False
+        output_file = "travis_test_panda.txt"
+        gt_file = "tests/panda/union_test_panda.txt"
+        gt_file_inter = "tests/panda/inter_test_panda.txt"
+        gt_file_rm = "tests/panda/rm_test_panda.txt"
+
+        ## Test command line call
+        result = subprocess.run(["netzoopy", "panda", "--help"], capture_output=False)
+        assert result.returncode == 0
+
+        # 1. Intersection
+        panda_obj = Panda(
+            expression_data,
+            motif,
+            ppi,
+            save_tmp=False,
+            remove_missing=rm_missing,
+            keep_expression_matrix=bool(lioness_file),
+            modeProcess="intersection",
+        )
+
+        panda_obj.save_panda_results(output_file)
+        res = pd.read_csv(output_file, sep=" ", header=None)
+        gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+
+    # 1. pantest
+    ppi = "tests/panda/ppi.txt"
+    motif = "tests/panda/motif.txt"
+    expression_data = "tests/panda/expression.txt"
+    lioness_file = ""
+    rm_missing = False
+    output_file = "pan_test_panda.txt"
+    gt_file = "tests/panda/panda_pantests_gt_matlab.csv"
+
+    panda_obj = Panda(
+        expression_data,
+        motif,
+        ppi,
+        save_tmp=False,
+        remove_missing=rm_missing,
+        keep_expression_matrix=bool(lioness_file),
+        modeProcess="legacy",
+    )
+
+    panda_obj.save_panda_results(output_file)
+    res = pd.read_csv(output_file, sep=" ", header=None)
+    gt = pd.read_csv(gt_file, sep=",", header=0, index_col=0)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-7, check_exact=False, check_names=False)
+
