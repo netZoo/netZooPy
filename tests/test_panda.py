@@ -23,7 +23,7 @@ def test_panda():
     result = subprocess.run(["netzoopy", "panda", "--help"], capture_output=False)
     assert result.returncode == 0
 
-    # 0. Intersection
+    # 1. Intersection
     panda_obj = Panda(
         expression_data,
         motif,
@@ -39,13 +39,13 @@ def test_panda():
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
-    # 0.b Intersection from command line
+    # 1.b Intersection from command line
     cmd.panda.callback(expression_data, motif, ppi, output_file, rm_missing = rm_missing, keep_expr=bool(lioness_file),mode_process='intersection', save_memory = True)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
-    # 0.1 Intersection via DataFrame
+    # 1.1 Intersection via DataFrame
     expression = pd.read_csv(expression_data, sep="\t", header=None, index_col=0)
     motif_data = pd.read_csv(motif, sep="\t", names=["source", "target", "w"])
     ppi_data = pd.read_csv(ppi, sep="\t", header=None)
@@ -64,7 +64,7 @@ def test_panda():
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
-    # 0.2 Intersection with symmetric PPI
+    # 1.2 Intersection with symmetric PPI
     ppi_data = pd.read_csv(ppi, sep="\t", header=None)
     new_df = pd.DataFrame(data={0: ppi_data[0], 1: ppi_data[1], 2: ppi_data[2]})
     ppi_data_symm = pd.concat([ppi_data, new_df])
@@ -82,7 +82,7 @@ def test_panda():
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
-    # 1. Union
+    # 2. Union
     panda_obj = Panda(
         expression_data,
         motif,
@@ -98,7 +98,7 @@ def test_panda():
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
 
-    # 1.b Union from command line
+    # 2.b Union from command line
 
     cmd.panda.callback(expression_data, motif, ppi, output_file, rm_missing = rm_missing, keep_expr=bool(lioness_file),mode_process='union', save_memory = True)
 
@@ -107,7 +107,7 @@ def test_panda():
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
 
-    # 2. In-degree and out-degree
+    # 3. In-degree and out-degree
     panda_obj = Panda(
         expression_data,
         motif,
@@ -124,7 +124,7 @@ def test_panda():
     assert np.round(panda_obj.panda_indegree.iloc[0].loc["force"], 5) == 1.13971
     assert np.round(panda_obj.panda_outdegree.iloc[0].loc["force"], 5) == 1030.06840
 
-    # 3. Legacy
+    # 4. Legacy
     panda_obj = Panda(
         expression_data,
         motif,
@@ -136,10 +136,11 @@ def test_panda():
         modeProcess="legacy",
     )
     panda_obj.save_panda_results(output_file)
-    gt_file = "tests/panda/legacy_test_panda.txt"
+    #gt_file = "tests/panda/legacy_test_panda.txt"
+    gt_file = "tests/panda/panda_gt_matlab.csv"
     res = pd.read_csv(output_file, sep=" ", header=None)
-    gt = pd.read_csv(gt_file, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    gt = pd.read_csv(gt_file, sep=",", index_col=0, header=0)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-5, check_exact=False, check_names=False)
     print("Test panda passed was successful!")
 
     # 3' Legacy with rm_missing=True
