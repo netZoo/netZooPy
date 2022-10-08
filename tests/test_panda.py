@@ -287,7 +287,7 @@ def test_panda():
         gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
         pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
-    # 1. pantest
+    # 5. pantest
     ppi = "tests/panda/ppi.txt"
     motif = "tests/panda/motif.txt"
     expression_data = "tests/panda/expression.txt"
