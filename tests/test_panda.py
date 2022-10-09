@@ -311,3 +311,14 @@ def test_panda():
     gt = pd.read_csv(gt_file, sep=",", header=0, index_col=0)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-7, check_exact=False, check_names=False)
 
+    # 6. test square nonsymmetric matrices
+    W = np.array([[1., 1., 0.],
+                  [0., 0., 1.],
+                  [1., 2., 3.]])
+    W_gt = np.array([[ 1.        ,  0.5       , -1.75592895],
+                     [-1.5       , -1.3660254 ,  0.81101776],
+                     [-0.3660254 ,  0.8660254 ,  1.81093659]])
+    W_res = Panda._normalize_network(self=[],x=W)
+    assert(np.allclose(W_gt, W_res, rtol=1e-05, atol=1e-08))
+
+
