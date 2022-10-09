@@ -135,10 +135,10 @@ def test_panda():
         save_memory=True,
         modeProcess="legacy",
     )
-    panda_obj.save_panda_results(output_file)
+    #panda_obj.save_panda_results(output_file)
     #gt_file = "tests/panda/legacy_test_panda.txt"
     gt_file = "tests/panda/panda_gt_matlab.csv"
-    res = pd.read_csv(output_file, sep=" ", header=None)
+    res = panda_obj.panda_network
     gt = pd.read_csv(gt_file, sep=",", index_col=0, header=0)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-5, check_exact=False, check_names=False)
     print("Test panda passed was successful!")
