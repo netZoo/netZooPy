@@ -121,8 +121,8 @@ def test_panda():
     panda_obj.return_panda_indegree()
     panda_obj.return_panda_outdegree()
     # Lazy test
-    assert np.round(panda_obj.panda_indegree.iloc[0].loc["force"], 5) == 1.13971
-    assert np.round(panda_obj.panda_outdegree.iloc[0].loc["force"], 5) == 1030.06840
+    assert (panda_obj.panda_indegree.iloc[0].loc["force"]*1e5).astype(int)/1e5 == 1.13969
+    assert (panda_obj.panda_outdegree.iloc[0].loc["force"]*1e5).astype(int)/1e5 == 1030.06841
 
     # 4. Legacy
     panda_obj = Panda(
