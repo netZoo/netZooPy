@@ -348,8 +348,15 @@ class Ligress(Panda):
         
         # Compute sample-specific covariance matrix
         
-        lioness_network = self.delta * np.outer(self.expression_data_centered.loc[:, sample], self.expression_data_centered.loc[:, sample]) +
+        sscov = self.delta * np.outer(self.expression_data_centered.loc[:, sample], self.expression_data_centered.loc[:, sample]) +
                 (1-self.delta) * covariance_matrix
+            
+        # Compute sample-specific coexpression matrix from the sample-specific covariance matrix
+        
+        sscov = np.array(sscov)
+        diag = np.sqrt(np.diag(np.diag(sscov)))
+        sds = np.linalg.inv(diag)
+        lioness_network = sds @ sscov @ sds
 
         if (keep_coexpression):
             cfolder = self.output_folder+coexpression_folder
