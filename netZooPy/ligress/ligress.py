@@ -346,8 +346,10 @@ class Ligress(Panda):
         #        (self.get_n_matrix(self.expression_data.loc[:, touse])) * correlation_matrix
         #)
         
-        lioness_network = self.delta * np.outer(self.expression_data_scaled.loc[:, sample], self.expression_data_scaled.loc[:, sample]) +
-                (1-self.delta) * correlation_matrix
+        # Compute sample-specific covariance matrix
+        
+        lioness_network = self.delta * np.outer(self.expression_data_centered.loc[:, sample], self.expression_data_centered.loc[:, sample]) +
+                (1-self.delta) * covariance_matrix
 
         if (keep_coexpression):
             cfolder = self.output_folder+coexpression_folder
