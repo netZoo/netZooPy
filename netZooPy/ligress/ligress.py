@@ -237,8 +237,12 @@ class Ligress(Panda):
         correlation_complete = correlation_complete * self.get_n_matrix(self.expression_data)
         
         # scale expression data to make mean = 0 and sd = 1
+ 
+        # self.expression_data_scaled = (self.expression_data - self.expression_data.mean(axis = 1))/self.expression_data.std(ddof=1, axis = 1)
+    
+        # Center expression data to make mean = 0
         
-        self.expression_data_scaled = (self.expression_data - self.expression_data.mean(axis = 1))/self.expression_data.std(ddof=1, axis = 1)
+        self.expression_data_centered = (self.expression_data - self.expression_data.mean(axis = 1))
 
         
         if th_motifs>len(self.prior2sample_dict.keys()):
