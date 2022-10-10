@@ -49,6 +49,11 @@ class Ligress(Panda):
                 name of the gene column in the prior files
             output_folder: str
                 folder where to save the results
+            tune_delta: boolean
+                - FALSE: use user specified value of delta
+                - TRUE: find posterior weight (delta) from data
+            delta: float
+                posterior weight between 0 and 1
 
     Notes
     ------
@@ -70,7 +75,7 @@ class Ligress(Panda):
     ----------
     .. [1]__ 
 
-    Authors: Viola Fanfani
+    Authors: Viola Fanfani, Enakshi Saha
     """
 
     def __init__(
@@ -83,7 +88,9 @@ class Ligress(Panda):
         mode_priors="union",
         prior_tf_col=0,
         prior_gene_col=1,
-        output_folder='./ligress/' 
+        output_folder='./ligress/'
+        tune_delta=False
+        delta=0.1
     ):
         """Intialize instance of Panda class and load data."""
 
@@ -100,6 +107,8 @@ class Ligress(Panda):
         self.prior_tf_col = prior_tf_col
         self.prior_gene_col=prior_gene_col
         self.output_folder = output_folder
+        self.tune_delta = tune_delta
+        self.delta = delta
 
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)
@@ -227,6 +236,11 @@ class Ligress(Panda):
         # we automatically multiply the correlation with the number of samples
         correlation_complete = correlation_complete * self.get_n_matrix(self.expression_data)
         
+        # scale expression data to make mean = 0 and sd = 1
+        
+        self.expression_data_scaled = (self.expression_data - self.expression_data.mean(axis = 1))/self.expression_data.std(ddof=1, axis = 1)
+
+        
         if th_motifs>len(self.prior2sample_dict.keys()):
             for p,ss in self.prior2sample_dict.items():
                 # read the motif data and sort it
@@ -312,12 +326,20 @@ class Ligress(Panda):
 
         correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
         
+        # Compute posterior weight delta from data
+        if (self.tune_delta):
+            self.delta = 1/( 3 + 2 * np.sqrt(correlation_matrix.diagonal()).mean()/correlation_matrix.diagonal().var())
+
+        
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
         # coexpression has been already multiplied by N all
 
-        lioness_network = coexpression - (
-                (self.get_n_matrix(self.expression_data.loc[:, touse])) * correlation_matrix
-        )
+        #lioness_network = coexpression - (
+        #        (self.get_n_matrix(self.expression_data.loc[:, touse])) * correlation_matrix
+        #)
+        
+        lioness_network = self.delta * np.outer(self.expression_data_scaled.loc[:, sample], self.expression_data_scaled.loc[:, sample]) +
+                (1-self.delta) * correlation_matrix
 
         if (keep_coexpression):
             cfolder = self.output_folder+coexpression_folder
