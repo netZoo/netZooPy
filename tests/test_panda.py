@@ -302,8 +302,8 @@ def test_panda():
         modeProcess="legacy",
     )
 
-    panda_obj.save_panda_results(output_file)
-    res = pd.read_csv(output_file, sep=" ", header=None)
+    #panda_obj.save_panda_results(output_file)
+    res = panda_obj.panda_network
     gt = pd.read_csv(gt_file, sep=",", header=0, index_col=0)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-7, check_exact=False, check_names=False)
 
