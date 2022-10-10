@@ -336,7 +336,7 @@ class Ligress(Panda):
         
         # Compute posterior weight delta from data
         if (self.tune_delta):
-            self.delta = 1/( 3 + 2 * np.sqrt(correlation_matrix.diagonal()).mean()/correlation_matrix.diagonal().var())
+            self.delta = 1/( 3 + 2 * np.sqrt(covariance_matrix.diagonal()).mean()/covariance_matrix.diagonal().var())
 
         
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
