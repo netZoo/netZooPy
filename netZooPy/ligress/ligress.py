@@ -328,7 +328,11 @@ class Ligress(Panda):
         names = self.expression_data.index.tolist()
         
 
-        correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
+        #correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
+        
+        # Compute covariance matrix from the rest of the data, leaving out sample
+        
+        covariance_matrix = self.expression_data.loc[:, touse].T.cov().values
         
         # Compute posterior weight delta from data
         if (self.tune_delta):
