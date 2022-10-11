@@ -13,7 +13,7 @@ setup(name='netZooPy',
     'networkx>=2.6.3',
     'matplotlib>=3.3.4',
     'scipy>=1.5.3',
-    'python-igraph>=0.9.11',
+    'python-igraph==0.9.11',
     'joblib>=1.1.0',
     'statsmodels>=0.12.2',
     'click'
