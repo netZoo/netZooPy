@@ -49,11 +49,11 @@ class Ligress(Panda):
                 name of the gene column in the prior files
             output_folder: str
                 folder where to save the results
-            tune_delta: boolean
-                - FALSE: use user specified value of delta
-                - TRUE: find posterior weight (delta) from data
             delta: float
-                posterior weight between 0 and 1
+                posterior weight between 0 and 1 (Default to 0.3)
+            tune_delta: boolean
+                if true, the posterior weight (delta) for the estimation of the single sample coexpression is estimated from data
+
 
     Notes
     ------
@@ -89,8 +89,6 @@ class Ligress(Panda):
         prior_tf_col=0,
         prior_gene_col=1,
         output_folder='./ligress/'
-        tune_delta=False
-        delta=0.1
     ):
         """Intialize instance of Panda class and load data."""
 
@@ -107,8 +105,7 @@ class Ligress(Panda):
         self.prior_tf_col = prior_tf_col
         self.prior_gene_col=prior_gene_col
         self.output_folder = output_folder
-        self.tune_delta = tune_delta
-        self.delta = delta
+
 
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)
@@ -133,6 +130,7 @@ class Ligress(Panda):
         self.universe_genes = None
         self.gene2idx = None
         self.tf2idx = None
+
 
         # prepare all the data
         self._prepare_data()
@@ -202,7 +200,7 @@ class Ligress(Panda):
         if self.ppi_mode=='motif':
             self.ppi_data = self.ppi_data.loc[self.universe_tfs,self.universe_tfs]
     
-    def run_ligress(self, keep_coexpression = False,save_memory = False, online_coexpression = False, coexpression_folder = 'coexpression/', computing_lioness = 'cpu', computing_panda = 'cpu', cores = 1, alpha = 0.1 , precision = 'single', th_motifs = 3):
+    def run_ligress(self, keep_coexpression = False,save_memory = False, online_coexpression = False, coexpression_folder = 'coexpression/', computing_lioness = 'cpu', computing_panda = 'cpu', cores = 1, alpha = 0.1 , precision = 'single', th_motifs = 3, tune_delta=False, delta=0.1):
         
         """Ligress algorithm
 
@@ -236,14 +234,14 @@ class Ligress(Panda):
         # we automatically multiply the correlation with the number of samples
         correlation_complete = correlation_complete * self.get_n_matrix(self.expression_data)
         
+        # consider removing this
         # scale expression data to make mean = 0 and sd = 1
- 
         # self.expression_data_scaled = (self.expression_data - self.expression_data.mean(axis = 1))/self.expression_data.std(ddof=1, axis = 1)
     
         # Center expression data to make mean = 0
-        
-        self.expression_data_centered = (self.expression_data - self.expression_data.mean(axis = 1))
-
+        # let's remove this from here, and keep it only inside the ligress computation
+        #self.expression_data_centered = (self.expression_data - np.mean(self.expression_data.values,axis = 1, keepdims=True))
+        self.expression_mean = np.mean(self.expression_data.values,axis = 1, keepdims=True)
         
         if th_motifs>len(self.prior2sample_dict.keys()):
             for p,ss in self.prior2sample_dict.items():
@@ -253,7 +251,7 @@ class Ligress(Panda):
                     sample_start = time.time()
                     ppi_data = self._get_ppi(sample, missing_tf = tftoadd)
                     # first run lioness on coexpression
-                    self._ligress_loop(correlation_complete, ppi_data, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
+                    self._ligress_loop(correlation_complete, ppi_data, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder, delta = delta, tune_delta=tune_delta)
 
         else:
             # Now for each sample we compute the lioness network from correlations and 
@@ -263,10 +261,10 @@ class Ligress(Panda):
                 # first run lioness on coexpression
                 motif_data, tftoadd, genetoadd = self._get_motif(self.sample2prior_dict[sample])
                 ppi_data = self._get_ppi(sample, missing_tf = tftoadd)
-                self._ligress_loop(correlation_complete, ppi_data, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder)
+                self._ligress_loop(correlation_complete, ppi_data, motif_data, sample, keep_coexpression=keep_coexpression, save_memory=save_memory, computing_lioness=computing_lioness, computing_panda=computing_panda, alpha = alpha, coexpression_folder=coexpression_folder, delta = delta, tune_delta=tune_delta)
 
 
-    def _ligress_loop(self, correlation_complete, ppi_data, motif_data, sample, keep_coexpression = False, save_memory = True, online_coexpression = False, computing_lioness = 'cpu', coexpression_folder = './coexpression/' , computing_panda = 'cpu', alpha = 0.1):
+    def _ligress_loop(self, correlation_complete, ppi_data, motif_data, sample, keep_coexpression = False, save_memory = True, online_coexpression = False, computing_lioness = 'cpu', coexpression_folder = './coexpression/' , computing_panda = 'cpu', alpha = 0.1, delta=0.3,tune_delta=False):
         """Runs ligress on one sample. For now all samples are saved separately.
 
         Args:
@@ -288,7 +286,7 @@ class Ligress(Panda):
         
         if not os.path.exists(self.output_folder+'single_panda/'):
             os.makedirs(self.output_folder+'single_panda/')
-        sample_lioness = self._run_lioness_coexpression(correlation_complete, sample, keep_coexpression = keep_coexpression, save_memory = save_memory, online_coexpression = online_coexpression, computing = computing_lioness, coexpression_folder = coexpression_folder)
+        sample_lioness = self._run_lioness_coexpression(correlation_complete, sample, keep_coexpression = keep_coexpression, save_memory = save_memory, online_coexpression = online_coexpression, computing = computing_lioness, coexpression_folder = coexpression_folder, delta = delta, tune_delta = tune_delta)
 
         final_panda= self._run_panda_coexpression(sample_lioness,ppi_data, motif_data, sample, computing = computing_panda, alpha = alpha, save_single=True)
         #return(final_panda)
@@ -322,7 +320,7 @@ class Ligress(Panda):
 
         return(data)
 
-    def _run_lioness_coexpression(self, coexpression, sample, keep_coexpression = False,save_memory = True, online_coexpression = False, computing = 'cpu', cores = 1, coexpression_folder = 'coexpression/'):
+    def _run_lioness_coexpression(self, coexpression, sample, keep_coexpression = False,save_memory = True, online_coexpression = False, computing = 'cpu', cores = 1, coexpression_folder = 'coexpression/', delta = 0.3, tune_delta = False):
         
         touse = list(set(self.samples).difference(set([sample])))
         names = self.expression_data.index.tolist()
@@ -331,12 +329,12 @@ class Ligress(Panda):
         #correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
         
         # Compute covariance matrix from the rest of the data, leaving out sample
-        
         covariance_matrix = self.expression_data.loc[:, touse].T.cov().values
-        
+        print('covariance')
+        print(covariance_matrix)
         # Compute posterior weight delta from data
-        if (self.tune_delta):
-            self.delta = 1/( 3 + 2 * np.sqrt(covariance_matrix.diagonal()).mean()/covariance_matrix.diagonal().var())
+        if (tune_delta):
+            delta = 1/( 3 + 2 * np.sqrt(covariance_matrix.diagonal()).mean()/covariance_matrix.diagonal().var())
 
         
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
@@ -347,16 +345,17 @@ class Ligress(Panda):
         #)
         
         # Compute sample-specific covariance matrix
-        
-        sscov = self.delta * np.outer(self.expression_data_centered.loc[:, sample], self.expression_data_centered.loc[:, sample]) +
-                (1-self.delta) * covariance_matrix
-            
+        sscov = delta * np.outer((self.expression_data-self.expression_mean).loc[:, sample], (self.expression_data-self.expression_mean).loc[:, sample]) + (1-delta) * covariance_matrix
+
         # Compute sample-specific coexpression matrix from the sample-specific covariance matrix
         
         sscov = np.array(sscov)
         diag = np.sqrt(np.diag(np.diag(sscov)))
         sds = np.linalg.inv(diag)
         lioness_network = sds @ sscov @ sds
+
+        lioness_network = pd.DataFrame(data = lioness_network, index = coexpression.index, columns=coexpression.columns)
+        
 
         if (keep_coexpression):
             cfolder = self.output_folder+coexpression_folder

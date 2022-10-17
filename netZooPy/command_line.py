@@ -262,7 +262,11 @@ def condor(
               help='Output type. Now unused')
 @click.option('--th_motifs', type=int, show_default=True, default=3,
               help='Threshold for the motifs. Reads motif only once if possible.')      
-def ligress(expression, priors_table, ppi,output_lioness,ppitable, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs):
+@click.option('--delta', type=float, default=0.3, show_default=True,
+              help='posterior weight for single-sample coexpression estimation')
+@click.option('--tune_delta', is_flag=True, show_default=True,
+              help='tune the posterior weight for the single-sample coexpression estimation')
+def ligress(expression, priors_table, ppi,output_lioness,ppitable, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs, delta, tune_delta):
     """Run Lioness to extract single-sample coexpression networks. 
     Then run Panda on each sample with sample-specific priors.
     """
@@ -278,6 +282,6 @@ def ligress(expression, priors_table, ppi,output_lioness,ppitable, fmt, computin
         ligress_obj = Ligress(expression, priors_table, ppi_file = ppi, output_folder=output_lioness, mode_process=mode_process)
      
     print('Running ligress computations ...')
-    ligress_obj.run_ligress(keep_coexpression=save_coexpression,cores=ncores, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs)
+    ligress_obj.run_ligress(keep_coexpression=save_coexpression,cores=ncores, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs, delta=delta, tune_delta=tune_delta)
     print('All done!')
 
