@@ -14,7 +14,7 @@ setup(name='netZooPy',
     'matplotlib>=3.3.4',
     'scipy>=1.5.3',
     'igraph',
-    'python-igraph>=0.9.7',
+    'python-igraph<0.10.0',
     'joblib>=1.1.0',
     'statsmodels>=0.12.2',
     'click'
