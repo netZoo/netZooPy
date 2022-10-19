@@ -121,6 +121,7 @@ class condor_object:
 
             self.net.columns = ["V1", "V2", "weight"]
             # Creates iGraph object from the DataFrame.
+            
             self.graph = Graph.DataFrame(self.net, directed=False)# from igraph 0.10 add parameter: use_vids=False
 
             self.reg_names = sorted(set(self.net.iloc[:, 0]))
