@@ -46,7 +46,8 @@ def gupdate_diagonal(diagonal_matrix, num, alpha, step):
         step           : The current step in the algorithm.
     """
     cp.fill_diagonal(diagonal_matrix, cp.nan)
-    diagonal_std = cp.nanstd(diagonal_matrix, 1)
+    #diagonal_std = cp.nanstd(diagonal_matrix, 1)
+    diagonal_std = cp.nanstd(diagonal_matrix, axis=0, ddof=0)
     diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
     cp.fill_diagonal(diagonal_matrix, diagonal_fill)
     return diagonal_matrix
@@ -56,7 +57,6 @@ def compute_panda_gpu(
     correlation_matrix,
     ppi_matrix,
     motif_matrix,
-    computing="cpu",
     threshold=0.001,
     alpha=0.1,
 ):
@@ -68,17 +68,17 @@ def compute_panda_gpu(
         correlation_matrix (numpy float): coexpression matrix
         ppi_matrix (numpy float): PPI network matrix
         motif_matrix (numpy float): motif matrix
-        computing (str) : either cpu or gpu. Defaults to 'cpu'
         threshold (float, optional): hamming distance threshold for stop. Defaults to 0.001.
         alpha (float, optional): learning rate. Defaults to 0.1
     """
+    print("Computing panda on GPU")
     num_tfs, num_genes = motif_matrix.shape
     step = 0
     hamming = 1
 
-    ppi_matrix = cp.array(ppi_matrix)
-    motif_matrix = cp.array(motif_matrix)
-    correlation_matrix = cp.array(correlation_matrix)
+    ppi_matrix = cp.array(ppi_matrix.copy())
+    motif_matrix = cp.array(motif_matrix.copy())
+    correlation_matrix = cp.array(correlation_matrix.copy())
 
     while hamming > threshold:
 
@@ -105,7 +105,11 @@ def compute_panda_gpu(
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
         
+    
         del W, ppi, motif  # release memory for next step
+
+    if math.isnan(hamming):
+        print('Warning: NaN value for Hamming distance')
 
     motif_matrix = cp.asnumpy(motif_matrix)
     return motif_matrix
