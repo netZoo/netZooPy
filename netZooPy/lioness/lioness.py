@@ -255,7 +255,7 @@ class Lioness(Panda):
                     correlation_matrix,
                     np.copy(self.ppi_matrix),
                     np.copy(self.motif_matrix),
-                    computing = 'cpu',#self.computing,
+                    computing = self.computing,
                     alpha = self.alpha,
                 )
             else:
