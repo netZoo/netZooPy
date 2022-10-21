@@ -175,7 +175,7 @@ class Lioness(Panda):
                 total_genes = [i for i in gene_names for _ in range(len(tf_names))]
                 indDF = pd.DataFrame([total_tfs, total_genes], index=["tf", "gene"])
                 indDF = indDF.append(
-                    pd.DataFrame(self.total_lioness_network.transpose(), index = self.expression_samples)
+                    pd.DataFrame(self.total_lioness_network, index = self.expression_samples)
                 ).transpose()
             else:  # if equal to None to be specific
                 total_genes1 = gene_names * len(gene_names)
