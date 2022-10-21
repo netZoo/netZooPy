@@ -171,6 +171,8 @@ class Lioness(Panda):
             for i in self.indexes:
                 self.total_lioness_network = self.__lioness_loop(i)
         #        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
+            print(type(self.total_lioness_network))
+            print(self.total_lioness_network.shape)
             self.total_lioness_network = self.total_lioness_network.T
         # create result data frame
         if output == "network":
@@ -289,6 +291,7 @@ class Lioness(Panda):
             self.total_lioness_network = np.fromstring(
                 np.transpose(lioness_network).tostring(), dtype=lioness_network.dtype
             )
+            
         elif self.computing == "gpu" and i != 0:
             self.total_lioness_network = np.column_stack(
                 (
