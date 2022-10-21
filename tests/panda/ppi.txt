@@ -1,0 +1,7 @@
+tf1	tf2	1
+tf1	tf3	0
+tf2	tf1	1
+tf2	tf3	0
+tf3	tf2	0
+tf3	tf1	0
+
