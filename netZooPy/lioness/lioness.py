@@ -171,8 +171,6 @@ class Lioness(Panda):
             for i in self.indexes:
                 self.total_lioness_network = self.__lioness_loop(i)
         #        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
-            print(type(self.total_lioness_network))
-            print(self.total_lioness_network.shape)
             self.total_lioness_network = self.total_lioness_network.T
         # create result data frame
         if output == "network":
