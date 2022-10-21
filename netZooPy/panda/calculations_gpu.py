@@ -56,7 +56,6 @@ def compute_panda_gpu(
     correlation_matrix,
     ppi_matrix,
     motif_matrix,
-    computing="cpu",
     threshold=0.001,
     alpha=0.1,
 ):
@@ -68,10 +67,10 @@ def compute_panda_gpu(
         correlation_matrix (numpy float): coexpression matrix
         ppi_matrix (numpy float): PPI network matrix
         motif_matrix (numpy float): motif matrix
-        computing (str) : either cpu or gpu. Defaults to 'cpu'
         threshold (float, optional): hamming distance threshold for stop. Defaults to 0.001.
         alpha (float, optional): learning rate. Defaults to 0.1
     """
+    print("Computing panda on GPU")
     num_tfs, num_genes = motif_matrix.shape
     step = 0
     hamming = 1

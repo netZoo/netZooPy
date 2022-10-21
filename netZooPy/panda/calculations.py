@@ -75,6 +75,7 @@ def compute_panda_cpu(
         threshold (float, optional): hamming distance threshold for stop. Defaults to 0.001.
         alpha (float, optional): learning rate. Defaults to 0.1
     """
+    print("Computing panda on CPU")
     motif_matrix = motif_matrix.copy()
     ppi_matrix = ppi_matrix.copy()
     correlation_matrix = correlation_matrix.copy()
