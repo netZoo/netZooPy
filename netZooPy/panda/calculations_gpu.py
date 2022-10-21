@@ -76,9 +76,9 @@ def compute_panda_gpu(
     step = 0
     hamming = 1
 
-    ppi_matrix = cp.array(ppi_matrix)
-    motif_matrix = cp.array(motif_matrix)
-    correlation_matrix = cp.array(correlation_matrix)
+    ppi_matrix = cp.array(ppi_matrix.copy())
+    motif_matrix = cp.array(motif_matrix.copy())
+    correlation_matrix = cp.array(correlation_matrix.copy())
 
     while hamming > threshold:
 

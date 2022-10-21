@@ -139,6 +139,7 @@ def compute_panda(
             ppi_matrix,
             motif_matrix,
             alpha=alpha,
+            threshold=threshold
         )
 
     elif computing == "gpu":
@@ -149,6 +150,7 @@ def compute_panda(
             ppi_matrix,
             motif_matrix,
             alpha=alpha,
+            threshold=threshold
         )
     else:
         sys.error("ERROR: %s is not an existing computing device" % str(computing))
