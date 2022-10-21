@@ -46,7 +46,8 @@ def gupdate_diagonal(diagonal_matrix, num, alpha, step):
         step           : The current step in the algorithm.
     """
     cp.fill_diagonal(diagonal_matrix, cp.nan)
-    diagonal_std = cp.nanstd(diagonal_matrix, 1)
+    #diagonal_std = cp.nanstd(diagonal_matrix, 1)
+    diagonal_std = cp.nanstd(diagonal_matrix, axis=0, ddof=0)
     diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
     cp.fill_diagonal(diagonal_matrix, diagonal_fill)
     return diagonal_matrix
@@ -104,7 +105,11 @@ def compute_panda_gpu(
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
         
+    
         del W, ppi, motif  # release memory for next step
+
+    if math.isnan(hamming):
+        print('Warning: NaN value for Hamming distance')
 
     motif_matrix = cp.asnumpy(motif_matrix)
     return motif_matrix
