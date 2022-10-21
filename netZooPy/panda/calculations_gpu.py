@@ -80,7 +80,7 @@ def compute_panda_gpu(
     motif_matrix = cp.array(motif_matrix)
     correlation_matrix = cp.array(correlation_matrix)
 
-    if hamming > 0.001:
+    while hamming > threshold:
 
         W = 0.5 * (
             gt_function(ppi_matrix, motif_matrix)
@@ -104,6 +104,8 @@ def compute_panda_gpu(
         # del W, ppi, motif  # release memory for next step
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
+        
+        del W, ppi, motif  # release memory for next step
 
     motif_matrix = cp.asnumpy(motif_matrix)
     return motif_matrix
