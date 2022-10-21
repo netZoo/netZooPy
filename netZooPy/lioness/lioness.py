@@ -290,7 +290,7 @@ class Lioness(Panda):
         if self.computing == "gpu" and i == 0:
             self.total_lioness_network = np.fromstring(
                 np.transpose(lioness_network).tostring(), dtype=lioness_network.dtype
-            )
+            )[:,np.newaxis]
             
         elif self.computing == "gpu" and i != 0:
             self.total_lioness_network = np.column_stack(
