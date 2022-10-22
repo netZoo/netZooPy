@@ -7,5 +7,5 @@ import numpy as np
 def test_lioness_dragon():
     print("Start LIONESS-DRAGON test!")
 
-s = LionessDragon(layer1 = "tests/lioness/dragon/toy_data_layer1.tsv", layer2 = "tests/lioness/dragon/toy_data_layer2.tsv", output_file = "lioness/dragon/lioness_dragon_results.csv")
+s = LionessDragon(layer1 = "tests/lioness/dragon/toy_data_layer1.tsv", layer2 = "tests/lioness/dragon/toy_data_layer2.tsv", output_file = "tests/lioness/dragon/lioness_dragon_results.csv")
 s.lioness_loop()
