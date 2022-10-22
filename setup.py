@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='netZooPy',
-    version='0.9.8',
+    version='0.9.9',
     description='Python implementation of netZoo.',
     url='https://github.com/netZoo/netZooPy',
     author='netZoo team',
@@ -13,7 +13,8 @@ setup(name='netZooPy',
     'networkx>=2.6.3',
     'matplotlib>=3.3.4',
     'scipy>=1.5.3',
-    'python-igraph>=0.9.8',
+    'python-igraph<0.10.0',
+    'igraph<0.10.0',
     'joblib>=1.1.0',
     'statsmodels>=0.12.2',
     'click'

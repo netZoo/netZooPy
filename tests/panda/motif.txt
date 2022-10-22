@@ -1,0 +1,15 @@
+tf1	gene1	1
+tf1	gene2	0
+tf1	gene3	0
+tf1	gene4	1
+tf1	gene5	0
+tf2	gene1	0
+tf2	gene2	1
+tf2	gene3	0
+tf2	gene4	1
+tf2	gene5	0
+tf3	gene1	0
+tf3	gene2	0
+tf3	gene3	0
+tf3	gene4	0
+tf3	gene5	1
