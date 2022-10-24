@@ -29,9 +29,9 @@ def gt_function(x, y=None):
     else:
         a_matrix = cp.dot(x, y)
         a_matrix /= cp.sqrt(
-            cp.square(y).sum(axis=0).astype(float32)
-            + cp.square(x).sum(axis=1).reshape(-1, 1).astype(float32)
-            - cp.abs(a_matrix).astype(float32)
+            cp.square(y).sum(axis=0)#.astype(np.float32)
+            + cp.square(x).sum(axis=1).reshape(-1, 1)#.astype(np.float32)
+            - cp.abs(a_matrix)#.astype(np.float32)
         )
     return a_matrix
 
@@ -77,9 +77,9 @@ def compute_panda_gpu(
     step = 0
     hamming = 1
 
-    ppi_matrix = cp.array(ppi_matrix.copy(), dtype = np.int32)
-    motif_matrix = cp.array(motif_matrix.copy(), dtype = np.int32)
-    correlation_matrix = cp.array(correlation_matrix.copy(), dtype = np.int32)
+    ppi_matrix = cp.array(ppi_matrix.copy(), dtype = np.float32)
+    motif_matrix = cp.array(motif_matrix.copy(), dtype = np.float32)
+    correlation_matrix = cp.array(correlation_matrix.copy(), dtype = np.float32)
 
     while hamming > threshold:
 
