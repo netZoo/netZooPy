@@ -81,10 +81,10 @@ def compute_panda_gpu(
     correlation_matrix = cp.array(correlation_matrix.copy())
 
     print('remove, inside gpu')
-    print(type(correlation_matrix))
-    print(type(ppi_matrix))
+    print(type(correlation_matrix[0][0]))
+    print(type(ppi_matrix[0][0]))
     print(type(alpha))
-    print(type(motif_matrix))
+    print(type(motif_matrix[0][0]))
 
     while hamming > threshold:
 
@@ -120,5 +120,6 @@ def compute_panda_gpu(
     motif_matrix_np = cp.asnumpy(motif_matrix)
     del motif_matrix
     cp._default_memory_pool.free_all_blocks()
+    sys.exit()
     
     return motif_matrix_np
