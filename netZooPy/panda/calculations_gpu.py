@@ -27,11 +27,16 @@ def gt_function(x, y=None):
     if y is None:
         a_matrix = cp.dot(x, x.T)
         s = cp.square(x).sum(axis=1)
+        print('noy')
         print(s.dtype)
+        print(a_matrix.dtype)
         a_matrix /= cp.sqrt(s + s.reshape(-1, 1) - cp.abs(a_matrix))
     else:
         a_matrix = cp.dot(x, y)
+        print('y')
         print(a_matrix.dtype)
+        print(x.dtype)
+        print(y.dtype)
         a_matrix /= cp.sqrt(
             cp.square(y).sum(axis=0)
             + cp.square(x).sum(axis=1).reshape(-1, 1)
