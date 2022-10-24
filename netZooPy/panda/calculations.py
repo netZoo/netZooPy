@@ -5,9 +5,6 @@ import numpy as np
 from scipy.stats import zscore
 import sys
 
-#remove this
-# importing the library
-from memory_profiler import profile
 
 #
 # Calculation functions:
@@ -61,7 +58,6 @@ def update_diagonal(diagonal_matrix, num, alpha, step):
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
 
-@profile
 def compute_panda_cpu(
     correlation_matrix,
     ppi_matrix,

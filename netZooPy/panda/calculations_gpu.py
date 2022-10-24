@@ -3,10 +3,11 @@ from __future__ import print_function
 import math
 import cupy as cp
 import numpy as np
-import time
+#below are the imports for memory and time profiling
+#import time
 #remove this
 # importing the library
-from memory_profiler import profile
+#from memory_profiler import profile
 
 #
 # GPU Calculation functions:
@@ -29,7 +30,7 @@ def gt_function(x, y=None):
         a_matrix = cp.dot(x, x.T)
         s = cp.square(x).sum(axis=1)
         a_matrix /= cp.sqrt(s + s.reshape(-1, 1) - cp.abs(a_matrix))
-        del x
+        #del x
     else:
         a_matrix = cp.dot(x, y)
         a_matrix /= cp.sqrt(
@@ -37,9 +38,9 @@ def gt_function(x, y=None):
             + cp.square(x).sum(axis=1).reshape(-1, 1)
             - cp.abs(a_matrix)
         )
-        del x,y
+        #del x,y
         
-    cp._default_memory_pool.free_all_blocks()
+    #cp._default_memory_pool.free_all_blocks()
     return a_matrix
 
 def gupdate_diagonal(diagonal_matrix, num, alpha, step):
@@ -57,12 +58,13 @@ def gupdate_diagonal(diagonal_matrix, num, alpha, step):
     diagonal_std = cp.nanstd(diagonal_matrix, axis=0, ddof=0)
     diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
     cp.fill_diagonal(diagonal_matrix, diagonal_fill)
-    del diagonal_fill
-    cp._default_memory_pool.free_all_blocks()
+    #del diagonal_fill
+    #cp._default_memory_pool.free_all_blocks()
     
     return diagonal_matrix
 
-@profile
+# Use this for memory profiling
+#@profile
 def compute_panda_gpu(
     correlation_matrix,
     ppi_matrix,
