@@ -87,8 +87,6 @@ def compute_panda_gpu(
             gt_function(ppi_matrix, motif_matrix)
             + gt_function(motif_matrix, correlation_matrix)
         )  # W = (R + A) / 2
-        print('computed W')
-        print(W.dtype)
         hamming = cp.abs(motif_matrix - W).mean()
         # update motif matrix
         motif_matrix *= 1 - alpha
@@ -116,6 +114,5 @@ def compute_panda_gpu(
     motif_matrix_np = cp.asnumpy(motif_matrix)
     del motif_matrix
     cp._default_memory_pool.free_all_blocks()
-    sys.exit()
     
     return motif_matrix_np
