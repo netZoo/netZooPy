@@ -105,11 +105,13 @@ def compute_panda_gpu(
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
         
-    
         del W, ppi, motif  # release memory for next step
 
     if math.isnan(hamming):
         print('Warning: NaN value for Hamming distance')
 
-    motif_matrix = cp.asnumpy(motif_matrix)
-    return motif_matrix
+    motif_matrix_np = cp.asnumpy(motif_matrix)
+    del motif_matrix
+    cp._default_memory_pool.free_all_blocks()
+    
+    return motif_matrix_np

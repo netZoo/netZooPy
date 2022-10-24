@@ -120,15 +120,18 @@ class Lioness(Panda):
             self.export_panda_results = obj.export_panda_results
             self.expression_matrix = obj.expression_matrix
             self.expression_samples = obj.expression_samples
-            self.motif_matrix = obj.motif_matrix
-            self.ppi_matrix = obj.ppi_matrix
-            self.correlation_matrix = obj.correlation_matrix
             if precision == "single":
-                self.correlation_matrix = np.float32(self.correlation_matrix)
-                self.motif_matrix = np.float32(self.motif_matrix)
-                self.ppi_matrix = np.float32(self.ppi_matrix)
+                self.correlation_matrix = np.float32(obj.correlation_matrix)
+                self.motif_matrix = np.float32(obj.motif_matrix)
+                self.ppi_matrix = np.float32(obj.ppi_matrix)
+                self.alpha = np.float32(alpha)
+            else:
+                self.motif_matrix = obj.motif_matrix
+                self.ppi_matrix = obj.ppi_matrix
+                self.correlation_matrix = obj.correlation_matrix
+                self.alpha = alpha
+                
             self.computing = computing
-            self.alpha = alpha
             self.n_cores = int(ncores)
             self.save_single = save_single
             if hasattr(obj, "panda_network"):
