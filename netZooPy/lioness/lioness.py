@@ -247,7 +247,9 @@ class Lioness(Panda):
                 if cp.isnan(correlation_matrix).any():
                     cp.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = cp.nan_to_num(correlation_matrix)
-                correlation_matrix = cp.asnumpy(correlation_matrix,dtype=self.np_dtype)
+                
+                print(correlation_matrix.dtype)
+                correlation_matrix = cp.asnumpy(correlation_matrix)
             else:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():
