@@ -34,8 +34,6 @@ def gt_function(x, y=None):
             + cp.square(x).sum(axis=1).reshape(-1, 1)
             - cp.abs(a_matrix)
         )
-    print('gtfunction')
-    time.sleep(10)
     return a_matrix
 
 
@@ -55,8 +53,6 @@ def gupdate_diagonal(diagonal_matrix, num, alpha, step):
     diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
     cp.fill_diagonal(diagonal_matrix, diagonal_fill)
     
-    print('guupdate')
-    time.sleep(10)
     return diagonal_matrix
 
 
