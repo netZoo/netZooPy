@@ -135,6 +135,11 @@ class Lioness(Panda):
             self.computing = computing
             self.n_cores = int(ncores)
             self.save_single = save_single
+            self.precision = precision
+            if precision == "single":
+                self.np_dtype = np.float32
+            else:
+                self.np_dtype = np.float64
             if hasattr(obj, "panda_network"):
                 self.network = obj.panda_network.to_numpy()
             elif hasattr(obj, "puma_network"):
@@ -236,12 +241,13 @@ class Lioness(Panda):
                 import cupy as cp
                 print('loop')
                 print(self.expression_matrix.dtype)
-                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                
+                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
                 print(correlation_matrix.dtype)
                 if cp.isnan(correlation_matrix).any():
                     cp.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = cp.nan_to_num(correlation_matrix)
-                correlation_matrix = cp.asnumpy(correlation_matrix)
+                correlation_matrix = cp.asnumpy(correlation_matrix,dtype=self.np_dtype)
             else:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():
@@ -257,10 +263,6 @@ class Lioness(Panda):
         with Timer("Inferring LIONESS network:"):
             if self.motif_matrix is not None:
                 del correlation_matrix_orig
-                print(type(correlation_matrix))
-                print(type(self.ppi_matrix))
-                print(type(self.alpha))
-                print(type(self.motif_matrix))
                 subset_panda_network = compute_panda(
                     correlation_matrix,
                     np.copy(self.ppi_matrix),
