@@ -94,7 +94,7 @@ def compute_panda_gpu(
     
     while hamming > threshold:
 
-        W = np.float32(0.5) * (
+        W = 0.5 * (
             gt_function(ppi_matrix, motif_matrix)
             + gt_function(motif_matrix, correlation_matrix)
         )  # W = (R + A) / 2
@@ -102,6 +102,7 @@ def compute_panda_gpu(
         print(ppi_matrix.dtype)
         print(motif_matrix.dtype)
         hamming = cp.abs(motif_matrix - W).mean()
+        print(hamming.dtype)
         # update motif matrix
         motif_matrix *= 1 - alpha
         motif_matrix += alpha * W
