@@ -77,9 +77,9 @@ def compute_panda_gpu(
     step = 0
     hamming = 1
 
-    ppi_matrix = cp.array(ppi_matrix.copy())#, dtype = np.float32)
-    motif_matrix = cp.array(motif_matrix.copy())#, dtype = np.float32)
-    correlation_matrix = cp.array(correlation_matrix.copy())#, dtype = np.float32)
+    ppi_matrix = cp.array(ppi_matrix.copy())
+    motif_matrix = cp.array(motif_matrix.copy())
+    correlation_matrix = cp.array(correlation_matrix.copy())
 
     print('remove gpu')
     print(ppi_matrix.dtype)
@@ -113,6 +113,8 @@ def compute_panda_gpu(
         correlation_matrix *= 1 - alpha
         correlation_matrix += alpha * motif
         print(correlation_matrix.dtype)
+        print(motif.dtype)
+        print(motif_matrix.dtype)
         # del W, ppi, motif  # release memory for next step
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
