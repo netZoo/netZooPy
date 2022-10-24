@@ -3,6 +3,7 @@ from __future__ import print_function
 import math
 import cupy as cp
 import numpy as np
+import time
 
 #
 # GPU Calculation functions:
@@ -33,6 +34,8 @@ def gt_function(x, y=None):
             + cp.square(x).sum(axis=1).reshape(-1, 1)
             - cp.abs(a_matrix)
         )
+    print('gtfunction')
+    time.sleep(10)
     return a_matrix
 
 
@@ -51,6 +54,9 @@ def gupdate_diagonal(diagonal_matrix, num, alpha, step):
     diagonal_std = cp.nanstd(diagonal_matrix, axis=0, ddof=0)
     diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
     cp.fill_diagonal(diagonal_matrix, diagonal_fill)
+    
+    print('guupdate')
+    time.sleep(10)
     return diagonal_matrix
 
 
@@ -77,48 +83,43 @@ def compute_panda_gpu(
     step = 0
     hamming = 1
 
+
+    print('before copy')
+    time.sleep(10)
     ppi_matrix = cp.array(ppi_matrix.copy())
     motif_matrix = cp.array(motif_matrix.copy())
     correlation_matrix = cp.array(correlation_matrix.copy())
-
-    print('remove gpu')
-    print(ppi_matrix.dtype)
-    print(motif_matrix.dtype)
-    print(correlation_matrix.dtype)
+    
+    
+    print('aftercopy')
+    time.sleep(10)
     while hamming > threshold:
 
         W = 0.5 * (
             gt_function(ppi_matrix, motif_matrix)
             + gt_function(motif_matrix, correlation_matrix)
         )  # W = (R + A) / 2
-        print(W.dtype)
-        print(correlation_matrix.dtype)
         hamming = cp.abs(motif_matrix - W).mean()
-        print(hamming.dtype)
         # update motif matrix
         motif_matrix *= 1 - alpha
         motif_matrix += alpha * W
-        print(motif_matrix.dtype)
         # Update ppi_matrix
         ppi = gt_function(motif_matrix)  # t_func(X, X.T)
         ppi = gupdate_diagonal(ppi, num_tfs, alpha, step)
-        print(ppi.dtype)
         ppi_matrix *= 1 - alpha
         ppi_matrix += alpha * ppi
-        print(ppi_matrix.dtype)
 
         # Update correlation_matrix
         motif = gt_function(motif_matrix.T)
         motif = gupdate_diagonal(motif, num_genes, alpha, step)
         correlation_matrix *= 1 - alpha
         correlation_matrix += alpha * motif
-        print(correlation_matrix.dtype)
-        print(motif.dtype)
-        print(motif_matrix.dtype)
         # del W, ppi, motif  # release memory for next step
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
         
+        print('during computation')
+        time.sleep(10)
         del W, ppi, motif  # release memory for next step
 
     if math.isnan(hamming):
