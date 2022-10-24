@@ -118,14 +118,15 @@ class Lioness(Panda):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
-            self.expression_matrix = obj.expression_matrix
             self.expression_samples = obj.expression_samples
             if precision == "single":
+                self.expression_matrix = np.float32(obj.expression_matrix)
                 self.correlation_matrix = np.float32(obj.correlation_matrix)
                 self.motif_matrix = np.float32(obj.motif_matrix)
                 self.ppi_matrix = np.float32(obj.ppi_matrix)
                 self.alpha = np.float32(alpha)
             else:
+                self.expression_matrix = obj.expression_matrix
                 self.motif_matrix = obj.motif_matrix
                 self.ppi_matrix = obj.ppi_matrix
                 self.correlation_matrix = obj.correlation_matrix
@@ -172,6 +173,8 @@ class Lioness(Panda):
 
         elif self.computing == "gpu":
             for i in self.indexes:
+                print('indexes')
+                print(self.correlation_matrix.dtype)
                 self.total_lioness_network = self.__lioness_loop(i)
         #        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
             self.total_lioness_network = self.total_lioness_network.T
@@ -231,8 +234,10 @@ class Lioness(Panda):
         with Timer("Computing coexpression network:"):
             if self.computing == "gpu":
                 import cupy as cp
-                
+                print('loop')
+                print(self.expression_matrix.dtype)
                 correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
+                print(correlation_matrix.dtype)
                 if cp.isnan(correlation_matrix).any():
                     cp.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = cp.nan_to_num(correlation_matrix)
