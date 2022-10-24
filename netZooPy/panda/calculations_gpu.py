@@ -83,16 +83,10 @@ def compute_panda_gpu(
     step = 0
     hamming = 1
 
-
-    print('before copy')
-    time.sleep(10)
     ppi_matrix = cp.array(ppi_matrix.copy())
     motif_matrix = cp.array(motif_matrix.copy())
     correlation_matrix = cp.array(correlation_matrix.copy())
     
-    
-    print('aftercopy')
-    time.sleep(10)
     while hamming > threshold:
 
         W = 0.5 * (
@@ -118,8 +112,6 @@ def compute_panda_gpu(
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
         
-        print('during computation')
-        time.sleep(10)
         del W, ppi, motif  # release memory for next step
 
     if math.isnan(hamming):
