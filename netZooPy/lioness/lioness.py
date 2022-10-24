@@ -178,8 +178,6 @@ class Lioness(Panda):
 
         elif self.computing == "gpu":
             for i in self.indexes:
-                print('indexes')
-                print(self.correlation_matrix.dtype)
                 self.total_lioness_network = self.__lioness_loop(i)
         #        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
             self.total_lioness_network = self.total_lioness_network.T
@@ -239,16 +237,11 @@ class Lioness(Panda):
         with Timer("Computing coexpression network:"):
             if self.computing == "gpu":
                 import cupy as cp
-                print('loop')
-                print(self.expression_matrix.dtype)
                 
                 correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
-                print(correlation_matrix.dtype)
                 if cp.isnan(correlation_matrix).any():
                     cp.fill_diagonal(correlation_matrix, 1)
                     correlation_matrix = cp.nan_to_num(correlation_matrix)
-                
-                print(correlation_matrix.dtype)
                 correlation_matrix = cp.asnumpy(correlation_matrix)
             else:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])

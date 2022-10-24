@@ -92,11 +92,13 @@ def compute_panda_gpu(
             + gt_function(motif_matrix, correlation_matrix)
         )  # W = (R + A) / 2
         print(W.dtype)
+        print(correlation_matrix.dtype)
         hamming = cp.abs(motif_matrix - W).mean()
         print(hamming.dtype)
         # update motif matrix
         motif_matrix *= 1 - alpha
         motif_matrix += alpha * W
+        print(motif_matrix.dtype)
         # Update ppi_matrix
         ppi = gt_function(motif_matrix)  # t_func(X, X.T)
         ppi = gupdate_diagonal(ppi, num_tfs, alpha, step)
@@ -110,6 +112,7 @@ def compute_panda_gpu(
         motif = gupdate_diagonal(motif, num_genes, alpha, step)
         correlation_matrix *= 1 - alpha
         correlation_matrix += alpha * motif
+        print(correlation_matrix.dtype)
         # del W, ppi, motif  # release memory for next step
         print("step: {}, hamming: {}".format(step, hamming))
         step = step + 1
