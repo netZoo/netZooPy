@@ -100,7 +100,7 @@ def compute_panda_gpu(
         )  # W = (R + A) / 2
         print(W.dtype)
         print(ppi_matrix.dtype)
-        print(motif_matrix.dype)
+        print(motif_matrix.dtype)
         hamming = cp.abs(motif_matrix - W).mean()
         # update motif matrix
         motif_matrix *= 1 - alpha
