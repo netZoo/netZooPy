@@ -5,13 +5,16 @@ import numpy as np
 from scipy.stats import zscore
 import sys
 
+#remove this
+# importing the library
+from memory_profiler import profile
+
 #
 # Calculation functions:
 # These functions were defined in Panda, but are
 # also shared by Puma and possibly others.
 # We are going to start putting these here so they can be
 # shared by all classes as they are independent from the class
-
 
 def t_function(x, y=None):
     """
@@ -39,7 +42,6 @@ def t_function(x, y=None):
         )
     return a_matrix
 
-
 def update_diagonal(diagonal_matrix, num, alpha, step):
     """
     Description:
@@ -59,6 +61,7 @@ def update_diagonal(diagonal_matrix, num, alpha, step):
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
 
+@profile
 def compute_panda_cpu(
     correlation_matrix,
     ppi_matrix,
