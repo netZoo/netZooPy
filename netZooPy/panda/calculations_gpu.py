@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import math
 import cupy as cp
+import numpy as np
 
 #
 # GPU Calculation functions:
