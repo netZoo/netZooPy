@@ -29,9 +29,9 @@ def gt_function(x, y=None):
     else:
         a_matrix = cp.dot(x, y)
         a_matrix /= cp.sqrt(
-            cp.square(y).sum(axis=0)#.astype(np.float32)
-            + cp.square(x).sum(axis=1).reshape(-1, 1)#.astype(np.float32)
-            - cp.abs(a_matrix)#.astype(np.float32)
+            cp.square(y).sum(axis=0)
+            + cp.square(x).sum(axis=1).reshape(-1, 1)
+            - cp.abs(a_matrix)
         )
     return a_matrix
 
@@ -77,25 +77,33 @@ def compute_panda_gpu(
     step = 0
     hamming = 1
 
-    ppi_matrix = cp.array(ppi_matrix.copy(), dtype = np.float32)
-    motif_matrix = cp.array(motif_matrix.copy(), dtype = np.float32)
-    correlation_matrix = cp.array(correlation_matrix.copy(), dtype = np.float32)
+    ppi_matrix = cp.array(ppi_matrix.copy())#, dtype = np.float32)
+    motif_matrix = cp.array(motif_matrix.copy())#, dtype = np.float32)
+    correlation_matrix = cp.array(correlation_matrix.copy())#, dtype = np.float32)
 
+    print('remove gpu')
+    print(ppi_matrix.dtype)
+    print(motif_matrix.dtype)
+    print(correlation_matrix.dtype)
     while hamming > threshold:
 
         W = 0.5 * (
             gt_function(ppi_matrix, motif_matrix)
             + gt_function(motif_matrix, correlation_matrix)
         )  # W = (R + A) / 2
+        print(W.dtype)
         hamming = cp.abs(motif_matrix - W).mean()
+        print(hamming.dtype)
         # update motif matrix
         motif_matrix *= 1 - alpha
         motif_matrix += alpha * W
         # Update ppi_matrix
         ppi = gt_function(motif_matrix)  # t_func(X, X.T)
         ppi = gupdate_diagonal(ppi, num_tfs, alpha, step)
+        print(ppi.dtype)
         ppi_matrix *= 1 - alpha
         ppi_matrix += alpha * ppi
+        print(ppi_matrix.dtype)
 
         # Update correlation_matrix
         motif = gt_function(motif_matrix.T)
