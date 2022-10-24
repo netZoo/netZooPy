@@ -1,6 +1,15 @@
 ==========
 Changelog
 ==========
+0.9.9 (2022-10-21)
+------------------
+
+- added the case for square nonsymmetric matrices for normalization in panda
+- Updated tests for panda and lioness to match MATLAB
+- Fixed Panda-Lioness GPU inconsistencies
+- Forcing igraph<0.10, otherwise community assignment results change. This will need further investigation for the future.
+- Fixed lioness GPU export (now lioness allows to save the full matrix, with explicit edge and sample names).
+
 0.9.6 (2022-06-10)
 ------------------
 
