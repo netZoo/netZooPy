@@ -22,12 +22,16 @@ def gt_function(x, y=None):
     Ouputs:
         a_matrix: Matrix containing the pairwsie distances.
     """
+    print('remove gt')
+    print(x.dtype)
     if y is None:
         a_matrix = cp.dot(x, x.T)
         s = cp.square(x).sum(axis=1)
+        print(s.dtype)
         a_matrix /= cp.sqrt(s + s.reshape(-1, 1) - cp.abs(a_matrix))
     else:
         a_matrix = cp.dot(x, y)
+        print(a_matrix.dtype)
         a_matrix /= cp.sqrt(
             cp.square(y).sum(axis=0)
             + cp.square(x).sum(axis=1).reshape(-1, 1)
