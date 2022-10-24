@@ -450,9 +450,8 @@ class Panda(object):
         ):
             # Initialize data & Populate gene expression
             self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
-            idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
-            
-            self.expression[idx_geneEx, :] = self.expression_data.values
+            idx_geneEx = [gene2idx.get(x) for x in self.gene_names]
+            self.expression[idx_geneEx, :] = self.expression_data.loc[self.gene_names].values
             self.expression_data = pd.DataFrame(data=self.expression)
 
         # =====================================================================
