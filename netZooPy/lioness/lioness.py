@@ -252,6 +252,10 @@ class Lioness(Panda):
         with Timer("Inferring LIONESS network:"):
             if self.motif_matrix is not None:
                 del correlation_matrix_orig
+                print(type(correlation_matrix))
+                print(type(self.ppi_matrix))
+                print(type(self.alpha))
+                print(type(self.motif_matrix))
                 subset_panda_network = compute_panda(
                     correlation_matrix,
                     np.copy(self.ppi_matrix),
