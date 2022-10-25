@@ -238,12 +238,12 @@ class Lioness(Panda):
             if self.computing == "gpu":
                 import cupy as cp
                 
-                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
-                if cp.isnan(correlation_matrix).any():
-                    cp.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = cp.nan_to_num(correlation_matrix)
-                correlation_matrix_np = cp.asnumpy(correlation_matrix)
-                del correlation_matrix
+                correlation_matrix_cp = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
+                if cp.isnan(correlation_matrix_cp).any():
+                    cp.fill_diagonal(correlation_matrix_cp, 1)
+                    correlation_matrix_cp = cp.nan_to_num(correlation_matrix_cp)
+                correlation_matrix = cp.asnumpy(correlation_matrix_cp)
+                del correlation_matrix_cp
                 cp._default_memory_pool.free_all_blocks()
             else:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
