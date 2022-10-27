@@ -6,6 +6,8 @@ import numpy as np
 import subprocess
 import netZooPy.command_line as cmd
 
+# PUMA toy data set has 1000 expression genes and 913 motif gene. The 913 motif genes are a subset of the 1000 expression
+# genes
 def test_panda():
     # print(os.getcwd())
     print("Start Panda run ...")
@@ -283,7 +285,7 @@ def test_panda():
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
-    # 5. pantest
+    # 5. pantests
     ppi = "tests/panda/ppi.txt"
     motif = "tests/panda/motif.txt"
     expression_data = "tests/panda/expression.txt"
