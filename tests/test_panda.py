@@ -17,7 +17,7 @@ def runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,o
         modeProcess=modeProcess,
     )
     res = panda_obj.panda_network
-    gt = pd.read_csv(gt_file, sep=",")
+    gt = pd.read_csv(gt_file, sep=",", header=None, index_col=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-7, check_exact=False, check_names=False)
     return
 
