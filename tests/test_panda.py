@@ -54,13 +54,13 @@ def test_panda():
     panda_obj.save_panda_results(output_file)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
     # 1.b Intersection from command line
     cmd.panda.callback(expression_data, motif, ppi, output_file, rm_missing = rm_missing, keep_expr=bool(lioness_file),mode_process='intersection', save_memory = True)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
     # 1.1 Intersection via DataFrame
     expression = pd.read_csv(expression_data, sep="\t", header=None, index_col=0)
@@ -79,7 +79,7 @@ def test_panda():
     panda_obj.save_panda_results(output_file)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
     # 1.2 Intersection with symmetric PPI
     ppi_data = pd.read_csv(ppi, sep="\t", header=None)
@@ -97,7 +97,7 @@ def test_panda():
     panda_obj.save_panda_results(output_file)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
     # 2. Union
     panda_obj = Panda(
@@ -112,7 +112,7 @@ def test_panda():
     panda_obj.save_panda_results(output_file)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
 
     # 2.b Union from command line
@@ -121,7 +121,7 @@ def test_panda():
 
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
 
     # 3. In-degree and out-degree
@@ -157,7 +157,7 @@ def test_panda():
     gt_file = "tests/panda/panda_gt_matlab.csv"
     res = panda_obj.panda_network
     gt = pd.read_csv(gt_file, sep=",", index_col=0, header=0)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-5, check_exact=False, check_names=False)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-12, atol=1e-12, check_exact=False, check_names=False)
     print("Test panda passed was successful!")
 
     # 3' Legacy with rm_missing=True
@@ -174,7 +174,7 @@ def test_panda():
     panda_obj.save_panda_results(output_file)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_rm, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
     print("Test panda passed was successful!")
 
     # 4. None Types
@@ -226,7 +226,7 @@ def test_panda():
             + ".txt"
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
-        #pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
         # Expression
         i = i + 1
         panda_obj = Panda(
@@ -248,7 +248,7 @@ def test_panda():
             + ".txt"
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
-        #pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
         # Expression and PPI
         i = i + 1
         panda_obj = Panda(
@@ -270,35 +270,7 @@ def test_panda():
             + ".txt"
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
-        #pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
-
-
-        print("Start Panda run ...")
-        ppi = "tests/puma/ToyData/ToyPPIData.txt"
-        motif = "tests/puma/ToyData/ToyMotifData.txt"
-        expression_data = "tests/puma/ToyData/ToyExpressionData.txt"
-        lioness_file = ""
-        rm_missing = False
-        output_file = "travis_test_panda.txt"
-        gt_file = "tests/panda/union_test_panda.txt"
-        gt_file_inter = "tests/panda/inter_test_panda.txt"
-        gt_file_rm = "tests/panda/rm_test_panda.txt"
-
-    # 1. Intersection
-    panda_obj = Panda(
-        expression_data,
-        motif,
-        ppi,
-        save_tmp=False,
-        remove_missing=rm_missing,
-        keep_expression_matrix=bool(lioness_file),
-        modeProcess="intersection",
-    )
-
-    panda_obj.save_panda_results(output_file)
-    res = pd.read_csv(output_file, sep=" ", header=None)
-    gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
     # 5. pantests
     modeProcess = 'union'
