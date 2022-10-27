@@ -301,7 +301,7 @@ def test_panda():
         save_tmp=False,
         remove_missing=rm_missing,
         keep_expression_matrix=bool(lioness_file),
-        modeProcess="legacy",
+        modeProcess="union",
     )
 
     #panda_obj.save_panda_results(output_file)
