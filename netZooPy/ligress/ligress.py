@@ -323,7 +323,7 @@ class Ligress(Panda):
         
         touse = list(set(self.samples).difference(set([sample])))
         names = self.expression_data.index.tolist()
-        
+                 
         #correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
         
         # Compute covariance matrix from the rest of the data, leaving out sample
@@ -348,9 +348,14 @@ class Ligress(Panda):
         # Compute sample-specific coexpression matrix from the sample-specific covariance matrix
         
         sscov = np.array(sscov)
-        diag = np.sqrt(np.diag(np.diag(sscov)))
-        sds = np.linalg.inv(diag)
-        lioness_network = sds @ sscov @ sds
+        sscov = np.where(~np.isnan(sscov),sscov,0)
+        sscov_diag = np.diag(sscov)
+        
+        sds = np.diag(1/np.sqrt(np.where(sscov_diag!=0, sscov_diag, 1)))
+        #diag = np.sqrt(np.diag(np.diag(sscov)))
+        #sds = np.linalg.inv(diag)
+        
+        lioness_network = np.matmul(sds, np.matmul(sscov,sds))
 
         nmatrix = self.n_matrix - self.get_n_matrix(self.expression_data.loc[:, touse])
 
