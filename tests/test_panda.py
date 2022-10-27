@@ -204,7 +204,7 @@ def test_panda():
             + ".txt"
         )
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
-        #pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+        pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
         # PPI
         i = i + 1
         panda_obj = Panda(
