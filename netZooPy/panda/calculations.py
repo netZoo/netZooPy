@@ -51,11 +51,13 @@ def update_diagonal(diagonal_matrix, num, alpha, step):
         step           : The current step in the algorithm.
     """
     np.fill_diagonal(diagonal_matrix, np.nan)
-    diagonal_std = np.nanstd(diagonal_matrix, 1)
+    diagonal_std = np.nanstd(diagonal_matrix, axis=0, ddof=0)
     diagonal_fill = diagonal_std * num * math.exp(2 * alpha * step)
     np.fill_diagonal(diagonal_matrix, diagonal_fill)
     return diagonal_matrix
 
+def check_symmetric(a, rtol=1e-05, atol=1e-08):
+    return np.allclose(a, a.T, rtol=rtol, atol=atol)
 
 def compute_panda_cpu(
     correlation_matrix,
@@ -73,6 +75,7 @@ def compute_panda_cpu(
         threshold (float, optional): hamming distance threshold for stop. Defaults to 0.001.
         alpha (float, optional): learning rate. Defaults to 0.1
     """
+    print("Computing panda on CPU")
     motif_matrix = motif_matrix.copy()
     ppi_matrix = ppi_matrix.copy()
     correlation_matrix = correlation_matrix.copy()
@@ -136,6 +139,7 @@ def compute_panda(
             ppi_matrix,
             motif_matrix,
             alpha=alpha,
+            threshold=threshold
         )
 
     elif computing == "gpu":
@@ -146,6 +150,7 @@ def compute_panda(
             ppi_matrix,
             motif_matrix,
             alpha=alpha,
+            threshold=threshold
         )
     else:
         sys.error("ERROR: %s is not an existing computing device" % str(computing))
@@ -163,14 +168,14 @@ def normalize_network(x):
     Outputs:
         normalized_matrix: Standardized adjacency matrix.
     """
-    norm_col = zscore(x, axis=0)
-    if x.shape[0] == x.shape[1]:
+    norm_col = zscore(x, ddof=0, axis=0)
+    if (x.shape[0] == x.shape[1]) and check_symmetric(x):
         norm_row = norm_col.T
     else:
-        norm_row = zscore(x, axis=1)
+        norm_row = zscore(x, ddof=0, axis=1)
     # Alessandro: replace nan values
     normalized_matrix = (norm_col + norm_row) / math.sqrt(2)
-    norm_total = (x - np.mean(x)) / np.std(x)  # NB zscore(x) is not the same
+    norm_total = (x - np.mean(x)) / np.std(x, ddof=1)  # NB zscore(x) is not the same
     nan_col = np.isnan(norm_col)
     nan_row = np.isnan(norm_row)
     normalized_matrix[nan_col] = (norm_row[nan_col] + norm_total[nan_col]) / math.sqrt(
