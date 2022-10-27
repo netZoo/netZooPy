@@ -6,6 +6,21 @@ import numpy as np
 import subprocess
 import netZooPy.command_line as cmd
 
+def runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file):
+    panda_obj = Panda(
+        expression_data,
+        motif,
+        ppi,
+        save_tmp=False,
+        remove_missing=rm_missing,
+        keep_expression_matrix=bool(lioness_file),
+        modeProcess=modeProcess,
+    )
+    res = panda_obj.panda_network
+    gt = pd.read_csv(gt_file, sep=",", header=0, index_col=0)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-7, check_exact=False, check_names=False)
+    return
+
 # PUMA toy data set has 1000 expression genes and 913 motif gene. The 913 motif genes are a subset of the 1000 expression
 # genes
 def test_panda():
@@ -286,6 +301,8 @@ def test_panda():
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
     # 5. pantests
+    modeProcess = 'union'
+    ## AgNet 0
     ppi = "tests/panda/ppi.txt"
     motif = "tests/panda/motif.txt"
     expression_data = "tests/panda/expression.txt"
@@ -293,21 +310,44 @@ def test_panda():
     rm_missing = False
     output_file = "pan_test_panda.txt"
     gt_file = "tests/panda/uAgNet0.csv"
-
-    panda_obj = Panda(
-        expression_data,
-        motif,
-        ppi,
-        save_tmp=False,
-        remove_missing=rm_missing,
-        keep_expression_matrix=bool(lioness_file),
-        modeProcess="union",
-    )
-
-    #panda_obj.save_panda_results(output_file)
-    res = panda_obj.panda_network
-    gt = pd.read_csv(gt_file, sep=",", header=0, index_col=0)
-    pd.testing.assert_frame_equal(res, gt, rtol=1e-7, atol=1e-7, check_exact=False, check_names=False)
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
+    ## AgNet 1
+    expression_data = "tests/panda/expression_down.txt"
+    gt_file = "tests/panda/uAgNet1.csv"
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
+    ## AgNet 2
+    expression_data = "tests/panda/expression.txt"
+    motif = 'tests/panda/motif_down_gene.txt';
+    gt_file = "tests/panda/uAgNet2.csv"
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
+    ## AgNet 3
+    motif = 'tests/panda/motif_down_tf.txt';
+    gt_file = "tests/panda/uAgNet3.csv"
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
+    ## AgNet 4
+    motif = "tests/panda/motif.txt"
+    ppi = "tests/panda/ppi_down.txt"
+    gt_file = "tests/panda/uAgNet4.csv"
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
+    ## AgNet 5
+    ppi = "tests/panda/ppi.txt"
+    expression_data = "tests/panda/expression_up.txt"
+    gt_file = "tests/panda/uAgNet5.csv"
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
+    ## AgNet 6
+    expression_data = "tests/panda/expression.txt"
+    motif = 'tests/panda/motif_up_gene.txt';
+    gt_file = "tests/panda/uAgNet6.csv"
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
+    ## AgNet 7
+    motif = 'tests/panda/motif_up_tf.txt';
+    gt_file = "tests/panda/uAgNet7.csv"
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
+    ## AgNet 8
+    motif = "tests/panda/motif.txt"
+    ppi = "tests/panda/ppi_up.txt"
+    gt_file = "tests/panda/uAgNet8.csv"
+    runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file)
 
     # 6. test square nonsymmetric matrices
     W = np.array([[1., 1., 0.],
