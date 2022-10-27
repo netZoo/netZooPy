@@ -292,7 +292,7 @@ def test_panda():
     lioness_file = ""
     rm_missing = False
     output_file = "pan_test_panda.txt"
-    gt_file = "tests/panda/panda_pantests_gt_matlab.csv"
+    gt_file = "tests/panda/uAgNet0.csv"
 
     panda_obj = Panda(
         expression_data,
