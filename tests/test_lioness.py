@@ -22,6 +22,8 @@ def test_lioness():
     output_table = "lioness_output/toy-lioness-py.txt"
     output_results_txt = "lioness_output/toy-lioness-res.txt"
     output_results_npy = "lioness_output/toy-lioness-res.npy"
+    output_results_npy_2 = "lioness_output/toy-lioness-res2.npy"
+    output_results_npy_3 = "lioness_output/toy-lioness-res3.npy"
     output_results_mat = "lioness_output/toy-lioness-res.mat"
     toy_r_file = 'tests/lioness/toy-lioness-first4-1.txt'
 
@@ -65,13 +67,32 @@ def test_lioness():
     #pd.testing.assert_frame_equal(rdf, pydf, rtol=5e-1, atol= 99e-2,  check_exact=False, check_names = False, check_column_type = False)
     np.allclose(rdf.iloc[:,2].values, pydf.iloc[:,2].values)
 
+    # Check the same results for running only the first two samples
+    lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 2, save_single=True)
+    lioness_obj.save_lioness_results(output_results_npy_2)
+
+    # First, check that all save results are the same
+    res_npy2 = np.load(output_results_npy_2)
+    np.allclose(res_npy[:,:2], res_npy2)
+
+
+    # Check the same results for running only on sample 0 and 2
+    lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 4, subset_numbers='0,1,2', subset_names = '',save_single=True)
+    lioness_obj.save_lioness_results(output_results_npy_3)
+
+    # First, check that all save results are the same
+    res_npy3 = np.load(output_results_npy_3)
+    np.allclose(res_npy[:,:3], res_npy3)
+
+
     ## Test command line call
     result = subprocess.run(["netzoopy", "lioness", "--help"], capture_output=False)
     assert result.returncode == 0
 
     # 1. Test command line
-    #positional: expression, motif, ppi, output_panda, output_lioness, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, start, end):
-    cmd.lioness.callback(expression_data, motif, ppi, 'panda.txt','lioness_output_cmd',None,'npy','cpu','double',1,False,True,rm_missing,'legacy','network',0.1,1,4,False,True)
+    #positional: expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers, subset_names,with_header, save_single_lioness):
+   
+    cmd.lioness.callback(expression_data, motif, ppi, 'panda.txt','lioness_output_cmd',None,'npy','cpu','double',1,False,True,rm_missing,'legacy','network',0.1,1,4,1,None,'','',False,True)
     res = np.load("lioness_output/lioness.1.npy")
     gt = res = np.load("lioness_output_cmd/lioness.1.npy")
     assert np.allclose(gt, res)
