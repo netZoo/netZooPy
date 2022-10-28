@@ -37,10 +37,6 @@ class Lioness(Panda):
                 Index of first sample to compute the network.
             end             : int
                 Index of last sample to compute the network.
-            subset          : str
-                Comma separated list of samples onto which lioness should be run. '1,5,10'
-            all_background : bool
-                Pass the flag if you want to keep the whole samples as background
             save_dir        : str
                 Directory to save the networks.
             save_fmt        : str
@@ -110,8 +106,6 @@ class Lioness(Panda):
         ncores=1,
         start=1,
         end=None,
-        subset_numbers='',
-        subset_names='',
         save_dir="lioness_output",
         save_fmt="npy",
         output="network",
@@ -159,32 +153,11 @@ class Lioness(Panda):
             del obj
 
         # Get sample range to iterate
-        # the number of conditions is the N parameter used for the number of samples in the whole background
         self.n_conditions = self.expression_matrix.shape[1]
-        self.n_lio_samples = self.n_conditions
-        if (subset_numbers!='' or subset_names!=''):
-            if (subset_numbers!='' and subset_names!=''):
-                sys.exit('Pass only one between subset_numbers and subset_names')
-            elif (subset_numbers!='' and subset_names==''):
-                # select using indexes
-                self.indexes = [int(i) for i in subset_numbers.split(',')]
-            else:
-                #select using sample names
-                self.indexes = [self.expression_samples.index(int(i)) for i in subset_numbers.split(',')]
-            self.expression_samples = self.expression_samples[self.indexes]
-            # number of lioness networks to be computed
-            self.n_lio_samples = len(self.indexes)
-        else:
-            # if no subset is selected, we just use the start and end numbers to decide
-            # which samples need to be analyses. The background is always what is used for PANDA
-            # and stays the same
-            
-            self.indexes = range(self.n_conditions)[
-                start - 1 : end
-            ]  # sample indexes to include
-            self.expression_samples = self.expression_samples[start-1:end]
-            self.n_lio_samples = len(self.indexes)
-            
+        self.indexes = range(self.n_conditions)[
+            start - 1 : end
+        ]  # sample indexes to include
+        self.expression_samples = self.expression_samples[start-1:end]
         print("Number of total samples:", self.n_conditions)
         print("Number of computed samples:", len(self.indexes))
         print("Number of parallel cores:", self.n_cores)
@@ -243,7 +216,7 @@ class Lioness(Panda):
                 self.total_lioness_network, columns=tf_names, index = self.expression_samples
             ).transpose()
         
-        # if export filename is passed, the full lioness table is saved
+        # if 
         if export_filename:
             self.export_lioness_table(output_filename = export_filename)
         else:
