@@ -124,19 +124,28 @@ class Lioness(Panda):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
-            self.expression_matrix = obj.expression_matrix
             self.expression_samples = obj.expression_samples
-            self.motif_matrix = obj.motif_matrix
-            self.ppi_matrix = obj.ppi_matrix
-            self.correlation_matrix = obj.correlation_matrix
             if precision == "single":
-                self.correlation_matrix = np.float32(self.correlation_matrix)
-                self.motif_matrix = np.float32(self.motif_matrix)
-                self.ppi_matrix = np.float32(self.ppi_matrix)
+                self.expression_matrix = np.float32(obj.expression_matrix)
+                self.correlation_matrix = np.float32(obj.correlation_matrix)
+                self.motif_matrix = np.float32(obj.motif_matrix)
+                self.ppi_matrix = np.float32(obj.ppi_matrix)
+                self.alpha = np.float32(alpha)
+            else:
+                self.expression_matrix = obj.expression_matrix
+                self.motif_matrix = obj.motif_matrix
+                self.ppi_matrix = obj.ppi_matrix
+                self.correlation_matrix = obj.correlation_matrix
+                self.alpha = alpha
+                
             self.computing = computing
-            self.alpha = alpha
             self.n_cores = int(ncores)
             self.save_single = save_single
+            self.precision = precision
+            if precision == "single":
+                self.np_dtype = np.float32
+            else:
+                self.np_dtype = np.float64
             if hasattr(obj, "panda_network"):
                 self.network = obj.panda_network.to_numpy()
             elif hasattr(obj, "puma_network"):
@@ -256,11 +265,13 @@ class Lioness(Panda):
             if self.computing == "gpu":
                 import cupy as cp
                 
-                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
-                if cp.isnan(correlation_matrix).any():
-                    cp.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = cp.nan_to_num(correlation_matrix)
-                correlation_matrix = cp.asnumpy(correlation_matrix)
+                correlation_matrix_cp = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
+                if cp.isnan(correlation_matrix_cp).any():
+                    cp.fill_diagonal(correlation_matrix_cp, 1)
+                    correlation_matrix_cp = cp.nan_to_num(correlation_matrix_cp)
+                correlation_matrix = cp.asnumpy(correlation_matrix_cp)
+                del correlation_matrix_cp
+                cp._default_memory_pool.free_all_blocks()
             else:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():
