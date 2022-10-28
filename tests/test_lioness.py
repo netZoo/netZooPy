@@ -22,6 +22,8 @@ def test_lioness():
     output_table = "lioness_output/toy-lioness-py.txt"
     output_results_txt = "lioness_output/toy-lioness-res.txt"
     output_results_npy = "lioness_output/toy-lioness-res.npy"
+    output_results_npy_2 = "lioness_output/toy-lioness-res2.npy"
+    output_results_npy_3 = "lioness_output/toy-lioness-res3.npy"
     output_results_mat = "lioness_output/toy-lioness-res.mat"
     toy_r_file = 'tests/lioness/toy-lioness-first4-1.txt'
 
@@ -64,6 +66,24 @@ def test_lioness():
 
     #pd.testing.assert_frame_equal(rdf, pydf, rtol=5e-1, atol= 99e-2,  check_exact=False, check_names = False, check_column_type = False)
     np.allclose(rdf.iloc[:,2].values, pydf.iloc[:,2].values)
+
+    # Check the same results for running only the first two samples
+    lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 2, save_single=True)
+    lioness_obj.save_lioness_results(output_results_npy_2)
+
+    # First, check that all save results are the same
+    res_npy2 = np.load(output_results_npy_2)
+    np.allclose(res_npy[:,:2], res_npy2)
+
+
+    # Check the same results for running only on sample 0 and 2
+    lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 4, subset_numbers='0,1,2', subset_names = '',save_single=True)
+    lioness_obj.save_lioness_results(output_results_npy_3)
+
+    # First, check that all save results are the same
+    res_npy3 = np.load(output_results_npy_3)
+    np.allclose(res_npy[:,:3], res_npy3)
+
 
     ## Test command line call
     result = subprocess.run(["netzoopy", "lioness", "--help"], capture_output=False)

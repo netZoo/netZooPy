@@ -128,6 +128,7 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
 @click.option('--save_single_lioness', is_flag=True, show_default=False,
               help='Pass this flag to save all single lioness networks generated.')
 
+    
 def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, start, end, with_header, save_single_lioness):
     """Run Lioness to extract single-sample networks.
     First runs panda using expression, motif and ppi data. 

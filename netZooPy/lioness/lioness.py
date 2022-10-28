@@ -163,18 +163,17 @@ class Lioness(Panda):
         self.n_conditions = self.expression_matrix.shape[1]
         self.n_lio_samples = self.n_conditions
         if (subset_numbers!='' or subset_names!=''):
-            if (subset_numbers!='' or subset_names!=''):
+            if (subset_numbers!='' and subset_names!=''):
                 sys.exit('Pass only one between subset_numbers and subset_names')
             elif (subset_numbers!='' and subset_names==''):
                 # select using indexes
                 self.indexes = [int(i) for i in subset_numbers.split(',')]
-                self.expression_samples = self.expression_samples[self.indexes]
-                self.n_lio_samples = len(self.indexes)
             else:
                 #select using sample names
                 self.indexes = [self.expression_samples.index(int(i)) for i in subset_numbers.split(',')]
-                self.expression_samples = 
-                self.n_lio_samples = len(self.indexes)
+            self.expression_samples = self.expression_samples[self.indexes]
+            # number of lioness networks to be computed
+            self.n_lio_samples = len(self.indexes)
         else:
             # if no subset is selected, we just use the start and end numbers to decide
             # which samples need to be analyses. The background is always what is used for PANDA
@@ -184,6 +183,7 @@ class Lioness(Panda):
                 start - 1 : end
             ]  # sample indexes to include
             self.expression_samples = self.expression_samples[start-1:end]
+            self.n_lio_samples = len(self.indexes)
             
         print("Number of total samples:", self.n_conditions)
         print("Number of computed samples:", len(self.indexes))
@@ -243,7 +243,7 @@ class Lioness(Panda):
                 self.total_lioness_network, columns=tf_names, index = self.expression_samples
             ).transpose()
         
-        # if 
+        # if export filename is passed, the full lioness table is saved
         if export_filename:
             self.export_lioness_table(output_filename = export_filename)
         else:
