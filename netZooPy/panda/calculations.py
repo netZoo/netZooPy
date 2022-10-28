@@ -5,13 +5,13 @@ import numpy as np
 from scipy.stats import zscore
 import sys
 
+
 #
 # Calculation functions:
 # These functions were defined in Panda, but are
 # also shared by Puma and possibly others.
 # We are going to start putting these here so they can be
 # shared by all classes as they are independent from the class
-
 
 def t_function(x, y=None):
     """
@@ -38,7 +38,6 @@ def t_function(x, y=None):
             - np.abs(a_matrix)
         )
     return a_matrix
-
 
 def update_diagonal(diagonal_matrix, num, alpha, step):
     """
