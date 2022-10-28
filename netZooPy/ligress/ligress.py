@@ -240,7 +240,7 @@ class Ligress(Panda):
         # Center expression data to make mean = 0
         # let's remove this from here, and keep it only inside the ligress computation
         #self.expression_data_centered = (self.expression_data - np.mean(self.expression_data.values,axis = 1, keepdims=True))
-        self.expression_mean = np.mean(self.expression_data.values,axis = 1, keepdims=True)
+        self.expression_mean = np.nanmean(self.expression_data.values,axis = 1, keepdims=True)
         
         if th_motifs>len(self.prior2sample_dict.keys()):
             for p,ss in self.prior2sample_dict.items():
@@ -325,18 +325,16 @@ class Ligress(Panda):
         names = self.expression_data.index.tolist()
                  
         #correlation_matrix = self.expression_data.loc[:, touse].T.corr().values
-        
         # Compute covariance matrix from the rest of the data, leaving out sample
         covariance_matrix = self.expression_data.loc[:, touse].T.cov().values
         
         # Compute posterior weight delta from data
         if (tune_delta):
-            delta = 1/( 3 + 2 * np.sqrt(covariance_matrix.diagonal()).mean()/covariance_matrix.diagonal().var())
-
-        
+            delta = 1/( 3 + 2 * np.nanmean(np.sqrt(covariance_matrix.diagonal()))/np.nanvar(covariance_matrix.diagonal()))
+            print(delta)
+        # #TODO: remove this old version
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
         # coexpression has been already multiplied by N all
-
         # we no longer need coexpression
         #lioness_network = coexpression - (
         #        (self.get_n_matrix(self.expression_data.loc[:, touse])) * correlation_matrix
@@ -347,31 +345,46 @@ class Ligress(Panda):
 
         # Compute sample-specific coexpression matrix from the sample-specific covariance matrix
         
+        # compute a diagonal matrix from the inverse square root of sscov
         sscov = np.array(sscov)
+        print(sscov)
         sscov = np.where(~np.isnan(sscov),sscov,0)
         sscov_diag = np.diag(sscov)
-        
         sds = np.diag(1/np.sqrt(np.where(sscov_diag!=0, sscov_diag, 1)))
-        #diag = np.sqrt(np.diag(np.diag(sscov)))
-        #sds = np.linalg.inv(diag)
-        
-        lioness_network = np.matmul(sds, np.matmul(sscov,sds))
-
+        # SS coexpression
+        coexp = np.matmul(sds, np.matmul(sscov,sds))
+        ## matrix of number of samples (allows to put zeros where NaN)
         nmatrix = self.n_matrix - self.get_n_matrix(self.expression_data.loc[:, touse])
-
-        lioness_network = pd.DataFrame(data = np.multiply(nmatrix, lioness_network), index = names, columns=names)
-        
+        print(nmatrix)
+        coexp = np.multiply(nmatrix, coexp)
+        print(coexp)
+        #
 
         if (keep_coexpression):
             cfolder = self.output_folder+coexpression_folder
             if not os.path.exists(cfolder):
                 os.makedirs(cfolder)
+            path = cfolder+'coexpression_'+sample
+            path_genename = cfolder+'genenames_'+sample
             if (save_memory):
-                np.savetxt(coexpression_folder+'coexpression_'+sample+'.txt', lioness_network)
+                #if self.save_fmt == "txt":
+                #np.savetxt(path+'.txt', coexp)
+                #elif self.save_fmt == "npy":
+                np.save(path+'.npy', coexp)
+                # write the gene names
+                with open(path_genename+'.txt', 'w') as fp:
+                    for item in names:
+                        # write each item on a new line
+                        fp.write("%s\n" % item)
+                #elif self.save_fmt == "mat":
+                #    from scipy.io import savemat
+                #    savemat(path, {"SSCoexp": coexp})
             else:
-                pd.DataFrame(lioness_network, columns=self.universe_genes, index = self.universe_genes).to_csv(cfolder+'coexpression_'+sample+'.txt', sep = ' ')
+                pd.DataFrame(data = coexp, columns=names, index = names).to_csv(cfolder+'coexpression_'+sample+'.txt', sep = ' ')
         
-        return(lioness_network)
+        return(pd.DataFrame(data = coexp, index = names, columns=names))
+
+
 
     def _run_panda_coexpression(self, net, ppi, motif, sample, computing = 'cpu', alpha = 0.1, save_single = False):
         
