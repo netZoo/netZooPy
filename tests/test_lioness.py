@@ -77,7 +77,7 @@ def test_lioness():
 
 
     # Check the same results for running only on sample 0 and 2
-    lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 4, subset_numbers='0,1,2', subset_names = '',save_single=True)
+    lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 4, subset_numbers=[0,1,2], subset_names = None,save_single=True)
     lioness_obj.save_lioness_results(output_results_npy_3)
 
     # First, check that all save results are the same

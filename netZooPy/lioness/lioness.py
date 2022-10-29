@@ -33,12 +33,16 @@ class Lioness(Panda):
             precision       : str
                 'double' computes the regulatory network in double precision (15 decimal digits).
                 'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+            subset_numbers  : list
+                List of sample index onto which lioness should be run. ([1,10,20])
+            subset_names  : list
+                List of sample names onto which lioness should be run. (['s1','s2','s3'])
             start           : int
-                Index of first sample to compute the network.
+                Index of first sample to compute the network. If subset_numbers or subset_names is passed, 
+                this is ignored
             end             : int
-                Index of last sample to compute the network.
-            subset          : str
-                Comma separated list of samples onto which lioness should be run. '1,5,10'
+                Index of last sample to compute the network.If subset_numbers or subset_names is passed, 
+                this is ignored
             all_background : bool
                 Pass the flag if you want to keep the whole samples as background
             save_dir        : str
@@ -110,8 +114,8 @@ class Lioness(Panda):
         ncores=1,
         start=1,
         end=None,
-        subset_numbers='',
-        subset_names='',
+        subset_numbers=None,
+        subset_names=None,
         save_dir="lioness_output",
         save_fmt="npy",
         output="network",
@@ -162,15 +166,19 @@ class Lioness(Panda):
         # the number of conditions is the N parameter used for the number of samples in the whole background
         self.n_conditions = self.expression_matrix.shape[1]
         self.n_lio_samples = self.n_conditions
-        if (subset_numbers!='' or subset_names!=''):
-            if (subset_numbers!='' and subset_names!=''):
+        if (subset_numbers!=None or subset_names!=None):
+            if (subset_numbers!=None and subset_names!=None):
                 sys.exit('Pass only one between subset_numbers and subset_names')
-            elif (subset_numbers!='' and subset_names==''):
+            elif (subset_numbers!=None and subset_names==None):
                 # select using indexes
-                self.indexes = [int(i) for i in subset_numbers.split(',')]
+                assert isinstance(subset_numbers, list)
+                assert isinstance(subset_numbers[0], int)
+                self.indexes = [int(i) for i in subset_numbers]
             else:
                 #select using sample names
-                self.indexes = [self.expression_samples.index(int(i)) for i in subset_numbers.split(',')]
+                assert isinstance(subset_names, list)
+                assert isinstance(subset_names[0], int)
+                self.indexes = [self.expression_samples.index(int(i)) for i in subset_names]
             self.expression_samples = self.expression_samples[self.indexes]
             # number of lioness networks to be computed
             self.n_lio_samples = len(self.indexes)
