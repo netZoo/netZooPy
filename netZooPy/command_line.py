@@ -144,7 +144,7 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
               help='Pass if the expression file has a header. It will be used to save samples with the correct name.')
 @click.option('--save_single_lioness', is_flag=True, show_default=False,
               help='Pass this flag to save all single lioness networks generated.')
-def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='hello', subset_names='hello',with_header=False, save_single_lioness=False):
+def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False):
     """Run Lioness to extract single-sample networks.
     First runs panda using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
