@@ -55,6 +55,7 @@ class LionessDragon():
 
             output_dir : str
                 A folder for storing the output networks. default: "lioness-dragon-output"
+<<<<<<< HEAD
 
             merge_col : str
                 Name of the index column for joining the two omics layers. default: "id"
@@ -67,6 +68,8 @@ class LionessDragon():
 
             delim : str
                 Delimiter for input files. Default: ","
+=======
+>>>>>>> 5be0631 (changed lioness-dragon to output separate files for each network)
         """
 
         # assign output directory
