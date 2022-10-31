@@ -34,7 +34,7 @@ class LionessDragon():
 
     _indexes = []
 
-    def __init__(self,layer1,layer2,output_file):
+    def __init__(self,layer1,layer2,output_dir="dragon-lioness-output"):
         """
         Description
         ----------
@@ -52,13 +52,12 @@ class LionessDragon():
                 One column of the matrix must be labeled "id" and index the inner_join between
                 omics layers.
 
-            output_file : str
-                A file path for saving the estimated networks
-                Will overwrite an existing file with the same name at the moment
+            output_dir : str
+                A folder for storing the output networks. default: "lioness-dragon-output"
         """
 
-        # assign output file
-        self._outfile = output_file
+        # assign output directory
+        self._outdir = output_dir
 
         # load data
         print("[LIONESS-DRAGON] Loading input data ...")
@@ -88,16 +87,18 @@ class LionessDragon():
         ----------
 
             Run LIONESS with DRAGON.
-            Write to outfile one row at a time
+            Write each network to an individual file.
 
         Outputs
         ----------
-
-            In outfile, writes a sample-by-edge matrix containing sample-specific partial correlation networks.
+           In output directory, writes a sample-specific network adjacency matrix for
+           each sample
         """
-
-        outfile=open(self._outfile,'w')
+        if not os.path.exists(self._outdir):
+            os.makedirs(self._outdir)
         for i in self._indexes:
+            outfile=self._outdir + "/lioness-dragon-" + str(i) + ".csv"
+            outfile=open(outfile,'w')
             print("[LIONESS-DRAGON] Running LIONESS-DRAGON for sample %d:" % (i + 1))
             idx = [x for x in self._indexes if x != i] 
             with Timer("[LIONESS-DRAGON] Running DRAGON to fit partial correlation network:"):
@@ -118,14 +119,9 @@ class LionessDragon():
                 # apply LIONESS formula to get individual network
                 lioness_network = len(self._indexes) * (self._network - sub_lioness_network) + sub_lioness_network
 
-                # get upper triangle only to save space
-                utri_lioness_network = lioness_network[np.triu_indices(lioness_network.shape[0], k = 1)]
-                current_network = utri_lioness_network.flatten(order="F")
-
-                # append the network as a row to the output file (reshape is for switching to row)
-                np.savetxt(outfile,current_network.reshape(1, current_network.shape[0]),delimiter=",", header="")
-        
-        outfile.close()
+                # write the network as a column-separated adjacency matrix to a single file
+                np.savetxt(outfile,lioness_network,delimiter=",", header="")
+                outfile.close()
             
         return
 
