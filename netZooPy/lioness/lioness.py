@@ -4,13 +4,14 @@ import os, os.path, sys
 import numpy as np
 import pandas as pd
 from .timer import Timer
-
-sys.path.insert(1, "../panda")
-from netZooPy.panda.panda import Panda
 from joblib.externals.loky import set_loky_pickler
 from joblib import parallel_backend
 from joblib import Parallel, delayed
 from joblib import wrap_non_picklable_objects
+
+
+sys.path.insert(1, "../panda")
+from netZooPy.panda.panda import Panda
 from netZooPy.panda.calculations import compute_panda
 
 class Lioness(Panda):
@@ -117,19 +118,28 @@ class Lioness(Panda):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
-            self.expression_matrix = obj.expression_matrix
             self.expression_samples = obj.expression_samples
-            self.motif_matrix = obj.motif_matrix
-            self.ppi_matrix = obj.ppi_matrix
-            self.correlation_matrix = obj.correlation_matrix
             if precision == "single":
-                self.correlation_matrix = np.float32(self.correlation_matrix)
-                self.motif_matrix = np.float32(self.motif_matrix)
-                self.ppi_matrix = np.float32(self.ppi_matrix)
+                self.expression_matrix = np.float32(obj.expression_matrix)
+                self.correlation_matrix = np.float32(obj.correlation_matrix)
+                self.motif_matrix = np.float32(obj.motif_matrix)
+                self.ppi_matrix = np.float32(obj.ppi_matrix)
+                self.alpha = np.float32(alpha)
+            else:
+                self.expression_matrix = obj.expression_matrix
+                self.motif_matrix = obj.motif_matrix
+                self.ppi_matrix = obj.ppi_matrix
+                self.correlation_matrix = obj.correlation_matrix
+                self.alpha = alpha
+                
             self.computing = computing
-            self.alpha = alpha
             self.n_cores = int(ncores)
             self.save_single = save_single
+            self.precision = precision
+            if precision == "single":
+                self.np_dtype = np.float32
+            else:
+                self.np_dtype = np.float64
             if hasattr(obj, "panda_network"):
                 self.network = obj.panda_network.to_numpy()
             elif hasattr(obj, "puma_network"):
@@ -159,21 +169,28 @@ class Lioness(Panda):
             os.makedirs(save_dir)
         # Run LIONESS
         if int(self.n_conditions) >= int(self.n_cores) and self.computing == "cpu":
+            # the total_lioness_network here is a list of 1d
+            # arrays (network:(tfXgene,1),gene_targeting:(gene,1),tf_targeting:(tf,1))
+            
             self.total_lioness_network = Parallel(n_jobs=self.n_cores)(
                 self.__par_lioness_loop(i, output) for i in (self.indexes)
-            )
+            ) 
 
         elif self.computing == "gpu":
             for i in self.indexes:
                 self.total_lioness_network = self.__lioness_loop(i)
         #        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
-
+            self.total_lioness_network = self.total_lioness_network.T
         # create result data frame
         if output == "network":
             if isinstance(origmotif, pd.DataFrame):
+                # get row of all TFs
                 total_tfs = tf_names * len(gene_names)
+                # get row of all genes
                 total_genes = [i for i in gene_names for _ in range(len(tf_names))]
+                # first dataframe is made of tf and gene names
                 indDF = pd.DataFrame([total_tfs, total_genes], index=["tf", "gene"])
+                # concatenate with dataframe of data, rows are samples, columns the edges
                 indDF = indDF.append(
                     pd.DataFrame(self.total_lioness_network, index = self.expression_samples)
                 ).transpose()
@@ -186,21 +203,27 @@ class Lioness(Panda):
                 indDF = indDF.append(
                     pd.DataFrame(self.total_lioness_network, index = self.expression_samples)
                 ).transpose()
+            
+            # keep the df as the export results
             self.export_lioness_results = indDF
+            del indDF
         elif output == "gene_targeting":
             self.export_lioness_results = pd.DataFrame(
-                self.total_lioness_network, columns=gene_names
+                self.total_lioness_network, columns=gene_names, index = self.expression_samples
             ).transpose()
         elif output == "tf_targeting":
             self.export_lioness_results = pd.DataFrame(
-                self.total_lioness_network, columns=tf_names
+                self.total_lioness_network, columns=tf_names, index = self.expression_samples
             ).transpose()
+        
+        # if 
         if export_filename:
             self.export_lioness_table(output_filename = export_filename)
         else:
             self.save_lioness_results()
 
     def __lioness_loop(self, i):
+        #TODO: this is now for GPU only in practice
         """ Initialize instance of Lioness class and load data.
 
         Returns
@@ -215,11 +238,13 @@ class Lioness(Panda):
             if self.computing == "gpu":
                 import cupy as cp
                 
-                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
-                if cp.isnan(correlation_matrix).any():
-                    cp.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = cp.nan_to_num(correlation_matrix)
-                correlation_matrix = cp.asnumpy(correlation_matrix)
+                correlation_matrix_cp = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
+                if cp.isnan(correlation_matrix_cp).any():
+                    cp.fill_diagonal(correlation_matrix_cp, 1)
+                    correlation_matrix_cp = cp.nan_to_num(correlation_matrix_cp)
+                correlation_matrix = cp.asnumpy(correlation_matrix_cp)
+                del correlation_matrix_cp
+                cp._default_memory_pool.free_all_blocks()
             else:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():
@@ -274,7 +299,8 @@ class Lioness(Panda):
         if self.computing == "gpu" and i == 0:
             self.total_lioness_network = np.fromstring(
                 np.transpose(lioness_network).tostring(), dtype=lioness_network.dtype
-            )
+            )[:,np.newaxis]
+            
         elif self.computing == "gpu" and i != 0:
             self.total_lioness_network = np.column_stack(
                 (
@@ -285,7 +311,7 @@ class Lioness(Panda):
                     ),
                 )
             )
-
+            
         return self.total_lioness_network
 
     @delayed
@@ -311,6 +337,7 @@ class Lioness(Panda):
                     correlation_matrix = cp.nan_to_num(correlation_matrix)
                 correlation_matrix = cp.asnumpy(correlation_matrix)
             else:
+                # run on CPU with numpy
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():
                     np.fill_diagonal(correlation_matrix, 1)
@@ -323,6 +350,7 @@ class Lioness(Panda):
             correlation_matrix = self._normalize_network(correlation_matrix)
 
         with Timer("Inferring LIONESS network:"):
+            # TODO: fix this correlation matrix+delete
             if self.motif_matrix is not None:
                 del correlation_matrix_orig
                 subset_panda_network = compute_panda(
@@ -342,9 +370,11 @@ class Lioness(Panda):
         lioness_network = (self.n_conditions * self.network) - (
             (self.n_conditions - 1) * subset_panda_network
         )
-
+        # the lioness network here is a TFxGENE np array
+        
         # if save_single flag is passed, save each single lioness sample
         if self.save_single:
+            # TODO: here we need to decide whether to add the tf and gene name
             with Timer(
                 "Saving LIONESS network %d (%s) to %s using %s format:"
                 % (i + 1,self.expression_samples[i], self.save_dir, self.save_fmt)
@@ -361,6 +391,8 @@ class Lioness(Panda):
                 else:
                     print("Unknown format %s! File will not be saved." % self.save_fmt)
                     # np.save(path, lioness_network)
+        
+        # TODO: why this? Should we remove it?
         # if i == 0:
         # self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         # else:
@@ -400,7 +432,7 @@ class Lioness(Panda):
             print('Trying to save lioness output. Format %s not recognised' %str(fullpath))
         return None
 
-    def export_lioness_table(self, output_filename="lioness_table.txt", header=False):
+    def export_lioness_table(self, output_filename="lioness_table.txt", header=False, output = 'network'):
         """ 
             Saves LIONESS network with edge names. This saves a dataframe with the corresponding
             header and indexes.
@@ -412,11 +444,26 @@ class Lioness(Panda):
                 and format. Choose between .csv, .tsv and .txt. 
                 (Defaults to .lioness_table.txt))
         """
-        df  = self.export_lioness_results
-        df = df.sort_values(by=['tf','gene'])
-        if output_filename.endswith("txt"):
-            df.to_csv(output_filename, sep=" ", index = False)
-        elif output_filename.endswith("csv"):
-            df.to_csv(output_filename, sep=",", index = False)
-        elif output_filename.endswith("tsv"):
-            df.to_csv(output_filename, sep="\t", index = False)
+        # TODO: add case where there is tf_targeting or gene_targeting
+        if (output=='network'):
+            # we first get the names of first two columns (tf,gene) or (gene1,gene2)
+            sort_cols = self.export_lioness_results.columns.tolist()[:2]
+            if output_filename.endswith("txt"):
+                self.export_lioness_results.sort_values(by=sort_cols).to_csv(output_filename, sep=" ", index = False)
+            elif output_filename.endswith("csv"):
+                self.export_lioness_results.sort_values(by=sort_cols).to_csv(output_filename, sep=",", index = False)
+            elif output_filename.endswith("tsv"):
+                self.export_lioness_results.sort_values(by=sort_cols).to_csv(output_filename, sep="\t", index = False)
+            else:
+                sys.exit('Export output unknown: use txt/csv/tsv')
+
+        else:
+            # otherwise we only need one column and we sort by index
+            if output_filename.endswith("txt"):
+                self.export_lioness_results.sort_index().to_csv(output_filename, sep=" ")
+            elif output_filename.endswith("csv"):
+                self.export_lioness_results.sort_index().to_csv(output_filename, sep=",")
+            elif output_filename.endswith("tsv"):
+                self.export_lioness_results.sort_index().to_csv(output_filename, sep="\t")
+            else:
+                sys.exit('Export output unknown: use txt/csv/tsv')

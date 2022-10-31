@@ -35,10 +35,11 @@ def test_lioness():
         modeProcess="legacy",
         save_memory=False,
         start = 1,
-        end = 4
+        end = 4,
+        computing='gpu'
     )
     # Set parameters
-    lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 4, save_single=True)
+    lioness_obj = Lioness(panda_obj,save_dir = "lioness_output", start=1, end = 4, save_single=True,computing='gpu')
     panda_obj.save_panda_results('panda_remove.txt')
     lioness_obj.export_lioness_table(output_table)
     lioness_obj.save_lioness_results(output_results_mat)
@@ -71,7 +72,7 @@ def test_lioness():
 
     # 1. Test command line
     #positional: expression, motif, ppi, output_panda, output_lioness, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, start, end):
-    cmd.lioness.callback(expression_data, motif, ppi, 'panda.txt','lioness_output_cmd',None,'npy','cpu','double',1,False,True,rm_missing,'legacy','network',0.1,1,4,False,True)
+    cmd.lioness.callback(expression_data, motif, ppi, 'panda.txt','lioness_output_cmd',None,'npy','gpu','double',1,False,True,rm_missing,'legacy','network',0.1,1,4,False,True)
     res = np.load("lioness_output/lioness.1.npy")
     gt = res = np.load("lioness_output_cmd/lioness.1.npy")
     assert np.allclose(gt, res)
@@ -87,8 +88,9 @@ def test_lioness():
         remove_missing=rm_missing,
         keep_expression_matrix=True,
         modeProcess="legacy",
+        computing='gpu'
     )
-    lioness_obj_2 = Lioness(panda_obj_2, start=1, end=1, save_single=True,save_fmt='npy')
+    lioness_obj_2 = Lioness(panda_obj_2, start=1, end=1, save_single=True,save_fmt='npy',computing='gpu')
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res = np.load("lioness_output/lioness.1.npy")
@@ -100,7 +102,7 @@ def test_lioness():
     # 3. Testing Lioness in parallel
     # Set parameters
     os.remove("lioness_output/lioness.1.npy")
-    lioness_obj = Lioness(panda_obj, ncores=2, start=1, end=2, save_single=True)
+    lioness_obj = Lioness(panda_obj, ncores=2, start=1, end=2, save_single=True,computing='gpu')
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
     res = np.load("lioness_output/lioness.1.npy")

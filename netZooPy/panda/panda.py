@@ -2,7 +2,6 @@ from __future__ import print_function
 import math
 import time
 import pandas as pd
-from scipy.stats import zscore
 from .timer import Timer
 import numpy as np
 from netZooPy.panda import calculations as calc

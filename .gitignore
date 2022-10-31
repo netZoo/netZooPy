@@ -39,7 +39,6 @@ pt_out.csv
 reg_memb.txt
 tar_memb.txt
 gt_panda*.txt
-*~
 
 !tests/lioness
 !tests/lioness/*
@@ -48,3 +47,7 @@ gt_panda*.txt
 */debug*
 
 .vscode/*
+ligress/
+panda.txt
+panda_remove.txt
+pan_test_panda.txt
