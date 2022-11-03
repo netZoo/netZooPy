@@ -35,6 +35,7 @@ class LionessDragon():
     _indexes = []
 
     def __init__(self,layer1,layer2,output_dir="dragon-lioness-output"):
+
         """
         Description
         ----------
@@ -58,6 +59,7 @@ class LionessDragon():
 
         # assign output directory
         self._outdir = output_dir
+
 
         # load data
         print("[LIONESS-DRAGON] Loading input data ...")
@@ -87,18 +89,17 @@ class LionessDragon():
         ----------
 
             Run LIONESS with DRAGON.
-            Write each network to an individual file.
+
+            Write to outfile one row at a time
 
         Outputs
         ----------
-           In output directory, writes a sample-specific network adjacency matrix for
-           each sample
+
+            In outfile, writes a sample-by-edge matrix containing sample-specific partial correlation networks.
         """
-        if not os.path.exists(self._outdir):
-            os.makedirs(self._outdir)
+
+        outfile=open(self._outfile,'w')
         for i in self._indexes:
-            outfile=self._outdir + "/lioness-dragon-" + str(i) + ".csv"
-            outfile=open(outfile,'w')
             print("[LIONESS-DRAGON] Running LIONESS-DRAGON for sample %d:" % (i + 1))
             idx = [x for x in self._indexes if x != i] 
             with Timer("[LIONESS-DRAGON] Running DRAGON to fit partial correlation network:"):
@@ -122,6 +123,7 @@ class LionessDragon():
                 # write the network as a column-separated adjacency matrix to a single file
                 np.savetxt(outfile,lioness_network,delimiter=",", header="")
                 outfile.close()
+
             
         return
 

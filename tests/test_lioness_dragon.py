@@ -8,5 +8,4 @@ def test_lioness_dragon():
     print("Start LIONESS-DRAGON test!")
 
 s = LionessDragon(layer1 = "tests/lioness/dragon/toy_data_layer1.tsv", layer2 = "tests/lioness/dragon/toy_data_layer2.tsv", output_dir = "tests/lioness/dragon/lioness-dragon-output")
-
 s.lioness_loop()
