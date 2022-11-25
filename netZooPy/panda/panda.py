@@ -516,7 +516,7 @@ class Panda(object):
                 idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
                 self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
                 idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
-                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                self.ppi_matrix.ravel()[idx] = self.ppi_data[2][commind2]
 
         return
 
