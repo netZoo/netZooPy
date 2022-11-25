@@ -33,10 +33,18 @@ class Lioness(Panda):
             precision       : str
                 'double' computes the regulatory network in double precision (15 decimal digits).
                 'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
+            subset_numbers  : list
+                List of sample index onto which lioness should be run. ([1,10,20])
+            subset_names  : list
+                List of sample names onto which lioness should be run. (['s1','s2','s3'])
             start           : int
-                Index of first sample to compute the network.
+                Index of first sample to compute the network. If subset_numbers or subset_names is passed, 
+                this is ignored
             end             : int
-                Index of last sample to compute the network.
+                Index of last sample to compute the network.If subset_numbers or subset_names is passed, 
+                this is ignored
+            all_background : bool
+                Pass the flag if you want to keep the whole samples as background
             save_dir        : str
                 Directory to save the networks.
             save_fmt        : str
@@ -106,6 +114,8 @@ class Lioness(Panda):
         ncores=1,
         start=1,
         end=None,
+        subset_numbers=None,
+        subset_names=None,
         save_dir="lioness_output",
         save_fmt="npy",
         output="network",
@@ -118,19 +128,28 @@ class Lioness(Panda):
         # Load data
         with Timer("Loading input data ..."):
             self.export_panda_results = obj.export_panda_results
-            self.expression_matrix = obj.expression_matrix
             self.expression_samples = obj.expression_samples
-            self.motif_matrix = obj.motif_matrix
-            self.ppi_matrix = obj.ppi_matrix
-            self.correlation_matrix = obj.correlation_matrix
             if precision == "single":
-                self.correlation_matrix = np.float32(self.correlation_matrix)
-                self.motif_matrix = np.float32(self.motif_matrix)
-                self.ppi_matrix = np.float32(self.ppi_matrix)
+                self.expression_matrix = np.float32(obj.expression_matrix)
+                self.correlation_matrix = np.float32(obj.correlation_matrix)
+                self.motif_matrix = np.float32(obj.motif_matrix)
+                self.ppi_matrix = np.float32(obj.ppi_matrix)
+                self.alpha = np.float32(alpha)
+            else:
+                self.expression_matrix = obj.expression_matrix
+                self.motif_matrix = obj.motif_matrix
+                self.ppi_matrix = obj.ppi_matrix
+                self.correlation_matrix = obj.correlation_matrix
+                self.alpha = alpha
+                
             self.computing = computing
-            self.alpha = alpha
             self.n_cores = int(ncores)
             self.save_single = save_single
+            self.precision = precision
+            if precision == "single":
+                self.np_dtype = np.float32
+            else:
+                self.np_dtype = np.float64
             if hasattr(obj, "panda_network"):
                 self.network = obj.panda_network.to_numpy()
             elif hasattr(obj, "puma_network"):
@@ -144,11 +163,36 @@ class Lioness(Panda):
             del obj
 
         # Get sample range to iterate
+        # the number of conditions is the N parameter used for the number of samples in the whole background
         self.n_conditions = self.expression_matrix.shape[1]
-        self.indexes = range(self.n_conditions)[
-            start - 1 : end
-        ]  # sample indexes to include
-        self.expression_samples = self.expression_samples[start-1:end]
+        self.n_lio_samples = self.n_conditions
+        if (subset_numbers!=None or subset_names!=None):
+            if (subset_numbers!=None and subset_names!=None):
+                sys.exit('Pass only one between subset_numbers and subset_names')
+            elif (subset_numbers!=None and subset_names==None):
+                # select using indexes
+                assert isinstance(subset_numbers, list)
+                assert isinstance(subset_numbers[0], int)
+                self.indexes = [int(i) for i in subset_numbers]
+            else:
+                #select using sample names
+                assert isinstance(subset_names, list)
+                assert isinstance(subset_names[0], int)
+                self.indexes = [self.expression_samples.index(int(i)) for i in subset_names]
+            self.expression_samples = self.expression_samples[self.indexes]
+            # number of lioness networks to be computed
+            self.n_lio_samples = len(self.indexes)
+        else:
+            # if no subset is selected, we just use the start and end numbers to decide
+            # which samples need to be analyses. The background is always what is used for PANDA
+            # and stays the same
+            
+            self.indexes = range(self.n_conditions)[
+                start - 1 : end
+            ]  # sample indexes to include
+            self.expression_samples = self.expression_samples[start-1:end]
+            self.n_lio_samples = len(self.indexes)
+            
         print("Number of total samples:", self.n_conditions)
         print("Number of computed samples:", len(self.indexes))
         print("Number of parallel cores:", self.n_cores)
@@ -207,7 +251,7 @@ class Lioness(Panda):
                 self.total_lioness_network, columns=tf_names, index = self.expression_samples
             ).transpose()
         
-        # if 
+        # if export filename is passed, the full lioness table is saved
         if export_filename:
             self.export_lioness_table(output_filename = export_filename)
         else:
@@ -229,11 +273,13 @@ class Lioness(Panda):
             if self.computing == "gpu":
                 import cupy as cp
                 
-                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
-                if cp.isnan(correlation_matrix).any():
-                    cp.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = cp.nan_to_num(correlation_matrix)
-                correlation_matrix = cp.asnumpy(correlation_matrix)
+                correlation_matrix_cp = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
+                if cp.isnan(correlation_matrix_cp).any():
+                    cp.fill_diagonal(correlation_matrix_cp, 1)
+                    correlation_matrix_cp = cp.nan_to_num(correlation_matrix_cp)
+                correlation_matrix = cp.asnumpy(correlation_matrix_cp)
+                del correlation_matrix_cp
+                cp._default_memory_pool.free_all_blocks()
             else:
                 correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
                 if np.isnan(correlation_matrix).any():

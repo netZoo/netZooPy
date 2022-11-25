@@ -450,9 +450,10 @@ class Panda(object):
         ):
             # Initialize data & Populate gene expression
             self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
-            idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
-            
-            self.expression[idx_geneEx, :] = self.expression_data.values
+            idx_geneEx = [gene2idx.get(x, np.nan) for x in self.expression_genes]
+            filtered_genes = [i for (i, v) in zip(self.expression_genes, idx_geneEx) if ~np.isnan(v)]
+            idx_geneEx = [x for x in idx_geneEx if str(x) != 'nan']
+            self.expression[idx_geneEx, :] = self.expression_data.loc[filtered_genes].values
             self.expression_data = pd.DataFrame(data=self.expression)
 
         # =====================================================================
@@ -492,8 +493,11 @@ class Panda(object):
 
         with Timer("Creating motif network ..."):
             self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
-            idx_tfs = [tf2idx.get(x, 0) for x in self.motif_data[0]]
-            idx_genes = [gene2idx.get(x, 0) for x in self.motif_data[1]]
+            idx_tfs = [tf2idx.get(x, np.nan) for x in self.motif_data[0]]
+            idx_genes = [gene2idx.get(x, np.nan) for x in self.motif_data[1]]
+            commind1 = ~np.isnan(idx_tfs) & ~np.isnan(idx_genes)
+            idx_tfs = [i for (i, v) in zip(idx_tfs, commind1) if v]
+            idx_genes = [i for (i, v) in zip(idx_genes, commind1) if v]
             idx = np.ravel_multi_index(
                 (idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape
             )
@@ -504,8 +508,11 @@ class Panda(object):
         else:
             with Timer("Creating PPI network ..."):
                 self.ppi_matrix = np.identity(self.num_tfs)
-                idx_tf1 = [tf2idx.get(x, 0) for x in self.ppi_data[0]]
-                idx_tf2 = [tf2idx.get(x, 0) for x in self.ppi_data[1]]
+                idx_tf1 = [tf2idx.get(x, np.nan) for x in self.ppi_data[0]]
+                idx_tf2 = [tf2idx.get(x, np.nan) for x in self.ppi_data[1]]
+                commind2 = ~np.isnan(idx_tf1) & ~np.isnan(idx_tf2)
+                idx_tf1 = [i for (i, v) in zip(idx_tf1, commind2) if v]
+                idx_tf2 = [i for (i, v) in zip(idx_tf2, commind2) if v]
                 idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
                 self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
                 idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
