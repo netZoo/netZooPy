@@ -203,7 +203,7 @@ class Puma(object):
         # =====================================================================
         if save_tmp:
             with Timer("Saving expression matrix and normalized networks ..."):
-                os.makedirs('./tmp',exists_ok=True) 
+                os.makedirs('./tmp',exist_ok=True) 
                 if self.expression_data is not None:
                     np.save("./tmp/expression.npy", self.expression_data.values)
                 np.save("./tmp/motif.normalized.npy", self.motif_matrix)

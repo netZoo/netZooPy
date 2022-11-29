@@ -2,6 +2,15 @@
 Changelog
 ==========
 
+
+0.9.12
+-------------------------
+
+- We are changing the PANDA outputs and default flags. For now we are updating the command line 
+ call only, behavior is kept as in 0.9.11 for the internal functions. By passing `old_compatible = False`
+ the final output will always have column headers and indices.
+- PUMA and PANDA do not save_tmp as default.
+
 0.9.11 (2022-11-04)
 -------------------------
 

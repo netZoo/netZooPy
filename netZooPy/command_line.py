@@ -38,6 +38,8 @@ def get_list_from_str(a):
                   when false The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.')
 @click.option('--as_adjacency', is_flag=True, show_default=True,
               help='If true, the final PANDA is saved as an adjacency matrix. Works only when save_memory is false')
+@click.option('--old_compatible', is_flag=True, show_default=True,
+              help='If true, PANDA is saved without headers. Pass this if you want the same results of netzoopy before v0.9.11')
 @click.option('--save_tmp', is_flag=True, show_default=True,
               help='panda option')
 @click.option('--rm_missing', is_flag=True, show_default=False,
@@ -53,7 +55,7 @@ def get_list_from_str(a):
               help='panda first sample')
 @click.option('--end', type=int, default=None, show_default=True,
               help='panda last sample')
-def panda(expression, motif, ppi, output, computing='cpu', precision='double', save_memory=False, as_adjacency=False, save_tmp=False, rm_missing=False, keep_expr=False, mode_process='union', alpha=0.1, start=1, end=None):
+def panda(expression, motif, ppi, output, computing='cpu', precision='double', save_memory=False, as_adjacency=False, old_compatible=False, save_tmp=False, rm_missing=False, keep_expr=False, mode_process='union', alpha=0.1, start=1, end=None):
     """ Run panda using expression, motif and ppi data. 
     Use flags to modify the function behavior. By default, boolean flags are false.
     Output is a text file, with the TF, Gene, Motif, Force columns, where TF and Gene 
@@ -78,6 +80,8 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
 
 
     """
+    print('NEW: We changed the default behavior of save_tmp (now False). Pass --save_tmp for retrocompatibility')
+    print('NEW: We changed the default beavior of save_panda_results. Now all PANDA outputs have column headers by default. Pass old_compatible for the previous behavior')
     print('Input data:')
     print('Expression:', expression)
     print('Motif data:', motif)
@@ -85,8 +89,8 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
 
     # Run PANDA
     print('Start Panda run ...')
-    panda_obj = Panda(expression, motif, ppi, computing=computing,precision = precision,  save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=keep_expr, save_memory=save_memory,modeProcess=mode_process, alpha=alpha,start=start, end=end)
-    panda_obj.save_panda_results(output, save_adjacency=as_adjacency)
+    panda_obj = Panda(expression, motif, ppi, computing=computing,precision = precision,  save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=keep_expr, save_memory=save_memory,modeProcess=mode_process, alpha=alpha,start=start, end=end)
+    panda_obj.save_panda_results(output, save_adjacency=as_adjacency, old_compatible=old_compatible)
 
 #############################################################################
 # LIONESS ###################################################################
@@ -146,7 +150,11 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
               help='Pass if the expression file has a header. It will be used to save samples with the correct name.')
 @click.option('--save_single_lioness', is_flag=True, show_default=False,
               help='Pass this flag to save all single lioness networks generated.')
-def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False):
+@click.option('--as_adjacency', is_flag=True, show_default=True,
+              help='If true, the final PANDA is saved as an adjacency matrix. Works only when save_memory is false')
+@click.option('--old_compatible', is_flag=True, show_default=True,
+              help='If true, PANDA is saved without headers. Pass this if you want the same results of netzoopy before v0.9.11')
+def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False, as_adjacency=False, old_compatible=False):
     """Run Lioness to extract single-sample networks.
     First runs panda using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
@@ -173,7 +181,7 @@ def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, compu
     
     panda_obj = Panda(expression, motif, ppi, precision=precision, computing=computing, save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=True, save_memory=save_memory, modeProcess=mode_process, start=panda_start, end=panda_end, with_header=with_header)
     print('Panda saved. Computing Lioness...')
-    panda_obj.save_panda_results(output_panda)
+    panda_obj.save_panda_results(output_panda, save_adjacency=as_adjacency, old_compatible=old_compatible)
 
     if el=='None':
         el = None

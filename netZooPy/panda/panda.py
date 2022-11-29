@@ -5,7 +5,7 @@ import pandas as pd
 from .timer import Timer
 import numpy as np
 from netZooPy.panda import calculations as calc
-
+import os
 
 class Panda(object):
     """ 
@@ -36,7 +36,8 @@ class Panda(object):
                 - 'double' computes the regulatory network in double precision (15 decimal digits).
                 - 'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
             save_memory : bool
-                - True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
+                - True : removes temporary results from memory. The result network is weighted adjacency matrix of size
+                  (nTFs, nGenes).
                 - False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.
             save_tmp : bool
                 Save temporary variables.
@@ -105,7 +106,7 @@ class Panda(object):
         computing="cpu",
         precision="double",
         save_memory=True,
-        save_tmp=True,
+        save_tmp=False,
         remove_missing=False,
         keep_expression_matrix=False,
         modeProcess="union",
@@ -158,12 +159,13 @@ class Panda(object):
         if (save_memory==True):
             print("Clearing motif and ppi data, unique tfs, and gene names for speed")
             del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
-
+            print("WARNING: save_memory will be uncoupled from the output behavior.\n Pass as_adjacency to save the output panda as adjacency matrix")
         # =====================================================================
         # Saving middle data to tmp
         # =====================================================================
         if save_tmp:
             with Timer("Saving expression matrix and normalized networks ..."):
+                os.makedirs('./tmp',exist_ok=True) 
                 if self.expression_data is not None:
                     np.save("/tmp/expression.npy", self.expression_data.values)
                 np.save("/tmp/motif.normalized.npy", self.motif_matrix)
@@ -579,7 +581,7 @@ class Panda(object):
         self.export_panda_results = self.export_panda_results[["tf", "gene", "force"]]
         return None
 
-    def save_panda_results(self, path="panda.npy", save_adjacency=False ):
+    def save_panda_results(self, path="panda.npy", save_adjacency=False, old_compatible=True ):
         """ Saves PANDA network.
 
         Parameters
@@ -588,29 +590,49 @@ class Panda(object):
                 Path to save the network.
             save_adjacency: bool
                 if True the output is an adjacency matrix and not the edge list
+            old_compatible: bool
+                if True saves the data as it was saved until netzoopy 0.9.11
         """
         with Timer("Saving PANDA network to %s ..." % path):
             # Because there are two modes of operation (save_memory), save to file will be different
-            if not hasattr(self, "unique_tfs"):
-                toexport = self.panda_network
-            else:
-                # save the network with names
-                toexport = self.export_panda_results
-                if save_adjacency:
-                    toexport = pd.pivot_table(toexport, values = 'force', index = 'tf', columns='gene', dropna=False)
-                    toexport = toexport.reset_index()
+
             # Export to file
-            if path.endswith(".txt"):
-                #np.savetxt(path, toexport, fmt="%s", delimiter=" ")
-                toexport.to_csv(path, sep=" ", index=False)
-            elif path.endswith(".csv"):
-                #np.savetxt(path, toexport, fmt="%s", delimiter=",")
-                toexport.to_csv(path, sep=",", index=False)
-            elif path.endswith(".tsv"):
-                #np.savetxt(path, toexport, fmt="%s", delimiter="\t")
-                toexport.to_csv(path, sep="\t", index=False)
+            if old_compatible:
+                if not hasattr(self, "unique_tfs"):
+                    toexport = self.panda_network
+                else:
+                    # save the network with names
+                    toexport = self.export_panda_results
+                print('WARNING: saving without header will soon become obsolete. \n\
+                    Use old_compatible=False to save the panda results with correct column naming')
+                if path.endswith(".txt"):
+                    np.savetxt(path, toexport, fmt="%s", delimiter=" ")
+                elif path.endswith(".csv"):
+                    np.savetxt(path, toexport, fmt="%s", delimiter=",")
+                elif path.endswith(".tsv"):
+                    np.savetxt(path, toexport, fmt="%s", delimiter="\t")
+                else:
+                    np.save(path, toexport)
             else:
-                np.save(path, toexport)
+                print('WARNING: panda is now saved with the column names. \nUse old_compatible=True to save the panda results as previous versions without header')
+                if not hasattr(self, "unique_tfs"):
+                    toexport = self.panda_network
+                    toexport = toexport.reset_index()
+                else:
+                    # save the network with names
+                    toexport = self.export_panda_results
+                    #saving as adjacency matrix
+                    if (save_adjacency):
+                        toexport = pd.pivot_table(toexport, values = 'force', index = 'tf', columns='gene', dropna=False)
+                        toexport = toexport.reset_index()
+                if path.endswith(".txt"):
+                    toexport.to_csv(path, sep=" ", index=False)
+                elif path.endswith(".csv"):
+                    toexport.to_csv(path, sep=",", index=False)
+                elif path.endswith(".tsv"):
+                    toexport.to_csv(path, sep="\t", index=False)
+                else:
+                    np.save(path, toexport)
 
     def top_network_plot(self, top=100, file="panda_top_100.png", plot_bipart=False):
         """ Selects top genes.
