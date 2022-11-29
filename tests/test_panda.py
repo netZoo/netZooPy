@@ -6,6 +6,13 @@ import numpy as np
 import subprocess
 import netZooPy.command_line as cmd
 
+
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
+
+
 def runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file):
     panda_obj = Panda(
         expression_data,
@@ -39,6 +46,8 @@ def test_panda():
     ## Test command line call
     result = subprocess.run(["netzoopy", "panda", "--help"], capture_output=False)
     assert result.returncode == 0
+    
+    LOGGER.warning('Test1')
 
     # 1. Intersection
     panda_obj = Panda(
@@ -56,12 +65,14 @@ def test_panda():
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
+    LOGGER.warning('Test1b')
     # 1.b Intersection from command line
     cmd.panda.callback(expression_data, motif, ppi, output_file, rm_missing = rm_missing, keep_expr=bool(lioness_file),mode_process='intersection', save_memory = True)
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
+    LOGGER.warning('Test1.1')
     # 1.1 Intersection via DataFrame
     expression = pd.read_csv(expression_data, sep="\t", header=None, index_col=0)
     motif_data = pd.read_csv(motif, sep="\t", names=["source", "target", "w"])
@@ -80,7 +91,7 @@ def test_panda():
     res = pd.read_csv(output_file, sep=" ", header=None)
     gt = pd.read_csv(gt_file_inter, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
-
+    LOGGER.warning('Test1.2')
     # 1.2 Intersection with symmetric PPI
     ppi_data = pd.read_csv(ppi, sep="\t", header=None)
     new_df = pd.DataFrame(data={0: ppi_data[0], 1: ppi_data[1], 2: ppi_data[2]})

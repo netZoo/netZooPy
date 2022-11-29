@@ -117,6 +117,7 @@ class Panda(object):
         """ Intialize instance of Panda class and load data.
         """
         # Read data
+        
         self.processData(
             modeProcess,
             motif_file,
@@ -136,6 +137,8 @@ class Panda(object):
         # Network normalization
         # =====================================================================
 
+        self.precision = precision
+        
         with Timer("Normalizing networks ..."):
             self.correlation_matrix = self._normalize_network(self.correlation_matrix)
             with np.errstate(invalid="ignore"):  # silly warning bothering people
@@ -143,7 +146,7 @@ class Panda(object):
                     self.motif_matrix_unnormalized
                 )
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
-            if precision == "single":
+            if self.precision == "single":
                 self.correlation_matrix = np.float32(self.correlation_matrix)
                 self.motif_matrix = np.float32(self.motif_matrix)
                 self.ppi_matrix = np.float32(self.ppi_matrix)
@@ -548,7 +551,6 @@ class Panda(object):
             computing=computing,
             alpha=alpha,
         )
-
         print("Running panda took: %.2f seconds!" % (time.time() - panda_loop_time))
         # Ale: reintroducing the export_panda_results array if Panda called with save_memory=False
 
@@ -577,27 +579,36 @@ class Panda(object):
         self.export_panda_results = self.export_panda_results[["tf", "gene", "force"]]
         return None
 
-    def save_panda_results(self, path="panda.npy"):
+    def save_panda_results(self, path="panda.npy", save_adjacency=False ):
         """ Saves PANDA network.
 
         Parameters
         ----------
             path: str
                 Path to save the network.
+            save_adjacency: bool
+                if True the output is an adjacency matrix and not the edge list
         """
         with Timer("Saving PANDA network to %s ..." % path):
             # Because there are two modes of operation (save_memory), save to file will be different
             if not hasattr(self, "unique_tfs"):
                 toexport = self.panda_network
             else:
+                # save the network with names
                 toexport = self.export_panda_results
+                if save_adjacency:
+                    toexport = pd.pivot_table(toexport, values = 'force', index = 'tf', columns='gene', dropna=False)
+                    toexport = toexport.reset_index()
             # Export to file
             if path.endswith(".txt"):
-                np.savetxt(path, toexport, fmt="%s", delimiter=" ")
+                #np.savetxt(path, toexport, fmt="%s", delimiter=" ")
+                toexport.to_csv(path, sep=" ", index=False)
             elif path.endswith(".csv"):
-                np.savetxt(path, toexport, fmt="%s", delimiter=",")
+                #np.savetxt(path, toexport, fmt="%s", delimiter=",")
+                toexport.to_csv(path, sep=",", index=False)
             elif path.endswith(".tsv"):
-                np.savetxt(path, toexport, fmt="%s", delimiter="/t")
+                #np.savetxt(path, toexport, fmt="%s", delimiter="\t")
+                toexport.to_csv(path, sep="\t", index=False)
             else:
                 np.save(path, toexport)
 
