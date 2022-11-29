@@ -8,7 +8,7 @@ from .timer import Timer
 from netZooPy.panda.panda import Panda
 import netZooPy.panda.calculations as calc
 from netZooPy.puma.calculations import compute_puma
-
+import os
 
 class Puma(object):
     """
@@ -85,7 +85,7 @@ class Puma(object):
         computing="cpu",
         precision="double",
         save_memory=False,
-        save_tmp=True,
+        save_tmp=False,
         remove_missing=False,
         keep_expression_matrix=False,
         alpha=0.1,
@@ -203,6 +203,7 @@ class Puma(object):
         # =====================================================================
         if save_tmp:
             with Timer("Saving expression matrix and normalized networks ..."):
+                os.makedirs('./tmp',exists_ok=True) 
                 if self.expression_data is not None:
                     np.save("./tmp/expression.npy", self.expression_data.values)
                 np.save("./tmp/motif.normalized.npy", self.motif_matrix)
