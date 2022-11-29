@@ -504,7 +504,7 @@ class Panda(object):
             idx = np.ravel_multi_index(
                 (idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape
             )
-            self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
+            self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2][commind1]
 
         if self.ppi_data is None:
             self.ppi_matrix = np.identity(self.num_tfs, dtype=int)
@@ -519,7 +519,7 @@ class Panda(object):
                 idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
                 self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
                 idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
-                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                self.ppi_matrix.ravel()[idx] = self.ppi_data[2][commind2]
 
         return
 
