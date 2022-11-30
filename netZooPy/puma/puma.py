@@ -33,7 +33,9 @@ class Puma(object):
                 Path to file containing the TF PPI data, or pandas dataframe.
                 This can be provided as 'None' if no TF data is given and PUMA will estimate a miRNA-Gene networks.
             mir_file        : str
-                Path to file containing miRNA list or a list
+                Path to file containing miRNA list or a list. A standard mir_file can be read as:
+                >>> with open(mir_file, "r") as f:  
+                >>>     miR = f.read().splitlines() 
             computing       : str
                 - 'cpu' uses Central Processing Unit (CPU) to run PANDA.
                 - 'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
