@@ -30,6 +30,24 @@ def test_puma():
     gt = pd.read_csv(gt_file, sep=" ", header=None)
     pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
 
+    # 1.b Testing if passing a mir list works
+    with open(mir_file, "r") as f:
+        miR = f.read().splitlines()
+    puma_obj = Puma(
+        expression_data,
+        motif,
+        ppi,
+        miR,
+        save_tmp=False,
+        remove_missing=rm_missing,
+        keep_expression_matrix=bool(lioness_file),
+        modeProcess="legacy"
+    )
+    puma_obj.save_puma_results(output_file)
+    res = pd.read_csv(output_file, sep=" ", header=None)
+    gt = pd.read_csv(gt_file, sep=" ", header=None)
+    pd.testing.assert_frame_equal(res, gt, rtol=1e-5, check_exact=False)
+
     # 2. with argument values
     rm_missing = False
     print("Test puma was successful!")
