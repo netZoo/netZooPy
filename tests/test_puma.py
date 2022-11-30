@@ -14,7 +14,7 @@ def test_puma():
     output_file = "travis_test_puma.txt"
     gt_file = "tests/puma/matlablike_test_puma.txt"
 
-    # 1. Vanilla panda
+    # 1. Vanilla puma
     puma_obj = Puma(
         expression_data,
         motif,
