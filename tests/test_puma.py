@@ -1,6 +1,8 @@
 import pytest
 from netZooPy.puma.puma import Puma
 import pandas as pd
+from netZooPy.lioness.lioness_for_puma import LionessPuma
+
 
 def test_puma():
     # print(os.getcwd())
@@ -51,3 +53,17 @@ def test_puma():
     # 2. with argument values
     rm_missing = False
     print("Test puma was successful!")
+
+
+    # Let's at least check that Lioness for puma runs
+    puma_obj = Puma(
+        expression_data,
+        motif,
+        ppi,
+        miR,
+        save_tmp=False,
+        remove_missing=rm_missing,
+        keep_expression_matrix=True,
+        modeProcess="legacy"
+    )
+    lioness_obj = LionessPuma(puma_obj, computing='cpu', end = 3)
