@@ -1,6 +1,6 @@
 package:
   name: netzoopy
-  version: 0.9.11
+  version: 0.9.12
 
 source:
   path: ..
