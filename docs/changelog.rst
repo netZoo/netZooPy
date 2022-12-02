@@ -10,6 +10,8 @@ Changelog
  call only, behavior is kept as in 0.9.11 for the internal functions. By passing `old_compatible = False`
  the final output will always have column headers and indices.
 - PUMA and PANDA do not save_tmp as default.
+- lioness for puma has been fixed
+- Fixed PANDA data preprocessing bug
 
 0.9.11 (2022-11-04)
 -------------------------
