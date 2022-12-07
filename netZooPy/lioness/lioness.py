@@ -179,7 +179,7 @@ class Lioness(Panda):
                 assert isinstance(subset_names, list)
                 assert isinstance(subset_names[0], int)
                 self.indexes = [self.expression_samples.index(int(i)) for i in subset_names]
-            self.expression_samples = self.expression_samples[self.indexes]
+            #self.expression_samples = self.expression_samples[self.indexes]
             # number of lioness networks to be computed
             self.n_lio_samples = len(self.indexes)
         else:
@@ -190,7 +190,7 @@ class Lioness(Panda):
             self.indexes = range(self.n_conditions)[
                 start - 1 : end
             ]  # sample indexes to include
-            self.expression_samples = self.expression_samples[start-1:end]
+            #self.expression_samples = self.expression_samples[start-1:end]
             self.n_lio_samples = len(self.indexes)
             
         print("Number of total samples:", self.n_conditions)
@@ -227,7 +227,7 @@ class Lioness(Panda):
                 indDF = pd.DataFrame([total_tfs, total_genes], index=["tf", "gene"])
                 # concatenate with dataframe of data, rows are samples, columns the edges
                 indDF = indDF.append(
-                    pd.DataFrame(self.total_lioness_network, index = self.expression_samples)
+                    pd.DataFrame(self.total_lioness_network, index = self.expression_samples[self.indexes])
                 ).transpose()
             else:  # if equal to None to be specific
                 total_genes1 = gene_names * len(gene_names)
@@ -236,7 +236,7 @@ class Lioness(Panda):
                     [total_genes1, total_genes2], index=["gene1", "gene2"]
                 )
                 indDF = indDF.append(
-                    pd.DataFrame(self.total_lioness_network, index = self.expression_samples)
+                    pd.DataFrame(self.total_lioness_network, index = self.expression_samples[self.indexes])
                 ).transpose()
             
             # keep the df as the export results
@@ -244,11 +244,11 @@ class Lioness(Panda):
             del indDF
         elif output == "gene_targeting":
             self.export_lioness_results = pd.DataFrame(
-                self.total_lioness_network, columns=gene_names, index = self.expression_samples
+                self.total_lioness_network, columns=gene_names, index =self.expression_samples[self.indexes]
             ).transpose()
         elif output == "tf_targeting":
             self.export_lioness_results = pd.DataFrame(
-                self.total_lioness_network, columns=tf_names, index = self.expression_samples
+                self.total_lioness_network, columns=tf_names, index = self.expression_samples[self.indexes]
             ).transpose()
         
         # if export filename is passed, the full lioness table is saved
@@ -267,7 +267,7 @@ class Lioness(Panda):
                 An edge-by-sample matrix containing sample-specific networks.
         """
         # for i in self.indexes:
-        print("Running LIONESS for sample %d:" % (i + 1))
+        print("Running LIONESS for sample %d/%d:" %((i + 1),(self.n_conditions)))
         idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
         with Timer("Computing coexpression network:"):
             if self.computing == "gpu":
