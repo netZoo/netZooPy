@@ -33,6 +33,8 @@ def get_list_from_str(a):
               help='computing option, choose one between cpu and gpu')
 @click.option('--precision', type=str, show_default=True, default='double',
               help='precision option')
+@click.option('--with_header', is_flag=True, show_default=False,
+              help='Pass if the expression file has a header. It will be used to save samples with the correct name.')
 @click.option('--save_memory', is_flag=True, show_default=True,
               help='panda option. When true the result network is weighted adjacency matrix of size (nTFs, nGenes).\
                   when false The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.')
@@ -55,7 +57,7 @@ def get_list_from_str(a):
               help='panda first sample')
 @click.option('--end', type=int, default=None, show_default=True,
               help='panda last sample')
-def panda(expression, motif, ppi, output, computing='cpu', precision='double', save_memory=False, as_adjacency=False, old_compatible=False, save_tmp=False, rm_missing=False, keep_expr=False, mode_process='union', alpha=0.1, start=1, end=None):
+def panda(expression, motif, ppi, output, computing='cpu', precision='double',with_header=False, save_memory=False, as_adjacency=False, old_compatible=False, save_tmp=False, rm_missing=False, keep_expr=False, mode_process='union', alpha=0.1, start=1, end=None):
     """ Run panda using expression, motif and ppi data. 
     Use flags to modify the function behavior. By default, boolean flags are false.
     Output is a text file, with the TF, Gene, Motif, Force columns, where TF and Gene 
@@ -89,7 +91,7 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
 
     # Run PANDA
     print('Start Panda run ...')
-    panda_obj = Panda(expression, motif, ppi, computing=computing,precision = precision,  save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=keep_expr, save_memory=save_memory,modeProcess=mode_process, alpha=alpha,start=start, end=end)
+    panda_obj = Panda(expression, motif, ppi, computing=computing,precision = precision,  save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=keep_expr, save_memory=save_memory,modeProcess=mode_process, alpha=alpha,start=start, end=end, with_header=with_header)
     panda_obj.save_panda_results(output, save_adjacency=as_adjacency, old_compatible=old_compatible)
 
 #############################################################################
