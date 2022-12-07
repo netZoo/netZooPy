@@ -267,7 +267,7 @@ class Lioness(Panda):
                 An edge-by-sample matrix containing sample-specific networks.
         """
         # for i in self.indexes:
-        print("Running LIONESS for sample %d/%d:" %((i + 1),(self.n_conditions)))
+        print("Running LIONESS for sample %d/%d:" %((i),(self.n_conditions)))
         idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
         with Timer("Computing coexpression network:"):
             if self.computing == "gpu":
@@ -316,9 +316,9 @@ class Lioness(Panda):
         if self.save_single:
             with Timer(
                 "Saving LIONESS network %d (%s) to %s using %s format:"
-                % (i + 1, self.expression_samples[i], self.save_dir, self.save_fmt)
+                % (i, self.expression_samples[i], self.save_dir, self.save_fmt)
             ):
-                path = os.path.join(self.save_dir, "lioness.%s.%s" % (self.expression_samples[i], self.save_fmt))
+                path = os.path.join(self.save_dir, "lioness.%s.%s.%s" % (self.expression_samples[i],str(i),self.save_fmt))
                 if self.save_fmt == "txt":
                     np.savetxt(path, lioness_network)
                 elif self.save_fmt == "npy":
