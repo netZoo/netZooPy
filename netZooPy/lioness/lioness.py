@@ -49,8 +49,10 @@ class Lioness(Panda):
                 Directory to save the networks.
             save_fmt        : str
                 Save format.
-                - '.npy': (Default) Numpy file.
-                - '.txt': Text file.
+                - '.npy': (Default) Numpy file of the network.
+                - '.txt': Text file, only values are saved, no tf or gene names. Will be deprecated.
+                - '.csv': text file with index (tf) and column (gene) names
+                - '.h5': hdf file, fastest way to save the lioness dataframe with index/column names
                 - '.mat': MATLAB file.
             output          : str
                 - 'network' returns all networks in a single edge-by-sample matrix (lioness_obj.total_lioness_network is the unlabeled variable and lioness_obj.export_lioness_results is the row-labeled variable). For large sample sizes, this variable requires large RAM memory.
@@ -63,6 +65,8 @@ class Lioness(Panda):
             export_filename: str
                 if passed, the final lioness table will be saved with all tf-gene edges as dataframe index and 
                 samples as column name
+            ignore_final: bool
+                if True, no lioness network is kept in memory. This requires saving single networks at each step
     Returns
     --------
     export_lioness_results : _
@@ -121,7 +125,8 @@ class Lioness(Panda):
         output="network",
         alpha=0.1,
         save_single = False,
-        export_filename = None
+        export_filename = None,
+        ignore_final=False, 
     ):
         """ Initialize instance of Lioness class and load data.
         """
@@ -160,6 +165,8 @@ class Lioness(Panda):
             gene_names = obj.gene_names
             tf_names = obj.unique_tfs
             origmotif = obj.motif_data  # save state of original motif matrix
+            self.gene_names = gene_names
+            self.tf_names = tf_names
             del obj
 
         # Get sample range to iterate
@@ -200,13 +207,22 @@ class Lioness(Panda):
         # Create the output folder if not exists
         self.save_dir = save_dir
         self.save_fmt = save_fmt
+        # if true, no final large matrix is saved
+        self.ignore_final=ignore_final
+        
+        # Here we make sure that at least one between the complete lioness (edgex x samples) 
+        # dataframe or each single network is saved
+        if ((self.save_single==False) and (self.ignore_final==True)):
+            sys.exit("ERROR: you are passing save_single=False, and ignore_final=True. This way no output is saved, change one of the two to have either the single networks or the final large table")
+        # We create the folder
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
+        #############
         # Run LIONESS
+        #############
         if int(self.n_conditions) >= int(self.n_cores) and self.computing == "cpu":
             # the total_lioness_network here is a list of 1d
             # arrays (network:(tfXgene,1),gene_targeting:(gene,1),tf_targeting:(tf,1))
-            
             self.total_lioness_network = Parallel(n_jobs=self.n_cores)(
                 self.__par_lioness_loop(i, output) for i in (self.indexes)
             ) 
@@ -214,48 +230,50 @@ class Lioness(Panda):
         elif self.computing == "gpu":
             for i in self.indexes:
                 self.total_lioness_network = self.__lioness_loop(i)
-        #        # self.export_lioness_results = pd.DataFrame(self.total_lioness_network)
             self.total_lioness_network = self.total_lioness_network.T
         # create result data frame
-        if output == "network":
-            if isinstance(origmotif, pd.DataFrame):
-                # get row of all TFs
-                total_tfs = tf_names * len(gene_names)
-                # get row of all genes
-                total_genes = [i for i in gene_names for _ in range(len(tf_names))]
-                # first dataframe is made of tf and gene names
-                indDF = pd.DataFrame([total_tfs, total_genes], index=["tf", "gene"])
-                # concatenate with dataframe of data, rows are samples, columns the edges
-                indDF = indDF.append(
-                    pd.DataFrame(self.total_lioness_network, index = self.expression_samples[self.indexes])
+        if self.ignore_final:
+            print('WARNING: we do not keep all lionesses in memory. They have been saved singularly.')
+        else:
+            if output == "network":
+                if isinstance(origmotif, pd.DataFrame):
+                    # get row of all TFs
+                    total_tfs = tf_names * len(gene_names)
+                    # get row of all genes
+                    total_genes = [i for i in gene_names for _ in range(len(tf_names))]
+                    # first dataframe is made of tf and gene names
+                    indDF = pd.DataFrame([total_tfs, total_genes], index=["tf", "gene"])
+                    # concatenate with dataframe of data, rows are samples, columns the edges
+                    indDF = indDF.append(
+                        pd.DataFrame(self.total_lioness_network, index = self.expression_samples[self.indexes])
+                    ).transpose()
+                else:  # if equal to None to be specific
+                    total_genes1 = gene_names * len(gene_names)
+                    total_genes2 = [i for i in gene_names for _ in range(len(gene_names))]
+                    indDF = pd.DataFrame(
+                        [total_genes1, total_genes2], index=["gene1", "gene2"]
+                    )
+                    indDF = indDF.append(
+                        pd.DataFrame(self.total_lioness_network, index = self.expression_samples[self.indexes])
+                    ).transpose()
+                
+                # keep the df as the export results
+                self.export_lioness_results = indDF
+                del indDF
+            elif output == "gene_targeting":
+                self.export_lioness_results = pd.DataFrame(
+                    self.total_lioness_network, columns=gene_names, index =self.expression_samples[self.indexes]
                 ).transpose()
-            else:  # if equal to None to be specific
-                total_genes1 = gene_names * len(gene_names)
-                total_genes2 = [i for i in gene_names for _ in range(len(gene_names))]
-                indDF = pd.DataFrame(
-                    [total_genes1, total_genes2], index=["gene1", "gene2"]
-                )
-                indDF = indDF.append(
-                    pd.DataFrame(self.total_lioness_network, index = self.expression_samples[self.indexes])
+            elif output == "tf_targeting":
+                self.export_lioness_results = pd.DataFrame(
+                    self.total_lioness_network, columns=tf_names, index = self.expression_samples[self.indexes]
                 ).transpose()
             
-            # keep the df as the export results
-            self.export_lioness_results = indDF
-            del indDF
-        elif output == "gene_targeting":
-            self.export_lioness_results = pd.DataFrame(
-                self.total_lioness_network, columns=gene_names, index =self.expression_samples[self.indexes]
-            ).transpose()
-        elif output == "tf_targeting":
-            self.export_lioness_results = pd.DataFrame(
-                self.total_lioness_network, columns=tf_names, index = self.expression_samples[self.indexes]
-            ).transpose()
-        
-        # if export filename is passed, the full lioness table is saved
-        if export_filename:
-            self.export_lioness_table(output_filename = export_filename)
-        else:
-            self.save_lioness_results()
+            # if export filename is passed, the full lioness table is saved
+            if export_filename:
+                self.export_lioness_table(output_filename = export_filename)
+            else:
+                self.save_lioness_results()
 
     def __lioness_loop(self, i):
         #TODO: this is now for GPU only in practice
@@ -318,36 +336,30 @@ class Lioness(Panda):
                 "Saving LIONESS network %d (%s) to %s using %s format:"
                 % (i, self.expression_samples[i], self.save_dir, self.save_fmt)
             ):
+                
                 path = os.path.join(self.save_dir, "lioness.%s.%s.%s" % (self.expression_samples[i],str(i),self.save_fmt))
-                if self.save_fmt == "txt":
-                    np.savetxt(path, lioness_network)
-                elif self.save_fmt == "npy":
-                    np.save(path, lioness_network)
-                elif self.save_fmt == "mat":
-                    from scipy.io import savemat
+                self.__lioness_to_disk(lioness_network, path)
 
-                    savemat(path, {"PredNet": lioness_network})
-                else:
-                    print("Unknown format %s! Use npy format instead." % self.save_fmt)
-                    np.save(path, lioness_network)
-
-        if self.computing == "gpu" and i == 0:
-            self.total_lioness_network = np.fromstring(
-                np.transpose(lioness_network).tostring(), dtype=lioness_network.dtype
-            )[:,np.newaxis]
-            
-        elif self.computing == "gpu" and i != 0:
-            self.total_lioness_network = np.column_stack(
-                (
-                    self.total_lioness_network,
-                    np.fromstring(
-                        np.transpose(lioness_network).tostring(),
-                        dtype=lioness_network.dtype,
-                    ),
+        if self.ignore_final:
+            return 0
+        else:
+            if self.computing == "gpu" and i == 0:
+                self.total_lioness_network = np.fromstring(
+                    np.transpose(lioness_network).tostring(), dtype=lioness_network.dtype
+                )[:,np.newaxis]
+                
+            elif self.computing == "gpu" and i != 0:
+                self.total_lioness_network = np.column_stack(
+                    (
+                        self.total_lioness_network,
+                        np.fromstring(
+                            np.transpose(lioness_network).tostring(),
+                            dtype=lioness_network.dtype,
+                        ),
+                    )
                 )
-            )
             
-        return self.total_lioness_network
+            return self.total_lioness_network
 
     @delayed
     @wrap_non_picklable_objects
@@ -412,33 +424,28 @@ class Lioness(Panda):
             # TODO: here we need to decide whether to add the tf and gene name
             with Timer(
                 "Saving LIONESS network %d (%s) to %s using %s format:"
-                % (i + 1,self.expression_samples[i], self.save_dir, self.save_fmt)
+                % (i, self.expression_samples[i], self.save_dir, self.save_fmt)
             ):
-                path = os.path.join(self.save_dir, "lioness.%s.%s" % (self.expression_samples[i], self.save_fmt))
-                if self.save_fmt == "txt":
-                    np.savetxt(path, lioness_network)
-                elif self.save_fmt == "npy":
-                    np.save(path, lioness_network)
-                elif self.save_fmt == "mat":
-                    from scipy.io import savemat
-
-                    savemat(path, {"PredNet": lioness_network})
-                else:
-                    print("Unknown format %s! File will not be saved." % self.save_fmt)
-                    # np.save(path, lioness_network)
+                
+                path = os.path.join(self.save_dir, "lioness.%s.%s.%s" % (self.expression_samples[i],str(i),self.save_fmt))
+                print(path)
+                self.__lioness_to_disk(lioness_network, path)
         
         # TODO: why this? Should we remove it?
         # if i == 0:
         # self.total_lioness_network = np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)
         # else:
         #    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
-        if output == "network":
-            self.total_lioness_network = np.transpose(lioness_network).flatten()
-        elif output == "gene_targeting":
-            self.total_lioness_network = np.sum(lioness_network, axis=0)
-        elif output == "tf_targeting":
-            self.total_lioness_network = np.sum(lioness_network, axis=1)
-        return self.total_lioness_network
+        if self.ignore_final:
+            return 0
+        else:
+            if output == "network":
+                self.total_lioness_network = np.transpose(lioness_network).flatten()
+            elif output == "gene_targeting":
+                self.total_lioness_network = np.sum(lioness_network, axis=0)
+            elif output == "tf_targeting":
+                self.total_lioness_network = np.sum(lioness_network, axis=1)
+            return self.total_lioness_network
 
     def save_lioness_results(self, lioness_output_filename = None):
         """ Saves LIONESS network.
@@ -457,8 +464,20 @@ class Lioness(Panda):
                 np.transpose(self.total_lioness_network),
                 delimiter="\t",
             )
+        elif fullpath.endswith("csv"):
+            np.savetxt(
+                fullpath,
+                np.transpose(self.total_lioness_network),
+                delimiter=",",
+            )
         elif fullpath.endswith("npy"):
             np.save(fullpath, np.transpose(self.total_lioness_network))
+        elif fullpath.endswith("h5"):
+            print('Warning: saving as txt for now. Need to rewrite this')
+            np.savetxt(fullpath,
+                            np.transpose(self.total_lioness_network),
+                            delimiter="\t",
+                        )
         elif fullpath.endswith("mat"):
             from scipy.io import savemat
             mdic = {"results": np.transpose(self.total_lioness_network), "label": "lioness"}
@@ -466,6 +485,22 @@ class Lioness(Panda):
         else:
             print('Trying to save lioness output. Format %s not recognised' %str(fullpath))
         return None
+
+    def __lioness_to_disk(self, net, path):
+        if self.save_fmt == "txt":
+            np.savetxt(path, net)
+        elif self.save_fmt == "h5":
+            pd.DataFrame(data = net, columns=self.gene_names, index = self.tf_names).to_hdf(path, key = 'lioness' ,mode='w')
+        elif self.save_fmt == 'csv':
+            pd.DataFrame(data = net, columns=self.gene_names, index = self.tf_names).to_csv(path)
+        elif self.save_fmt == "npy":
+            np.save(path, net)
+        elif self.save_fmt == "mat":
+            from scipy.io import savemat
+            savemat(path, {"PredNet": net})
+        else:
+            print("Unknown format %s! Use npy format instead." % self.save_fmt)
+            np.save(path, net)
 
     def export_lioness_table(self, output_filename="lioness_table.txt", header=False, output = 'network'):
         """ 

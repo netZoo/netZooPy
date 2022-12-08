@@ -152,11 +152,13 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double',wi
               help='Pass if the expression file has a header. It will be used to save samples with the correct name.')
 @click.option('--save_single_lioness', is_flag=True, show_default=False,
               help='Pass this flag to save all single lioness networks generated.')
+@click.option('--ignore_final', is_flag=True, show_default=False,
+              help='The whole lioness data is not kept in memory. Always use save_single_lioness for this')
 @click.option('--as_adjacency', is_flag=True, show_default=True,
               help='If true, the final PANDA is saved as an adjacency matrix. Works only when save_memory is false')
 @click.option('--old_compatible', is_flag=True, show_default=True,
               help='If true, PANDA is saved without headers. Pass this if you want the same results of netzoopy before v0.9.11')
-def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False, as_adjacency=False, old_compatible=False):
+def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False,ignore_final=False, as_adjacency=False, old_compatible=False):
     """Run Lioness to extract single-sample networks.
     First runs panda using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
@@ -191,7 +193,7 @@ def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, compu
     subset_numbers = get_list_from_str(subset_numbers)
     subset_names = get_list_from_str(subset_names)
 
-    Lioness(panda_obj, computing=computing, precision=precision,ncores=ncores, save_dir=output_lioness, save_fmt=fmt, output = output_type, alpha = alpha, export_filename=el, save_single=save_single_lioness, start=start, end=end, subset_names=subset_names, subset_numbers=subset_numbers)
+    Lioness(panda_obj, computing=computing, precision=precision,ncores=ncores, save_dir=output_lioness, save_fmt=fmt, output = output_type, alpha = alpha, export_filename=el, save_single=save_single_lioness,ignore_final=ignore_final, start=start, end=end, subset_names=subset_names, subset_numbers=subset_numbers)
 
     print('All done!')
     
