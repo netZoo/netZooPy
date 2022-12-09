@@ -3,6 +3,15 @@ Changelog
 ==========
 
 
+0.9.13
+-------------------------
+
+- We have added some options to LIONESS: single lioness files can be saved in HDF (fmt='h5') which saves a lot of time
+  and memory. By passing ignore_final to lioness (with save_single_lioness) each lioness is discarded after being saved, 
+  hence you won't have all lioness networks in memory at the same time. 
+- PANDA can be run with_header from CLI
+- Added pytables/tables in dependencies.
+
 0.9.12
 -------------------------
 
