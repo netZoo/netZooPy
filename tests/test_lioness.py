@@ -95,10 +95,12 @@ def test_lioness():
 
     # 1. Test command line
     #positional: expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers, subset_names,with_header, save_single_lioness):
+    #            expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False,ignore_final=False, as_adjacency=False, old_compatible=False):
    
-    cmd.lioness.callback(expression_data, motif, ppi, 'panda.txt','lioness_output_cmd',None,'npy','cpu','double',1,False,True,rm_missing,'legacy','network',0.1,1,4,1,None,'','',False,True)
-    res = np.load("lioness_output/lioness.1.npy")
-    gt = res = np.load("lioness_output_cmd/lioness.1.npy")
+    cmd.lioness.callback(expression_data, motif, ppi, 'panda.txt','lioness_output_cmd',None,'npy','cpu','double',1,False,True,rm_missing,'legacy','network',0.1,1,4,1,None,save_single_lioness=True)
+    # Now lioness is saved with lioness.sample_name.sample_index
+    res = np.load("lioness_output/lioness.1.0.npy")
+    gt = res = np.load("lioness_output_cmd/lioness.1.0.npy")
     assert np.allclose(gt, res)
 
     # 2. Testing Lioness with motif set to None to compute Lioness on coexpression networks
@@ -116,7 +118,7 @@ def test_lioness():
     lioness_obj_2 = Lioness(panda_obj_2, start=1, end=1, save_single=True,save_fmt='npy')
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
-    res = np.load("lioness_output/lioness.1.npy")
+    res = np.load("lioness_output/lioness.1.0.npy")
     gt = np.load("tests/lioness/lioness.1.coexpression.npy")
     # Compare to ground truth
     assert np.allclose(gt, res)
@@ -124,11 +126,11 @@ def test_lioness():
     print('test3')
     # 3. Testing Lioness in parallel
     # Set parameters
-    os.remove("lioness_output/lioness.1.npy")
+    os.remove("lioness_output/lioness.1.0.npy")
     lioness_obj = Lioness(panda_obj, ncores=2, start=1, end=2, save_single=True)
     # lioness_obj.save_lioness_results(lioness_file)
     # Read first lioness network
-    res = np.load("lioness_output/lioness.1.npy")
+    res = np.load("lioness_output/lioness.1.0.npy")
     gt = np.load("tests/lioness/lioness.1.npy")
     # Compare to ground truth
     assert np.allclose(gt, res)
