@@ -341,7 +341,7 @@ class Lioness(Panda):
                 self.__lioness_to_disk(lioness_network, path)
 
         if self.ignore_final:
-            return 0
+            return(np.array([0]))
         else:
             if self.computing == "gpu" and i == 0:
                 self.total_lioness_network = np.fromstring(
@@ -437,7 +437,7 @@ class Lioness(Panda):
         # else:
         #    self.total_lioness_network=np.column_stack((self.total_lioness_network ,np.fromstring(np.transpose(lioness_network).tostring(),dtype=lioness_network.dtype)))
         if self.ignore_final:
-            return 0
+            return(np.array([0]))
         else:
             if output == "network":
                 self.total_lioness_network = np.transpose(lioness_network).flatten()

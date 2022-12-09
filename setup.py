@@ -17,7 +17,8 @@ setup(name='netZooPy',
     'igraph<0.10.0',
     'joblib>=1.1.0',
     'statsmodels>=0.12.2',
-    'click'
+    'click',
+    'pytables'
     ],
     zip_safe=False,
     # add cli interface
