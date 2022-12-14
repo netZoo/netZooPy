@@ -34,8 +34,8 @@ class LionessDragon():
 
     _indexes = []
 
-    def __init__(self,layer1,layer2,output_dir="dragon-lioness-output",merge_col="id",ext1="_layer1",ext2="_layer2",delim=","):
 
+    def __init__(self,layer1,layer2,output_dir="dragon-lioness-output",merge_col="id",ext1="_layer1",ext2="_layer2",delim=","):
         """
         Description
         ----------
@@ -67,6 +67,7 @@ class LionessDragon():
 
             delim : str
                 Delimiter for input files. Default: ","
+
         """
 
         # assign output directory
@@ -95,6 +96,7 @@ class LionessDragon():
         #print(self._merge_col)
         self._identifiers = self._all_data.index
         #print(self._identifiers)
+
         print("[LIONESS-DRAGON] Fitting overall DRAGON network ...")
         # run the first round of DRAGON
         all_data = self._all_data
@@ -118,6 +120,7 @@ class LionessDragon():
         self._cutoff = cutoff
         
     def lioness_loop(self):#, cutoff=len(self._indexes)):
+
         """
         Description
         ----------
@@ -148,6 +151,7 @@ class LionessDragon():
                 all_data = self._all_data.iloc[idx]
 
                 # split merged data back to layers
+
                 data_layer1 = all_data.filter(regex=self._ext1)
                 data_layer2 = all_data.filter(regex=self._ext2)
 
@@ -164,6 +168,7 @@ class LionessDragon():
                 #print(len(data_layer1.keys().append(data_layer2.keys())))
                 lioness_df = pd.DataFrame(lioness_network,columns = data_layer1.keys().append(data_layer2.keys()))
                 lioness_df.to_csv(outfile)
+
                 outfile.close()
             
         return
