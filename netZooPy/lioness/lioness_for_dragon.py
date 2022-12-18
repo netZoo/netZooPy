@@ -88,14 +88,12 @@ class LionessDragon():
         
         # merge to ensure ordering matches
         self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner", suffixes=(ext1,ext2))
-        #print(self._all_data.shape)
-        #print(self._all_data.keys())
-        #print(self._all_data.index)
+        self._all_data.index = self._all_data[self._merge_col]
+
         self._indexes = range(self._all_data.shape[0])
         self._cutoff = len(self._indexes)
         #print(self._merge_col)
         self._identifiers = self._all_data.index
-        #print(self._identifiers)
 
         print("[LIONESS-DRAGON] Fitting overall DRAGON network ...")
         # run the first round of DRAGON
@@ -149,7 +147,7 @@ class LionessDragon():
 
                 # subset leave-one-out data
                 all_data = self._all_data.iloc[idx]
-
+               
                 # split merged data back to layers
 
                 data_layer1 = all_data.filter(regex=self._ext1)
