@@ -8,7 +8,7 @@ from .timer import Timer
 from netZooPy.panda.panda import Panda
 import netZooPy.panda.calculations as calc
 from netZooPy.puma.calculations import compute_puma
-
+import os
 
 class Puma(object):
     """
@@ -23,15 +23,19 @@ class Puma(object):
     ------------
 
             expression_file : str
-                Path to file containing the gene expression data.
+                Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
             motif_file      : str
                 Path to file containing the regulation prior as a tab-separated file without a header. This can be a miRNA-Gene predicted network from TargetScan/miRanda.
                 However, this can be combined with transcription factor DNA binding motif data in the form of TF-gene-weight(0/1) to estimate gene regulation by TF and miRNA.
+                Alternatively, can be a dataframe with the motif network
                 If set to none, the gene coexpression matrix is returned as a result network.
             ppi_file        : str
-                Path to file containing the TF PPI data. This can be provided as 'None' if no TF data is given and PUMA will estimate a miRNA-Gene networks.
+                Path to file containing the TF PPI data, or pandas dataframe.
+                This can be provided as 'None' if no TF data is given and PUMA will estimate a miRNA-Gene networks.
             mir_file        : str
-                Path to file containing miRNA list.
+                Path to file containing miRNA list or a list. A standard mir_file can be read as:
+                >>> with open(mir_file, "r") as f:  
+                >>>     miR = f.read().splitlines() 
             computing       : str
                 - 'cpu' uses Central Processing Unit (CPU) to run PANDA.
                 - 'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
@@ -85,7 +89,7 @@ class Puma(object):
         computing="cpu",
         precision="double",
         save_memory=False,
-        save_tmp=True,
+        save_tmp=False,
         remove_missing=False,
         keep_expression_matrix=False,
         alpha=0.1,
@@ -112,8 +116,17 @@ class Puma(object):
         )
 
         with Timer("Loading miR data ..."):
-            with open(mir_file, "r") as f:
-                miR = f.read().splitlines()
+            # If the mir_file is a string the mir list is read from file
+            # otherwise the input list is used directly
+            if type(mir_file) is str:
+                with open(mir_file, "r") as f:
+                    miR = f.read().splitlines()
+            elif isinstance(mir_file,list):
+                miR = mir_file
+            else:
+                raise Exception(
+                        "For mir_file please provide either a file name or a list"
+                    )
             TFNames = self.unique_tfs
             sort_idx = np.argsort(TFNames)
             self.s1 = sort_idx[np.searchsorted(TFNames, miR, sorter=sort_idx)]
@@ -203,6 +216,7 @@ class Puma(object):
         # =====================================================================
         if save_tmp:
             with Timer("Saving expression matrix and normalized networks ..."):
+                os.makedirs('./tmp',exist_ok=True) 
                 if self.expression_data is not None:
                     np.save("./tmp/expression.npy", self.expression_data.values)
                 np.save("./tmp/motif.normalized.npy", self.motif_matrix)

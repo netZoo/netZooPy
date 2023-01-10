@@ -2,6 +2,26 @@
 Changelog
 ==========
 
+
+0.9.13
+-------------------------
+
+- We have added some options to LIONESS: single lioness files can be saved in HDF (fmt='h5') which saves a lot of time
+  and memory. By passing ignore_final to lioness (with save_single_lioness) each lioness is discarded after being saved, 
+  hence you won't have all lioness networks in memory at the same time. 
+- PANDA can be run with_header from CLI
+- Added pytables/tables in dependencies.
+
+0.9.12
+-------------------------
+
+- We are changing the PANDA outputs and default flags. For now we are updating the command line 
+ call only, behavior is kept as in 0.9.11 for the internal functions. By passing `old_compatible = False`
+ the final output will always have column headers and indices.
+- PUMA and PANDA do not save_tmp as default.
+- lioness for puma has been fixed
+- Fixed PANDA data preprocessing bug
+
 0.9.11 (2022-11-04)
 -------------------------
 
