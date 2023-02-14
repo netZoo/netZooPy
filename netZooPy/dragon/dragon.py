@@ -375,6 +375,24 @@ def estimate_p_values_dragon(r, n, p1, p2, lambdas, kappa='estimate', seed=1, si
 
     return(adj_pvalues_mat, p_mat)
 
+def MC_estimate(n, p1, p2, lambdas, seed=1):
+    Sigma1 = np.identity(p1)
+    Sigma2 = np.identity(p2)
+    np.random.seed(seed)
+    X1 = np.random.multivariate_normal(np.zeros(p1), Sigma1, n)
+    X2 = np.random.multivariate_normal(np.zeros(p2), Sigma2, n)
+    r_sim = get_partial_correlation_dragon(X1, X2, lambdas)
+    return(r_sim)
+
+def assign_p_to_r(r_target, r_null):
+    return np.sum(np.abs(r_null)>np.abs(r_target))/len(r_null)
+
+def estimate_p_values_mc(r, n, p1, p2, lambdas, seed = 1):
+    lam = lambdas
+    r_null = MC_estimate(n, p1, p2,lam, seed)[np.triu_indices(p1+p2,k=1)]  
+    mc_p = [[assign_p_to_r(r[i,j],r_null) for i in range(p1+p2)] for j in range(p1+p2)]
+    return(mc_p)
+
 def calculate_true_R(X1, X2, Sigma):
     x = np.arange(0., 1.01, 0.01)
     n_lams = len(x)
