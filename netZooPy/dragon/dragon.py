@@ -389,8 +389,26 @@ def assign_p_to_r(r_target, r_null):
 
 def estimate_p_values_mc(r, n, p1, p2, lambdas, seed = 1):
     lam = lambdas
-    r_null = MC_estimate(n, p1, p2,lam, seed)[np.triu_indices(p1+p2,k=1)]  
-    mc_p = [[assign_p_to_r(r[i,j],r_null) for i in range(p1+p2)] for j in range(p1+p2)]
+    r_null = MC_estimate(n, p1, p2,lam, seed) # [np.triu_indices(p1+p2,k=1)]  
+
+    # split r_null from MC_estimate into r11, r12/r21, and r22 to assign p-values
+    IDs = np.cumsum([0,p1,p2])
+    r_null_11 = r_null[IDs[0]:IDs[1],IDs[0]:IDs[1]][np.triu_indices(p1,k=1)]
+    r_null_12 = r_null[IDs[0]:IDs[1],IDs[1]:IDs[2]].flatten()
+    r_null_22 = r_null[IDs[1]:IDs[2],IDs[1]:IDs[2]][np.triu_indices(p2,k=1)]
+    
+    # assign p-values
+    mc_p_11 = [[assign_p_to_r(r[i,j],r_null_11) for j in range(p1)] for i in range(p1)]
+    mc_p_12 = [[assign_p_to_r(r[i,j],r_null_12) for j in range(IDs[1],IDs[2])] for i in range(p1)]
+    mc_p_21 = [[assign_p_to_r(r[i,j],r_null_12) for j in range(p1)] for i in range(IDs[1],IDs[2])]
+    mc_p_22 = [[assign_p_to_r(r[i,j],r_null_22) for j in range(IDs[1],IDs[2])] for i in range(IDs[1],IDs[2])]
+
+    # map back to matrix
+    mc_p = np.identity(p1+p2)
+    mc_p[IDs[0]:IDs[1],IDs[0]:IDs[1]] = mc_p_11
+    mc_p[IDs[0]:IDs[1],IDs[1]:IDs[2]] = mc_p_12
+    mc_p[IDs[1]:IDs[2],IDs[0]:IDs[1]] = mc_p_21
+    mc_p[IDs[1]:IDs[2],IDs[1]:IDs[2]] = mc_p_22
     return(mc_p)
 
 def calculate_true_R(X1, X2, Sigma):
