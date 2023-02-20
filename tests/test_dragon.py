@@ -68,6 +68,4 @@ def test_dragon():
                                  [7/12.,7/12.,7/12.,0,5/6.,0,5/6.],
                                  [1,1,1,5/6.,5/6.,5/6.,0]])
     
-    assert(dragon_p_mc == ground_truth_mc_p)
-
-     
+    assert(np.array_equal(dragon_p_mc,ground_truth_mc_p))
