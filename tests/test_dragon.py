@@ -58,8 +58,8 @@ def test_dragon():
     test_mc_mat[3:7,0:3] = test21
     test_mc_mat[3:7,3:7] = test22
 
-    dragon_p_mc = dragon.estimate_p_values_mc(test_mc_mat,n,p1,p2,lam,seed=412)
-
+    dragon_p_mc = dragon.dragon.estimate_p_values_mc(test_mc_mat,n,p1,p2,lam,seed=412)
+    print(dragon_p_mc)
     ground_truth_mc_p = np.array([[0,0,1/3.,0,1/12.,7/12.,1],
                                  [0,0,2/3.,0,1/12.,7/12.,1],
                                  [1/3.,2/3.,0,0,1/12,7/12.,1],
@@ -67,5 +67,8 @@ def test_dragon():
                                  [1/12.,1/12.,1/12.,0,0,5/6.,5/6.],
                                  [7/12.,7/12.,7/12.,0,5/6.,0,5/6.],
                                  [1,1,1,5/6.,5/6.,5/6.,0]])
-    
+    print(ground_truth_mc_p)
+    print(dragon_p_mc - ground_truth_mc_p)
     assert(np.array_equal(dragon_p_mc,ground_truth_mc_p))
+
+test_dragon()
