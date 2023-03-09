@@ -67,10 +67,6 @@ class LionessDragon():
 
             delim : str
                 Delimiter for input files. Default: ","
-<<<<<<< HEAD
-
-=======
->>>>>>> ed074cd (updated lioness-dragon options)
         """
 
         # assign output directory
@@ -104,7 +100,6 @@ class LionessDragon():
 
         self._identifiers = self._all_data.index
         self._lambdas = [0,0]
-
         print("[LIONESS-DRAGON] Fitting overall DRAGON network ...")
         # run the first round of DRAGON
         all_data = self._all_data

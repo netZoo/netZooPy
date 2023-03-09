@@ -386,20 +386,14 @@ def MC_estimate(n, p1, p2, lambdas, seed=1):
 
 def assign_p_to_r(r_target, r_null, idx1, idx2, verbose=True):
     # check to make sure absolute value has been taken
-<<<<<<< HEAD
     if verbose and idx1%100 == 0 and idx2%100 == 0:
         print("[netZooPy.dragon.dragon.assign_p_to_r] Assigning p at indices: " + str(idx1) + "," + str(idx2))
-=======
-    if verbose:
-        print("Indices" + str(idx1) + "," + str(idx2))
->>>>>>> d9ae183 (efficiency fixes)
     if np.min(r_null)<0:
         return("[netZooPy.dragon.dragon.assign_p_to_r] Error: null distribution must be absoluted before using this function")
     return np.sum(r_null>np.abs(r_target))/len(r_null)
 
 def estimate_p_values_mc(r, n, p1, p2, lambdas, seed = 1, verbose = True):
     lam = lambdas
-<<<<<<< HEAD
     r_null = MC_estimate(n, p1, p2,lam, seed) 
 
     # take absolute value, outside of assign_p_to_r function for efficiency
@@ -465,58 +459,6 @@ def estimate_p_values_mc(r, n, p1, p2, lambdas, seed = 1, verbose = True):
 
     # adj_pvalues_mat += adj_pvalues_mat.T
 
-=======
-    r_null = MC_estimate(n, p1, p2,lam, seed) # [np.triu_indices(p1+p2,k=1)]  
-
-    # take absolute value, outside of assign_p_to_r function for efficiency
-    r_null_abs = np.abs(r_null)
-
-    # split r_null from MC_estimate into r11, r12/r21, and r22 to assign p-values
-    IDs = np.cumsum([0,p1,p2])
-    r_null_11 = r_null_abs[IDs[0]:IDs[1],IDs[0]:IDs[1]][np.triu_indices(p1,k=1)]
-    r_null_12 = r_null_abs[IDs[0]:IDs[1],IDs[1]:IDs[2]].flatten()
-    r_null_22 = r_null_abs[IDs[1]:IDs[2],IDs[1]:IDs[2]][np.triu_indices(p2,k=1)]
-    
-    # assign p-values
-    mc_p_11 = np.zeros(shape=[p1,p1])
-    mc_p_12 = np.zeros(shape=[p1,p2])
-    mc_p_22 = np.zeros(shape=[p2,p2])
-
-    for i in range(p1):
-        for j in range(i):
-            mc_p_11[i,j] = assign_p_to_r(r[i,j],r_null_11,i,j)
-    for i in range(p1):
-        for j in range(IDs[1],IDs[2]):
-            mc_p_12[i,(j-p1)] = assign_p_to_r(r[i,j],r_null_12,i,j)
-    
-    for i in range(IDs[1],IDs[2]):
-        for j in range(IDs[1],i):
-            print("i: "+str(i))
-            print("j: "+str(j))
-            print("i-p1: "+str(i-p1))
-            print("j-p1: "+str(j-p1))
-            mc_p_22[(i-p1),(j-p1)] = assign_p_to_r(r[i,j],r_null_22,i,j)
-    
-    #mc_p_11 = [[assign_p_to_r(r[i,j],r_null_11,i,j) for j in range(p1)] for i in range(p1)]
-    #mc_p_12 = [[assign_p_to_r(r[i,j],r_null_12,i,j) for j in range(IDs[1],IDs[2])] for i in range(p1)]
-    #mc_p_22 = [[assign_p_to_r(r[i,j],r_null_22,i,j) for j in range(IDs[1],IDs[2])] for i in range(IDs[1],IDs[2])]
-
-    # map back to matrix
-    # mapping symmetries as needed
-    # np.tril(A) + np.triu(A.T, 1)
-    mc_p = np.identity(p1+p2)
-    mc_p[IDs[0]:IDs[1],IDs[0]:IDs[1]] = np.tril(mc_p_11) + np.triu(mc_p_11.T,1)
-    mc_p[IDs[0]:IDs[1],IDs[1]:IDs[2]] = mc_p_12
-<<<<<<< HEAD
-    mc_p[IDs[1]:IDs[2],IDs[0]:IDs[1]] = mc_p_21
-    mc_p[IDs[1]:IDs[2],IDs[1]:IDs[2]] = mc_p_22
->>>>>>> 485e6f4 (updated mc pvals to be blockwise)
-=======
-    mc_p[IDs[1]:IDs[2],IDs[0]:IDs[1]] = np.transpose(mc_p_12)
-    print("mc_p_22")
-    print(mc_p_22)
-    mc_p[IDs[1]:IDs[2],IDs[1]:IDs[2]] = np.tril(mc_p_22) + np.triu(mc_p_22.T,1)
->>>>>>> d9ae183 (efficiency fixes)
     return(mc_p)
 
 def calculate_true_R(X1, X2, Sigma):
