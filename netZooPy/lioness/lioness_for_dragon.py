@@ -94,6 +94,7 @@ class LionessDragon():
         self._cutoff = len(self._indexes)
         #print(self._merge_col)
         self._identifiers = self._all_data.index
+        self._lambdas = [0,0]
         #print(self._identifiers)
         print("[LIONESS-DRAGON] Fitting overall DRAGON network ...")
         # run the first round of DRAGON
@@ -107,17 +108,16 @@ class LionessDragon():
         #print(all_data.shape)
         #print(data_layer1.shape)
         #print(data_layer2.shape)
-
-        print("[LIONESS-DRAGON] Finished fitting overall DRAGON network ...")
-
         # run DRAGON and store in self._network
         lambdas, lambdas_landscape = estimate_penalty_parameters_dragon(data_layer1,data_layer2)
         self._network = get_partial_correlation_dragon(data_layer1,data_layer2,lambdas)
+        self._lambdas = lambdas
+        print("[LIONESS-DRAGON] Finished fitting overall DRAGON network ...")
 
     def set_cutoff(self,cutoff=0):
         self._cutoff = cutoff
         
-    def lioness_loop(self):#, cutoff=len(self._indexes)):
+    def lioness_loop(self,reestimate_lambda=False):#, cutoff=len(self._indexes)):
         """
         Description
         ----------
@@ -135,7 +135,7 @@ class LionessDragon():
             os.makedirs(self._outdir)
 
         print("[LIONESS-DRAGON] Preparing to run a total of " + str(len(self._indexes)) + " networks")
-
+        print("[LIONESS-DRAGON] reestimate_lambda parameter set to: "+str(reestimate_lambda))
         for i in self._indexes[0:self._cutoff]:
             outfile=self._outdir + "/lioness-dragon-" + str(self._identifiers[i]) + ".csv"
             outfile=open(outfile,'w')
@@ -151,8 +151,12 @@ class LionessDragon():
                 data_layer1 = all_data.filter(regex=self._ext1)
                 data_layer2 = all_data.filter(regex=self._ext2)
 
+                # add control flow for choosing to refit lambdas or not
                 # calculate penalty parameters
-                lambdas, lambdas_landscape = estimate_penalty_parameters_dragon(data_layer1,data_layer2)
+                if reestimate_lambda:
+                    lambdas, lambdas_landscape = estimate_penalty_parameters_dragon(data_layer1,data_layer2)
+                else:
+                    lambdas = self._lambdas
                 
                 # calculate partial correlations
                 sub_lioness_network = get_partial_correlation_dragon(data_layer1,data_layer2,lambdas)
