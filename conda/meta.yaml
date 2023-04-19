@@ -1,6 +1,6 @@
 package:
   name: netzoopy
-  version: 0.9.10
+  version: 0.9.13
 
 source:
   path: ..
@@ -22,6 +22,7 @@ requirements:
     - statsmodels>=0.12.2
     - click
     - pandas
+    - pytables
   run:
     - numpy>=1.19.2
     - python {{ python }}
@@ -34,6 +35,7 @@ requirements:
     - statsmodels>=0.12.2
     - click
     - pandas
+    - pytables
 
 test:
   commands:

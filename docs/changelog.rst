@@ -1,6 +1,46 @@
 ==========
 Changelog
 ==========
+
+
+0.9.13
+-------------------------
+
+- We have added some options to LIONESS: single lioness files can be saved in HDF (fmt='h5') which saves a lot of time
+  and memory. By passing ignore_final to lioness (with save_single_lioness) each lioness is discarded after being saved, 
+  hence you won't have all lioness networks in memory at the same time. 
+- PANDA can be run with_header from CLI
+- Added pytables/tables in dependencies.
+
+0.9.12
+-------------------------
+
+- We are changing the PANDA outputs and default flags. For now we are updating the command line 
+ call only, behavior is kept as in 0.9.11 for the internal functions. By passing `old_compatible = False`
+ the final output will always have column headers and indices.
+- PUMA and PANDA do not save_tmp as default.
+- lioness for puma has been fixed
+- Fixed PANDA data preprocessing bug
+
+0.9.11 (2022-11-04)
+-------------------------
+
+- Added LIONESS for DRAGON with tests
+- PANDA preprocessing expression: In Panda preprocessing there was a problem with indices. Using gene2idx.get(x, 0) always give you the index 0 if x is missing fro
+m gene2idx.get (like a gene in gene expression and not in motif, since gene2idx is build on top of the intersection of expression and motif). Now we use gene_names to
+both create the indices for self.expression and to access with .loc[] the expression data frame self.expression_data
+- New PANDA tests
+- Updated LIONESS start and end parameters so that they are independent of the background. Example: One can now run panda on 100 samples
+  and then apply LIONESS on only the first 10.
+- Added LIONESS subset parameter: passing subset parameters (a list of indices or sample names, [1,2,10]) allows to run
+  LIONESS only on specific samples. This parameter has priority over the start and end parameters.
+  
+0.9.10 (2022-10-28)
+------------------
+
+- Fixing single/double precision for GPU
+- Clearing GPU after computation to free more memory
+
 0.9.9 (2022-10-21)
 ------------------
 

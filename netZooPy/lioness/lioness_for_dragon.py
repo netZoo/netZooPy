@@ -34,8 +34,8 @@ class LionessDragon():
 
     _indexes = []
 
-
     def __init__(self,layer1,layer2,output_dir="dragon-lioness-output",merge_col="id",ext1="_layer1",ext2="_layer2",delim=","):
+
         """
         Description
         ----------
@@ -166,11 +166,13 @@ class LionessDragon():
                 
                 # apply LIONESS formula to get individual network
                 lioness_network = len(self._indexes) * (self._network - sub_lioness_network) + sub_lioness_network
+                
                 #print(lioness_network.shape)
                 #print(sub_lioness_network.shape)
                 #print(len(data_layer1.keys().append(data_layer2.keys())))
                 lioness_df = pd.DataFrame(lioness_network,columns = data_layer1.keys().append(data_layer2.keys()))
                 lioness_df.to_csv(outfile)
+
 
                 outfile.close()
             
