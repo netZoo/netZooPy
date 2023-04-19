@@ -88,7 +88,8 @@ class LionessDragon():
         
         # merge to ensure ordering matches
         self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner", suffixes=(ext1,ext2))
-        self._all_data.index = self._all_data[self._merge_col]
+        print(self._all_data.index)
+        # self._all_data.index = self._all_data[self._merge_col]
 
         self._indexes = range(self._all_data.shape[0])
         self._cutoff = len(self._indexes)
