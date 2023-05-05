@@ -1,7 +1,6 @@
 from __future__ import print_function
 import math
 import time
-from tkinter.messagebox import RETRY
 import pandas as pd
 from .timer import Timer
 import numpy as np
