@@ -10,6 +10,7 @@ from netZooPy.panda import calculations as calc
 from netZooPy.ligress import io
 import sys
 import os
+import pandas as pd
 
 
 class Ligress(Panda):
