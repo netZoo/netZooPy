@@ -49,7 +49,7 @@ gt_panda*.txt
 
 .vscode/*
 
-ligress/
+#ligress/
 panda.txt
 panda_remove.txt
 pan_test_panda.txt
