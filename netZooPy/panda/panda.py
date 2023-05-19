@@ -306,7 +306,9 @@ class Panda(object):
         # =====================================================================
         # Data loading
         # =====================================================================
+        ### Loading Motif
         if type(motif_file) is str:
+            # If motif_file is a filename
             with Timer("Loading motif data ..."):
                 self.motif_data = pd.read_csv(motif_file, sep="\t", header=None)
                 self.motif_tfs = sorted(set(self.motif_data[0]))
@@ -314,11 +316,14 @@ class Panda(object):
                 # self.num_tfs = len(self.unique_tfs)
                 # print('Unique TFs:', self.num_tfs)
         elif type(motif_file) is not str:
+            # If motif_file is an object
             if motif_file is None:
+                # Computation without motif
                 self.motif_data = None
                 self.motif_genes = []
                 self.motif_tfs = []
             else:
+                # If motif_file is an object, it needs to be a dataframe
                 if not isinstance(motif_file, pd.DataFrame):
                     raise Exception(
                         "Please provide a pandas dataframe for motif data with column names as 'source', 'target', and 'weight'."
@@ -334,7 +339,9 @@ class Panda(object):
             # self.num_tfs = len(self.unique_tfs)
             # print('Unique TFs:', self.num_tfs)
 
+        ### Loading expression
         if type(expression_file) is str:
+            # If we pass an expression file, check if we have a 'with header' flag and read it
             with Timer("Loading expression data ..."):
                 if with_header:
                     # Read data with header
@@ -345,13 +352,14 @@ class Panda(object):
                     self.expression_data = pd.read_csv(
                         expression_file, sep="\t", header=None, index_col=0
                     )
-
+                # assign expression data and samples/gene names
                 self.expression_data = self.expression_data.iloc[:, (start-1):end]
                 self.expression_genes = self.expression_data.index.tolist()
                 self.expression_samples = self.expression_data.columns.astype(str)
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
+            # Pass expression as a dataframe 
             if expression_file is not None:
                 if not isinstance(expression_file, pd.DataFrame):
                     raise Exception(
@@ -363,6 +371,7 @@ class Panda(object):
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
             else:
+                # If no expression is passed
                 self.gene_names = self.motif_genes
                 self.expression_genes = self.motif_genes
                 self.num_genes = len(self.gene_names)
@@ -370,6 +379,7 @@ class Panda(object):
                     None  # pd.DataFrame(np.identity(self.num_genes, dtype=int))
                 )
                 print(
+                    # TODO: Marouen check here. Here we do not pass the identity matrix
                     "No Expression data given: correlation matrix will be an identity matrix of size",
                     len(self.motif_genes),
                 )
@@ -379,6 +389,7 @@ class Panda(object):
                 "Duplicate gene symbols detected. Consider averaging before running PANDA"
             )
 
+        ### Loading the PPI
         if type(ppi_file) is str:
             with Timer("Loading PPI data ..."):
                 self.ppi_data = pd.read_csv(ppi_file, sep="\t", header=None)
@@ -396,6 +407,7 @@ class Panda(object):
                 )
                 print("Number of PPIs:", self.ppi_data.shape[0])
             else:
+                # TODO: marouen, here we do not have an identiy matrix
                 print(
                     "No PPI data given: ppi matrix will be an identity matrix of size",
                     len(self.motif_tfs),
@@ -403,6 +415,8 @@ class Panda(object):
                 self.ppi_data = None
                 self.ppi_tfs = self.motif_tfs
 
+
+        ### Data combination
         if modeProcess == "legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
             print('new case')
@@ -519,7 +533,7 @@ class Panda(object):
                 idx_tf1 = [i for (i, v) in zip(idx_tf1, commind2) if v]
                 idx_tf2 = [i for (i, v) in zip(idx_tf2, commind2) if v]
                 idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
-                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                self.ppi_matrix.ravel()[idx] = self.ppi_data[2][commind2]
                 idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
                 self.ppi_matrix.ravel()[idx] = self.ppi_data[2][commind2]
 
