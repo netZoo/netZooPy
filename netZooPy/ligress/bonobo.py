@@ -10,9 +10,9 @@ from netZooPy.ligress import io
 import sys
 import os
 import pandas as pd
+import scipy.stats as stats
 
-
-def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpression = False, computing = 'cpu', cores = 1, delta = None):
+def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpression = False, computing = 'cpu', cores = 1, delta = None, compute_sparse = False, confidence = 0.05):
     
     """Compute one bonobo matrix. Takes as input an expression matrix, the row-wise mean of the expression, and the
     index of the sample for which the bonobo is computed (index of the columns).
@@ -23,6 +23,8 @@ def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpr
     delta (float, optional): delta value for the computation. Defaults to None, which means that delta is tuned
     
     """
+    pval = None
+    
     mask_include = [True]*expression_matrix.shape[1]
     mask_include[sample_idx] = False
     
@@ -44,8 +46,31 @@ def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpr
     diag = np.sqrt(np.diag(np.diag(sscov)))
     sds = np.linalg.inv(diag)
     bonobo_matrix = sds @ sscov @ sds
+    
+    
+    if compute_sparse:
+        threshold  = stats.norm.ppf(1-(confidence/2))
+        g = sscov.shape[1]
+        d = g + 1/delta
+        a1 = (d-g+1)/((d-g)*(d-g-3))
+        a2 = (d-g-1)/((d-g)*(d-g-3))
+        
+        #m1 = a1*(np.multiply(sscov, sscov)) 
+        v = np.sqrt(np.diag(sscov)) 
+        #m2 = a2 * (np.outer(v, v))
+        
+        # v = m1 + m2
+        v = (a1*(np.multiply(sscov, sscov))) + (a2 * (np.outer(v, v)))
+        
+        # zscore
+        v = np.divide(sscov,v)
+        
+        pval = 2*(1-stats.norm.cdf(np.abs(v)))
+        
+        # bonobo gets sparsified: diagonal bonobo + sparsified off diagonal
+        bonobo_matrix = (np.eye(g)@bonobo_matrix) + np.multiply(1-np.eye(g)), (v*(v<threshold))
 
-    return(bonobo_matrix, delta)
+    return(bonobo_matrix, delta, pval)
 
 class Bonobo():
     """
@@ -143,7 +168,7 @@ class Bonobo():
         # Auxiliary dicts
         self.expression_gene2idx = {x: i for i, x in enumerate(self.expression_genes)}
 
-    def run_bonobo(self, output_folder = 'bonobo/', output_fmt = 'hd5', keep_in_memory = False,save_full = False, online_coexpression = False,delta = None, computing = 'cpu', cores = 1, precision = 'single', sample_names = []):
+    def run_bonobo(self, output_folder = 'bonobo/', output_fmt = 'hd5', keep_in_memory = False,save_full = False, online_coexpression = False,delta = None, computing = 'cpu', cores = 1, precision = 'single', sample_names = [], sparsify = False, confidence = 0.05):
         
         """BONOBO algorithm
 
@@ -160,6 +185,8 @@ class Bonobo():
             delta (float, optional): delta parameter. If default (None) delta is trained, otherwise pass a value.
             Recommended is 0.3.
             precision (str, optional): matrix precision, defaults to single precision.
+            sparsify (bool, optiona): if True, bonobo gets sparsified and relative pvalues are returned
+            confidence (float, optional): if sparsify is True, this is the CI for the approximate zscore.
         """
 
         ligress_start = time.time()
@@ -175,6 +202,9 @@ class Bonobo():
         # let's sort the expression and ppi data
         self.expression_data = self.expression_data.astype(atype)
         
+        
+        self.sparsify = sparsify
+        self.confidence = confidence
         # If output folder is an empty string, keep the matrix in memory and don't save it to disk
         # Otherwise the output folder can be created and the matrix saved
         if output_folder=='':
@@ -238,7 +268,7 @@ class Bonobo():
         sample_idx = list(self.expression_samples).index(sample)
 
         print('BONOBO: computing bonobo for sample %s' %str(sample))
-        sample_bonobo, sample_delta = compute_bonobo(self.expression_data.values,self.expression_mean, sample_idx, delta = delta, online_coexpression = online_coexpression, computing = computing)
+        sample_bonobo, sample_delta = compute_bonobo(self.expression_data.values,self.expression_mean, sample_idx, delta = delta, online_coexpression = online_coexpression, computing = computing, compute_sparse = self.sparsify, confidence = self.confidence)
         
         self.delta[sample] = sample_delta
         
