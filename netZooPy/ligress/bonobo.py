@@ -68,7 +68,7 @@ def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpr
         pval = 2*(1-stats.norm.cdf(np.abs(v)))
         
         # bonobo gets sparsified: diagonal bonobo + sparsified off diagonal
-        bonobo_matrix = (np.eye(g)@bonobo_matrix) + np.multiply(1-np.eye(g)), (v*(v<threshold))
+        bonobo_matrix = (np.eye(g)@bonobo_matrix) + np.multiply( 1-np.eye(g), (v*(v<threshold) ) )
 
     return(bonobo_matrix, delta, pval)
 
@@ -268,7 +268,9 @@ class Bonobo():
         sample_idx = list(self.expression_samples).index(sample)
 
         print('BONOBO: computing bonobo for sample %s' %str(sample))
-        sample_bonobo, sample_delta = compute_bonobo(self.expression_data.values,self.expression_mean, sample_idx, delta = delta, online_coexpression = online_coexpression, computing = computing, compute_sparse = self.sparsify, confidence = self.confidence)
+        sample_bonobo, sample_delta, pval = compute_bonobo(self.expression_data.values,self.expression_mean, sample_idx, delta = delta, online_coexpression = online_coexpression, computing = computing, compute_sparse = self.sparsify, confidence = self.confidence)
+        
+        self.pvals = pval
         
         self.delta[sample] = sample_delta
         
