@@ -21,14 +21,14 @@ class Panda(object):
     ----------
 
             expression_file : str
-                Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
+                Either i) a string of a path to file containing the gene expression data or ii) a pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
             motif_file : str 
-                Path to file containing the transcription factor DNA binding motif data in the form of
-                TF-gene-weight(0/1) as a tab-separated file without a header or pandas dataframe.
+                Either i) a string of a path to file containing the transcription factor DNA binding motif data in the form of
+                TF-gene-weight(0/1) as a tab-separated file without a header or ii) a pandas dataframe.
                 If set to none, the gene coexpression matrix is returned as a result network.
             ppi_file : str
-                Path to file containing the PPI data. or pandas dataframe. 
-                The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
+                Either i) a path to file containing the PPI data or a ii) pandas dataframe. 
+                The PPI has to  reflect an undirected network (A - B), if not, it will be transformed into an undirected network by building a  symmetrical adjacency matrix (A -> B, B -> A).
             computing : str
                 'cpu' uses Central Processing Unit (CPU) to run PANDA.
                 'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
@@ -59,7 +59,7 @@ class Panda(object):
 
     Examples
     --------
-
+	Note these examples use a small toy data that may not reflect an actual use case. To use actual gene expression, motif, and PPI data, please refer to [GRAND](https://grand.networkmedicine.org/) database.
         >>> #Import the classes in the pypanda library:  
         >>> from netZooPy.panda.panda import Panda
         >>> #Run the Panda algorithm, leave out motif and PPI data to use Pearson correlation network:
@@ -76,9 +76,12 @@ class Panda(object):
     Notes
     ------
 
-    Toy data:The example gene expression data that we have available here contains gene expression profiles 
+    Toy data: The example gene expression data that we have available here contains gene expression profiles 
     for different samples in the columns. Of note, this is just a small subset of a larger gene 
     expression dataset. We provided these "toy" data so that the user can test the method.
+
+    Gene naming nomeclature: Gene names have to be consistent between gene expresssion and motif columns; and TF PPI matrix and motif rows.
+    For example, gene expression and motif columns can be in Ensembl gene IDs (ENSG), and TF PPI and motif rows can be in HUGO gene symbols.
 
 
     Sample PANDA results:\b
