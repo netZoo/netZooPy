@@ -59,8 +59,10 @@ def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpr
         v = np.sqrt(np.diag(sscov)) 
         #m2 = a2 * (np.outer(v, v))
         
-        # v = m1 + m2
+        # Pointwise variance: v = m1 + m2
         v = (a1*(np.multiply(sscov, sscov))) + (a2 * (np.outer(v, v)))
+        # Pointwise standard deviation
+        v = np.sqrt(v)
         
         # zscore
         v = np.divide(sscov,v)
