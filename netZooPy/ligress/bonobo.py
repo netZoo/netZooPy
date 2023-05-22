@@ -70,7 +70,8 @@ def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpr
         pval = 2*(1-stats.norm.cdf(np.abs(v)))
         
         # bonobo gets sparsified: diagonal bonobo + sparsified off diagonal
-        bonobo_matrix = (np.eye(g)@bonobo_matrix) + np.multiply( 1-np.eye(g), (v*(v<threshold) ) )
+        # bonobo_matrix = (np.eye(g)@bonobo_matrix) + np.multiply( 1-np.eye(g), (v*(v<threshold) ) )
+        bonobo_matrix = np.eye(g) + np.multiply( 1-np.eye(g), (bonobo_matrix*(np.abs(v)<threshold) ) )
 
     return(bonobo_matrix, delta, pval)
 
