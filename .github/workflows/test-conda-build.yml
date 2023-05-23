@@ -27,5 +27,5 @@ jobs:
       - name: "Build and upload package"
         run: |
           mkdir conda-build
-          conda build . --no-build-id  --output-folder ./conda-build
+          conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
           conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build --dry-run
