@@ -76,6 +76,7 @@ class LionessDragon():
         self._ext1 = ext1
         self._ext2 = ext2
         self._merge_col = merge_col
+
         # load data
         print("[LIONESS-DRAGON] Loading input data ...")
 
