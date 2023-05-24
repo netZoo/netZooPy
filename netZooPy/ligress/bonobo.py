@@ -12,7 +12,7 @@ import os
 import pandas as pd
 import scipy.stats as stats
 
-def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpression = False, computing = 'cpu', cores = 1, delta = None, compute_sparse = False, confidence = 0.05):
+def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpression = False, computing = 'cpu', cores = 1, delta = None, compute_sparse = False, confidence = 0.05, save_pvals = False):
     
     """Compute one bonobo matrix. Takes as input an expression matrix, the row-wise mean of the expression, and the
     index of the sample for which the bonobo is computed (index of the columns).
@@ -71,7 +71,10 @@ def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpr
         
         # bonobo gets sparsified: diagonal bonobo + sparsified off diagonal
         # bonobo_matrix = (np.eye(g)@bonobo_matrix) + np.multiply( 1-np.eye(g), (v*(v<threshold) ) )
-        bonobo_matrix = np.eye(g) + np.multiply( 1-np.eye(g), (bonobo_matrix*(np.abs(v)<threshold) ) )
+        if save_pvals:
+            print('keep Bonobo whole, and use pvals to threshold and sparsify')
+        else:
+            bonobo_matrix = np.eye(g) + np.multiply( 1-np.eye(g), (bonobo_matrix*(np.abs(v)>threshold) ) )
 
     return(bonobo_matrix, delta, pval)
 
@@ -152,6 +155,8 @@ class Bonobo():
         self._prepare_expression()
         self.delta = {}
         self.bonobos = {}
+        self.pvals = {}
+        self.save_pvals = False
         
 
     ########################
@@ -171,7 +176,7 @@ class Bonobo():
         # Auxiliary dicts
         self.expression_gene2idx = {x: i for i, x in enumerate(self.expression_genes)}
 
-    def run_bonobo(self, output_folder = 'bonobo/', output_fmt = 'hd5', keep_in_memory = False,save_full = False, online_coexpression = False,delta = None, computing = 'cpu', cores = 1, precision = 'single', sample_names = [], sparsify = False, confidence = 0.05):
+    def run_bonobo(self, output_folder = 'bonobo/', output_fmt = 'hd5', keep_in_memory = False,save_full = False, online_coexpression = False,delta = None, computing = 'cpu', cores = 1, precision = 'single', sample_names = [], sparsify = False, confidence = 0.05, save_pvals = False):
         
         """BONOBO algorithm
 
@@ -193,6 +198,7 @@ class Bonobo():
         """
 
         ligress_start = time.time()
+        
         # first let's reorder the expression data
         
         if precision=='single':
@@ -208,6 +214,7 @@ class Bonobo():
         
         self.sparsify = sparsify
         self.confidence = confidence
+        self.save_pvals = save_pvals
         # If output folder is an empty string, keep the matrix in memory and don't save it to disk
         # Otherwise the output folder can be created and the matrix saved
         if output_folder=='':
@@ -271,19 +278,18 @@ class Bonobo():
         sample_idx = list(self.expression_samples).index(sample)
 
         print('BONOBO: computing bonobo for sample %s' %str(sample))
-        sample_bonobo, sample_delta, pval = compute_bonobo(self.expression_data.values,self.expression_mean, sample_idx, delta = delta, online_coexpression = online_coexpression, computing = computing, compute_sparse = self.sparsify, confidence = self.confidence)
+        sample_bonobo, sample_delta, pval = compute_bonobo(self.expression_data.values,self.expression_mean, sample_idx, delta = delta, online_coexpression = online_coexpression, computing = computing, compute_sparse = self.sparsify, confidence = self.confidence, save_pvals = self.save_pvals)
         
-        self.pvals = pval
         
         self.delta[sample] = sample_delta
         
-        df_bonobo = pd.DataFrame(data = sample_bonobo, columns = list(self.expression_genes))
+        df_bonobo = pd.DataFrame(data = sample_bonobo, columns = self.expression_data.index.tolist())
         
         if (save_matrix):
             print('Saving BONOBO for sample %s' %(str(sample)))
             output_fn = output_folder + 'bonobo_' + str(sample) + output_fmt
             if output_fmt=='.h5':
-                df_bonobo.to_hdf(output_fn,index = False)
+                df_bonobo.to_hdf(output_fn,key ='bonobo',index = False)
             elif output_fmt=='.csv':
                 df_bonobo.to_csv(output_fn, index = False)
             elif output_fmt=='.txt':
@@ -293,5 +299,21 @@ class Bonobo():
                 output_fn = output_folder + 'bonobo_' + str(sample) + '.h5'
                 df_bonobo.to_hdf(output_fn,key ='bonobo',index = False)
         
+        if (self.sparsify and self.save_pvals):
+            df_pvals = pd.DataFrame(data = pval, columns = self.expression_data.index.tolist())
+            print('Saving pvalues for sample %s' %(str(sample)))
+            output_fn = output_folder + 'pvals_' + str(sample) + output_fmt
+            if output_fmt=='.h5':
+                df_pvals.to_hdf(output_fn,key ='pvals',index = False)
+            elif output_fmt=='.csv':
+                df_pvals.to_csv(output_fn, index = False)
+            elif output_fmt=='.txt':
+                df_pvals.to_csv(output_fn, index = False, sep = '\t')
+            else:
+                print('WARNING: output format (%s) not recognised. We are saving in hdf' %str(output_fmt))
+                output_fn = output_folder + 'pvals_' + str(sample) + '.h5'
+                df_pvals.to_hdf(output_fn,key ='pvals',index = False)       
+        
         if keep_in_memory:
             self.bonobos[sample] = df_bonobo
+            self.pvals[sample] = pval
