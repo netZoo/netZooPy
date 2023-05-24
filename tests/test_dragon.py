@@ -67,3 +67,32 @@ def test_dragon():
                                  [7/12.,7/12.,7/12.,0,5/6.,0,5/6.],
                                  [1,1,1,5/6.,5/6.,5/6.,0]])
     assert(np.array_equal(dragon_p_mc,ground_truth_mc_p))
+
+def remove_zero_variance_preds(X1,X2): #X1 is n x p1 and X2 is n x p2
+    # check for any columns with zero variance in either dataset
+    layer_1_vars = np.var(X1, axis = 0)
+    layer_2_vars = np.var(X2, axis = 0)
+    layer_1_mask = layer_1_vars != 0
+    layer_2_mask = layer_2_vars != 0
+    X1_complete = X1[:,layer_1_mask] # filter out anything with zero variance
+    X2_complete = X2[:,layer_2_mask] # filter out anything with zero variance
+    return(X1_complete,X2_complete)
+
+def test_masking():
+    layer1 = np.array([[1,2,3],
+                   [1,5,6],
+                   [1,4,9],
+                   [1,10,11]])
+    layer2 = np.array([[1,2,3],
+                   [2,5,6],
+                   [3,4,9],
+                   [4,10,11]])
+    layer1_manual_complete = np.array([[2,3],
+                   [5,6],
+                   [4,9],
+                   [10,11]])
+    layer1_complete,layer2_complete = remove_zero_variance_preds(layer1,layer2)
+    print(layer1_complete)
+    print(layer2_complete)
+    assert(np.array_equal(layer1_complete, layer1_manual_complete))
+    assert(np.array_equal(layer2_complete, layer2))

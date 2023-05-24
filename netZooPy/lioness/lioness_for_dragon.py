@@ -77,23 +77,29 @@ class LionessDragon():
         self._ext1 = ext1
         self._ext2 = ext2
         self._merge_col = merge_col
+
         # load data
         print("[LIONESS-DRAGON] Loading input data ...")
 
         self._layer_1 = pd.read_csv(layer1,sep=delim, header=0,index_col=0)
-        #print(self._layer_1.shape)
-        
+
+        self._layer_1 = self._layer_1.add_suffix(ext1)
+        self._layer_1 = self._layer_1.rename(index=str, columns={'TCGAbarcode_'+ext1:'TCGAbarcode'})
+        print(self._layer_1.index)
+
         self._layer_2 = pd.read_csv(layer2,sep=delim,header=0,index_col=0)
-        #print(self._layer_2.shape)
-        
-        # merge to ensure ordering matches
-        self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner", suffixes=(ext1,ext2))
+
+        self._layer_2 = self._layer_2.add_suffix(ext2)
+        self._layer_2 = self._layer_2.rename(index=str, columns={'TCGAbarcode_'+ext2:'TCGAbarcode'})
+        print(self._layer_2.index)
+
+        self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner") 
         print(self._all_data.index)
-        # self._all_data.index = self._all_data[self._merge_col]
+
 
         self._indexes = range(self._all_data.shape[0])
         self._cutoff = len(self._indexes)
-        #print(self._merge_col)
+
         self._identifiers = self._all_data.index
         self._lambdas = [0,0]
 
@@ -101,14 +107,12 @@ class LionessDragon():
         # run the first round of DRAGON
         all_data = self._all_data
 
-        print("[LIONESS-DRAGON] Splitting data back to methylation and expression ...")
+        print("[LIONESS-DRAGON] Splitting data back to separate layers ...")
 
         # split merged data back to layers
         data_layer1 = self._all_data.filter(regex=ext1,axis=1)
         data_layer2 = self._all_data.filter(regex=ext2,axis=1)
-        #print(all_data.shape)
-        #print(data_layer1.shape)
-        #print(data_layer2.shape)
+       
         # run DRAGON and store in self._network
         lambdas, lambdas_landscape = estimate_penalty_parameters_dragon(data_layer1,data_layer2)
         self._network = get_partial_correlation_dragon(data_layer1,data_layer2,lambdas)
@@ -119,7 +123,7 @@ class LionessDragon():
         self._cutoff = cutoff
         
 
-    def lioness_loop(self,reestimate_lambda=False):#, cutoff=len(self._indexes)):
+    def lioness_loop(self,reestimate_lambda=False):
 
         """
         Description
@@ -167,10 +171,7 @@ class LionessDragon():
                 
                 # apply LIONESS formula to get individual network
                 lioness_network = len(self._indexes) * (self._network - sub_lioness_network) + sub_lioness_network
-                
-                #print(lioness_network.shape)
-                #print(sub_lioness_network.shape)
-                #print(len(data_layer1.keys().append(data_layer2.keys())))
+        
                 lioness_df = pd.DataFrame(lioness_network,columns = data_layer1.keys().append(data_layer2.keys()))
                 lioness_df.to_csv(outfile)
 
