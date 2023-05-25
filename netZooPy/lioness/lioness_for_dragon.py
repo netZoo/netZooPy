@@ -67,7 +67,10 @@ class LionessDragon():
 
             delim : str
                 Delimiter for input files. Default: ","
+<<<<<<< HEAD
 
+=======
+>>>>>>> new-branch
         """
 
         # assign output directory
@@ -99,10 +102,15 @@ class LionessDragon():
 
         self._indexes = range(self._all_data.shape[0])
         self._cutoff = len(self._indexes)
+<<<<<<< HEAD
 
         self._identifiers = self._all_data.index
         self._lambdas = [0,0]
+=======
+>>>>>>> new-branch
 
+        self._identifiers = self._all_data.index
+        self._lambdas = [0,0]
         print("[LIONESS-DRAGON] Fitting overall DRAGON network ...")
         # run the first round of DRAGON
         all_data = self._all_data
@@ -174,9 +182,11 @@ class LionessDragon():
         
                 lioness_df = pd.DataFrame(lioness_network,columns = data_layer1.keys().append(data_layer2.keys()))
                 lioness_df.to_csv(outfile)
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> new-branch
                 outfile.close()
             
         return
-

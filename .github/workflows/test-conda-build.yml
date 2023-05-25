@@ -13,7 +13,7 @@ jobs:
         python-version: [3.9]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: "Setup Conda"
         uses: s-weigand/setup-conda@v1
         with:
@@ -27,5 +27,5 @@ jobs:
       - name: "Build and upload package"
         run: |
           mkdir conda-build
-          conda build . --no-build-id  --output-folder ./conda-build
+          conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
           conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build --dry-run
