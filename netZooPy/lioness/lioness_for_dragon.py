@@ -81,13 +81,13 @@ class LionessDragon():
         self._layer_1 = pd.read_csv(layer1,sep=delim, header=0,index_col=0)
 
         self._layer_1 = self._layer_1.add_suffix(ext1)
-        self._layer_1 = self._layer_1.rename(index=str, columns={'TCGAbarcode_'+ext1:'TCGAbarcode'})
+        self._layer_1 = self._layer_1.rename(index=str, columns={self._merge_col+ext1:self._merge_col})
         print(self._layer_1.index)
 
         self._layer_2 = pd.read_csv(layer2,sep=delim,header=0,index_col=0)
 
         self._layer_2 = self._layer_2.add_suffix(ext2)
-        self._layer_2 = self._layer_2.rename(index=str, columns={'TCGAbarcode_'+ext2:'TCGAbarcode'})
+        self._layer_2 = self._layer_2.rename(index=str, columns={self._merge_col+ext1:self._merge_col})
         print(self._layer_2.index)
 
         self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner") 
