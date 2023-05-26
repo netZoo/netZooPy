@@ -14,9 +14,7 @@ class LionessDragon():
     Description
     ----------
         This function uses LIONESS to infer single-sample partial correlation networks.
-        Currently, all networks are written as ROWS to a single output file.
-        Note this differs from LIONESS, which writes networks as columns.
-        The purpose of the file format is to enable reading in one network at a time for downstream analyses.
+        The adjacency matrix of each network is written as an individual file to a specified output directory.
 
     Methods
     ----------
@@ -39,7 +37,7 @@ class LionessDragon():
         """
         Description
         ----------
-            Initialize instance of LionessDragon class and load data.
+            Initialize instance of LionessDragon class, load data, and fit the overall network.
 
         Parameters
         ----------
@@ -67,10 +65,6 @@ class LionessDragon():
 
             delim : str
                 Delimiter for input files. Default: ","
-<<<<<<< HEAD
-
-=======
->>>>>>> new-branch
         """
 
         # assign output directory
@@ -102,12 +96,10 @@ class LionessDragon():
 
         self._indexes = range(self._all_data.shape[0])
         self._cutoff = len(self._indexes)
-<<<<<<< HEAD
+
 
         self._identifiers = self._all_data.index
         self._lambdas = [0,0]
-=======
->>>>>>> new-branch
 
         self._identifiers = self._all_data.index
         self._lambdas = [0,0]
@@ -130,7 +122,6 @@ class LionessDragon():
     def set_cutoff(self,cutoff=0):
         self._cutoff = cutoff
         
-
     def lioness_loop(self,reestimate_lambda=False):
 
         """
@@ -140,10 +131,19 @@ class LionessDragon():
             Run LIONESS with DRAGON.
             Write each network to an individual file.
 
+        Parameters
+        ----------
+            reestimate_lambda : bool
+                If false (default), estimate a single shrinkage parameter lambda
+                on the full sample and apply this parameter in estimating each leave-one-out
+                network. If true, reestimate a separate lambda within each leave-one-out
+                network.
+
         Outputs
         ----------
            In output directory, writes a sample-specific network adjacency matrix for
            each sample
+    
         """
         
         if not os.path.exists(self._outdir):
@@ -167,8 +167,6 @@ class LionessDragon():
                 data_layer1 = all_data.filter(regex=self._ext1)
                 data_layer2 = all_data.filter(regex=self._ext2)
 
-                # add control flow for choosing to refit lambdas or not
-                # calculate penalty parameters
                 if reestimate_lambda:
                     lambdas, lambdas_landscape = estimate_penalty_parameters_dragon(data_layer1,data_layer2)
                 else:
@@ -182,11 +180,6 @@ class LionessDragon():
         
                 lioness_df = pd.DataFrame(lioness_network,columns = data_layer1.keys().append(data_layer2.keys()))
                 lioness_df.to_csv(outfile)
-<<<<<<< HEAD
-
-
-=======
->>>>>>> new-branch
                 outfile.close()
             
         return
