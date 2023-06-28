@@ -44,6 +44,13 @@ def compute_bonobo(expression_matrix, expression_mean, sample_idx, online_coexpr
     
     sscov = np.array(sscov)
     diag = np.sqrt(np.diag(np.diag(sscov)))
+
+    # Replace 0 diagonals by 1, so that the diagonal matrix can be inverted
+    diag = np.array(diag)
+    indices = np.where(np.diag(diag) == 0)[0]
+    for i in indices:
+        diag[i,i] = 1
+        
     sds = np.linalg.inv(diag)
     bonobo_matrix = sds @ sscov @ sds
     
