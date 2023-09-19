@@ -7,19 +7,19 @@ def test_cobra():
     print("Start COBRA run ...")
 
     # Read COBRA input
-    X_path = "cobra/X.csv"
+    X_path = "tests/cobra/X.csv"
     X = pd.read_csv(X_path, index_col=0)
-    expression_path = "cobra/expression.csv"
+    expression_path = "tests/cobra/expression.csv"
     expression = pd.read_csv(expression_path, index_col=0)
 
     # Read ground-truth
-    psi_gt_path = "cobra/psi.csv"
+    psi_gt_path = "tests/cobra/psi.csv"
     psi_gt = pd.read_csv(psi_gt_path, index_col=0)
-    Q_gt_path = "cobra/Q.csv"
+    Q_gt_path = "tests/cobra/Q.csv"
     Q_gt = pd.read_csv(Q_gt_path, index_col=0)
-    D_gt_path = "cobra/D.csv"
+    D_gt_path = "tests/cobra/D.csv"
     D_gt = pd.read_csv(D_gt_path, index_col=0)
-    G_gt_path = "cobra/G.csv"
+    G_gt_path = "tests/cobra/G.csv"
     G_gt = pd.read_csv(G_gt_path, index_col=0)
 
     # Call COBRA
