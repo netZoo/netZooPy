@@ -3,7 +3,11 @@ on:
   workflow_dispatch:
     branches:
       - master
-      - devel
+      - devel  
+    pull_request: 
+      branches:
+        - master
+        - devel
 jobs:
   build:
     runs-on: ${{ matrix.os }}
