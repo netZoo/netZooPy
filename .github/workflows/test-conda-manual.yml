@@ -1,8 +1,13 @@
-name: publish on release conda
+name: conda release manual
 on:
-  release:
+  workflow_dispatch:
     branches:
       - master
+      - devel  
+    pull_request: 
+      branches:
+        - master
+        - devel
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -16,9 +21,9 @@ jobs:
       - name: "Setup Conda"
         uses: s-weigand/setup-conda@v1
         with:
-          update-conda: true
+          update-conda: false
           python-version: ${{ matrix.python-version }}
-          conda-channels: anaconda, conda-forge, bioconda
+          conda-channels: anaconda,conda-forge,bioconda
       - name: "Install Conda development packages"
         run: |
           conda install conda-build
@@ -26,6 +31,6 @@ jobs:
       - name: "Build and upload package"
         run: |
           mkdir conda-build
-          conda build . --no-build-id  --output-folder ./conda-build
+          conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
+          conda install "urllib3<2"
           conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build
-          anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload --force -u netzoo --no-progress ./conda-build/**/netzoopy*.bz2
