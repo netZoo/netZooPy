@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.9]
+        python-version: [3.10]
 
     steps:
       - uses: actions/checkout@v3
@@ -28,4 +28,5 @@ jobs:
         run: |
           mkdir conda-build
           conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
+          conda install "urllib3<2"
           conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build --dry-run
