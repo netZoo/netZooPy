@@ -1,4 +1,4 @@
-name: conda release manual
+name: test conda manual
 on:
   workflow_dispatch:
     branches:
