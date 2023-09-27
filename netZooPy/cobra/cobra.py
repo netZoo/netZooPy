@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 from scipy.linalg import eigh,pinv
 
@@ -11,11 +12,11 @@ def cobra(X, expression, standardize=True):
          variables of interest to the observed co-expression.
     	Parameters
         -----------
-            X               : array
+            X : np.ndarray, pd.DataFrame
                 design matrix of size (n, q), n = number of samples, q = number of covariates
-            expressionData  : array
+            expression : np.ndarray, pd.DataFrame
                 gene expression as a matrix of size (g, n), g = number of genes
-            standardize     : bool
+            standardize : bool
                 flag to standardize the gene expression as a pre-processing step
     	Returns
         ---------
@@ -28,6 +29,15 @@ def cobra(X, expression, standardize=True):
             G   : array
                 (standardized) gene expression as a matrix of size (g, n)
         """
+    # Covert Types
+    if isinstance(X, pd.DataFrame):
+        X = X.values
+    elif not isinstance(X, np.ndarray):
+        raise ValueError("Unsupported type for 'X'. It should be of type: {np.ndarray, pd.DataFrame}")
+    if isinstance(expression, pd.DataFrame):
+        expression = expression.values
+    elif not isinstance(X, np.ndarray):
+        raise ValueError("Unsupported type for 'expression'. It should be of type: {np.ndarray, pd.DataFrame}")
     # Extract Shapes
     p, n = expression.shape
     assert p > n, "'expression is supposed to have higher number of genes (rows) than samples (columns)."
