@@ -35,7 +35,7 @@ def cobra(X, expression, standardize=True):
     _, q = X.shape
 
     # Standardize Gene Expressions
-    g = expression - expression.mean(axis=1)[:, None] if standardize else g.copy()
+    g = expression - expression.mean(axis=1)[:, None] if standardize else expression.copy()
     g = g / np.linalg.norm(g, axis=1)[:, None]
 
     # Co-expression Matrix
