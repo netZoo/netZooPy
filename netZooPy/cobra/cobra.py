@@ -1,13 +1,15 @@
 import numpy as np
+from scipy.linalg import eigh,pinv
+
 
 def cobra(X, expression, standardize=True):
     """
-         COBRA decomposes a (partial) gene co-expression matrix as a
-         linear combination of covariate-specific components.
-         It can be applied for batch correction, differential co-expression
-         analysis controlling for variables, and to understand the impact of
-         variables of interest to the observed co-expression.
-	Parameters
+     COBRA decomposes a (partial) gene co-expression matrix as a
+     linear combination of covariate-specific components.
+     It can be applied for batch correction, differential co-expression
+     analysis controlling for variables, and to understand the impact of
+     variables of interest to the observed co-expression.
+    Parameters
     -----------
         X               : array
             design matrix of size (n, q), n = number of samples, q = number of covariates
@@ -15,7 +17,7 @@ def cobra(X, expression, standardize=True):
             gene expression as a matrix of size (g, n), g = number of genes
         standardize     : bool
             flag to standardize the gene expression as a pre-processing step
-	Returns
+    Returns
     ---------
         psi : array
             impact of each covariate on the eigenvalues as a matrix of size (q, n)
@@ -26,23 +28,45 @@ def cobra(X, expression, standardize=True):
         G   : array
             (standardized) gene expression as a matrix of size (g, n)
     """
-    n = expression.shape[1]
-    N = min(n, expression.shape[0])
+    # Extract Shapes
+    p, n = expression.shape
+    assert p > n, "'expression is supposed to have higher number of genes (rows) than samples (columns)."
+    assert X.shape[0] == n, "'expression' is of shape p*n, so design matrix 'X' should be of shape n*q."
+    _, q = X.shape
 
-    if standardize:
-        expression = (expression.T - np.mean(expression, axis=1)).T
-        g = (expression.T / np.sqrt(np.sum(expression ** 2, axis=1))).T
-        Sigma = g.dot(g.T)
+    # Standardize Gene Expressions
+    g = expression - expression.mean(axis=1)[:, None] if standardize else g.copy()
+    g = g / np.linalg.norm(g, axis=1)[:, None]
 
-    Q, d, _ = np.linalg.svd(Sigma, full_matrices=True)
-    Q = Q[:, [i for i in range(N)]]
-    D = d[[i for i in range(N)]]
+    # Co-expression Matrix
+    c = np.dot(g, g.T)
+    c_eigenvalues, c_eigenvectors = eigh(c, subset_by_index=(p - n, p - 1))  # gives eigenvalues in ascending order
+    # Select Non-zero eigenvalues
+    indices_nonzero = c_eigenvalues != 0.0
+    assert np.any(indices_nonzero), "Co-expression matrix is zero (e.g. all eigen values are zero)."
+    Q = c_eigenvectors[:, indices_nonzero].T[::-1].T
 
-    hatmat = np.linalg.pinv(X.T.dot(X)).dot(X.T)
+    #
+    gtq = np.matmul(g.T, Q)
+    d = c_eigenvalues[indices_nonzero][::-1]
 
-    psi = np.zeros((X.shape[1], N))
+    #
+    xtx_inv = np.linalg.pinv(
+        np.dot(X.T, X)
+    )
+    xtx_inv_xt = np.dot(
+        xtx_inv, X.T
+    )
 
-    for i in range(psi.shape[0]):
-        psi[i, :] = (np.diag(Q.T.dot(g).dot(n * np.diag(hatmat[i,])).dot((Q.T.dot(g)).T)))
+    #
+    psi = np.zeros((q, n))
 
-    return psi, Q, D, g
+    for i in range(q):
+        for h in range(n):
+            psi[i, h] = n * np.sum([
+                (
+                        xtx_inv_xt[i, k] * gtq[k, h] ** 2
+                ) for k in range(n)
+            ])
+
+    return psi, Q, d, g
