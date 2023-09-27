@@ -4,30 +4,30 @@ from scipy.linalg import eigh,pinv
 
 def cobra(X, expression, standardize=True):
     """
-     COBRA decomposes a (partial) gene co-expression matrix as a
-     linear combination of covariate-specific components.
-     It can be applied for batch correction, differential co-expression
-     analysis controlling for variables, and to understand the impact of
-     variables of interest to the observed co-expression.
-    Parameters
-    -----------
-        X               : array
-            design matrix of size (n, q), n = number of samples, q = number of covariates
-        expressionData  : array
-            gene expression as a matrix of size (g, n), g = number of genes
-        standardize     : bool
-            flag to standardize the gene expression as a pre-processing step
-    Returns
-    ---------
-        psi : array
-            impact of each covariate on the eigenvalues as a matrix of size (q, n)
-        Q   : array
-            eigenvectors corresponding to non-zero eigenvalues as a matrix of size (g, n)
-        D   : array
-            list of length n containing the non-zero eigenvalues
-        G   : array
-            (standardized) gene expression as a matrix of size (g, n)
-    """
+         COBRA decomposes a (partial) gene co-expression matrix as a
+         linear combination of covariate-specific components.
+         It can be applied for batch correction, differential co-expression
+         analysis controlling for variables, and to understand the impact of
+         variables of interest to the observed co-expression.
+    	Parameters
+        -----------
+            X               : array
+                design matrix of size (n, q), n = number of samples, q = number of covariates
+            expressionData  : array
+                gene expression as a matrix of size (g, n), g = number of genes
+            standardize     : bool
+                flag to standardize the gene expression as a pre-processing step
+    	Returns
+        ---------
+            psi : array
+                impact of each covariate on the eigenvalues as a matrix of size (q, n)
+            Q   : array
+                eigenvectors corresponding to non-zero eigenvalues as a matrix of size (g, n)
+            D   : array
+                list of length n containing the non-zero eigenvalues
+            G   : array
+                (standardized) gene expression as a matrix of size (g, n)
+        """
     # Extract Shapes
     p, n = expression.shape
     assert p > n, "'expression is supposed to have higher number of genes (rows) than samples (columns)."
@@ -35,7 +35,7 @@ def cobra(X, expression, standardize=True):
     _, q = X.shape
 
     # Standardize Gene Expressions
-    g = expression - expression.mean(axis=1).to_numpy().reshape(-1, 1) if standardize else expression.copy()
+    g = expression - expression.mean(axis=1).reshape(-1, 1) if standardize else expression.copy()
     g = g / np.linalg.norm(g, axis=1)[:, None]
 
     # Co-expression Matrix
