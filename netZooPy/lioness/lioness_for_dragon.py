@@ -88,21 +88,18 @@ class LionessDragon():
             assert path.exists(layer2), "layer2 file not found"
             print('LOG: reading data from files and preparing all_data accordingly')
             self.__prepare_data(layer1,layer2,delim)
+
         else:
             print('LOG: using all_data provided by user')
             self._all_data = all_data
             assert len(self._all_data.filter(regex=self._ext1,axis=1))>1, "Layer 1 extension data not found in all_data"
             assert len(self._all_data.filter(regex=self._ext2,axis=1))>1, "Layer 2 extension data not found in all_data"
 
+        self._identifiers = self._all_data.index
         self._indexes = range(self._all_data.shape[0])
         self._cutoff = len(self._indexes)
-
-
-        self._identifiers = self._all_data.index
         self._lambdas = [0,0]
 
-        self._identifiers = self._all_data.index
-        self._lambdas = [0,0]
         print("[LIONESS-DRAGON] Fitting overall DRAGON network ...")
         # run the first round of DRAGON
         all_data = self._all_data
@@ -144,7 +141,13 @@ class LionessDragon():
         print(self._layer_2.index)
 
         self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner") 
-        print(self._all_data.index)
+
+        # if the name of the merge column is not the name of the index
+        # assign the index to be the merge column
+        if(self._all_data.index.name != self._merge_col):
+            print("[LIONESS-DRAGON::__prepare_data] Resetting index for:" + self._merge_col)
+            self._all_data.index = self._all_data[self._merge_col]
+            print("[LIONESS-DRAGON::__prepare_data] New index:" + self._all_data.index)
 
     def set_cutoff(self,cutoff=0):
         self._cutoff = cutoff
@@ -178,6 +181,7 @@ class LionessDragon():
 
         print("[LIONESS-DRAGON] Preparing to run a total of " + str(len(self._indexes)) + " networks")
         print("[LIONESS-DRAGON] reestimate_lambda parameter set to: "+str(reestimate_lambda))
+
         for i in self._indexes[0:self._cutoff]:
             outfile=self._outdir + "/lioness-dragon-" + str(self._identifiers[i]) + ".csv"
             outfile=open(outfile,'w')
