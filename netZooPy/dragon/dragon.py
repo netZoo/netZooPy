@@ -165,11 +165,11 @@ def estimate_kappa(n, p, lambda0, seed):
     X = np.random.multivariate_normal(np.zeros(p), Sigma, n)
     r_sim = get_partial_correlation(X, lambda0)
     r = r_sim[np.triu_indices(p,1)]
-    logliterm = lambda x: 0.5*np.log(1. - x**2/(1.-lambda0)**2)
-    term_Dlogli = np.sum(logliterm(r))
-    Dlogli = lambda x: (0.5*len(r)*(sc.digamma(x/2)-sc.digamma((x-1)/2))
+    logliterm = lambda y: 0.5*np.log(1. - y**2/(1.-lambda0)**2)
+    term_Dlogli = np.sum(logliterm(r)) # calculate log likelihood for null distribution
+    Dlogli = lambda k: (0.5*len(r)*(sc.digamma(k/2)-sc.digamma((k-1)/2))
                         +term_Dlogli)
-    DDlogli = lambda x: (1./4*len(r)*(sc.polygamma(1,x/2)-sc.polygamma(1,(x-1)/2)))
+    DDlogli = lambda k: (1./4*len(r)*(sc.polygamma(1,k/2)-sc.polygamma(1,(k-1)/2)))
     #res = optimize.bisect(Dlogli, 1.001, 1000)#bracket=[1.001, 100.*n], x0=100,
                                #method='bisect')
     res = optimize.bisect(Dlogli, 1.001, 1000*n)#optimize.newton(Dlogli, n, DDlogli)
