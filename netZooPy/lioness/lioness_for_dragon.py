@@ -32,19 +32,27 @@ class LionessDragon():
 
     _indexes = []
 
-    def __init__(self,layer1,layer2,output_dir="dragon-lioness-output",merge_col="id",ext1="_layer1",ext2="_layer2",delim=","):
+    def __init__(self,all_data = None, layer1 =None,layer2=None, output_dir="dragon-lioness-output",merge_col="id",ext1="_layer1",ext2="_layer2",delim=","):
 
         """
         Description
         ----------
             Initialize instance of LionessDragon class, load data, and fit the overall network.
+            One can either provide a single dataframe containing both omics layers, or two separate
+            filenames containing the dataframes for each omics layer. 
+            If the latter, the dataframes must be merged on a common merge_col.
 
         Parameters
         ----------
+            all_data : pandas dataframe
+                A dataframe containing both omics layers, cleaned and ready for analysis.
+                The dataframe must have the ext1 and ext2 suffixes appended to the column names.
+                If this is None, layer1 and layer2 must be specified. Default: "None"
+                
             layer1 : str
                 A file path to an n x (p1+1) matrix of omics layer 1, cleaned and ready for analysis.
                 One column of the matrix must index the inner_join between
-                omics layers. The name of this column is specified with the merge_col argument. Default is "id".
+                omics layers. Default: "None"
 
             layer2 : str
                 A file path to an n x (p2+1) matrix of omics layer 2, cleaned and ready for analysis
@@ -75,24 +83,16 @@ class LionessDragon():
         self._ext2 = ext2
         self._merge_col = merge_col
 
-        # load data
-        print("[LIONESS-DRAGON] Loading input data ...")
-
-        self._layer_1 = pd.read_csv(layer1,sep=delim, header=0,index_col=0)
-
-        self._layer_1 = self._layer_1.add_suffix(ext1)
-        self._layer_1 = self._layer_1.rename(index=str, columns={self._merge_col+ext1:self._merge_col})
-        print(self._layer_1.index)
-
-        self._layer_2 = pd.read_csv(layer2,sep=delim,header=0,index_col=0)
-
-        self._layer_2 = self._layer_2.add_suffix(ext2)
-        self._layer_2 = self._layer_2.rename(index=str, columns={self._merge_col+ext1:self._merge_col})
-        print(self._layer_2.index)
-
-        self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner") 
-        print(self._all_data.index)
-
+        if all_data is None:
+            assert path.exists(layer1), "layer1 file not found"
+            assert path.exists(layer2), "layer2 file not found"
+            print('LOG: reading data from files and preparing all_data accordingly')
+            self.__prepare_data(layer1,layer2,delim)
+        else:
+            print('LOG: using all_data provided by user')
+            self._all_data = all_data
+            assert len(self._all_data.filter(regex=self._ext1,axis=1))>1, "Layer 1 extension data not found in all_data"
+            assert len(self._all_data.filter(regex=self._ext2,axis=1))>1, "Layer 2 extension data not found in all_data"
 
         self._indexes = range(self._all_data.shape[0])
         self._cutoff = len(self._indexes)
@@ -118,6 +118,33 @@ class LionessDragon():
         self._network = get_partial_correlation_dragon(data_layer1,data_layer2,lambdas)
         self._lambdas = lambdas
         print("[LIONESS-DRAGON] Finished fitting overall DRAGON network ...")
+
+    def __prepare_data(self,layer1, layer2, delim="," ):
+        """_summary_
+
+        Args:
+            layer1 (str): filename of layer1 table
+            layer2 (_type_): filename of layer2 table
+            delim (str, optional): _description_. Defaults to ",".
+        """
+        # load data
+        print("[LIONESS-DRAGON] Loading input data ...")
+
+        self._layer_1 = pd.read_csv(layer1,sep=delim, header=0,index_col=0)
+        print(self._layer_1)
+
+        self._layer_1 = self._layer_1.add_suffix(self._ext1)
+        self._layer_1 = self._layer_1.rename(index=str, columns={self._merge_col+self._ext1:self._merge_col})
+        print(self._layer_1.index)
+
+        self._layer_2 = pd.read_csv(layer2,sep=delim,header=0,index_col=0)
+        print(self._layer_2)
+        self._layer_2 = self._layer_2.add_suffix(self._ext2)
+        self._layer_2 = self._layer_2.rename(index=str, columns={self._merge_col+self._ext2:self._merge_col})
+        print(self._layer_2.index)
+
+        self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner") 
+        print(self._all_data.index)
 
     def set_cutoff(self,cutoff=0):
         self._cutoff = cutoff
