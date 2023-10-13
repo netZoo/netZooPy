@@ -56,7 +56,11 @@ def compute_smaug(expression_matrix, methylation_matrix, expression_mean, methyl
                              (combined_data - combined_mean)[:, sample_idx]) + (1 - delta) * covariance_matrix
 
     # Compute sample-specific DRAGON from sample-specific covariance
-    smaug_matrix = np.linalg.inv(sscov)
+    Theta = np.linalg.inv(sscov)
+    p = Theta.shape[0]
+    A = np.sqrt(np.zeros((p, p)) + np.diag(Theta))
+    smaug_matrix = -Theta / A / A.T
+    smaug_matrix = smaug_matrix - np.diag(np.diag(smaug_matrix))
 
     return (smaug_matrix)
 
