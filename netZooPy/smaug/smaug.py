@@ -56,9 +56,9 @@ def compute_smaug(expression_matrix, methylation_matrix, expression_mean, methyl
 
     return (smaug_matrix)
 
-class Bonobo():
+class Smaug():
     """
-    BONOBO
+    SMAUG
 
 
     Parameters
@@ -144,12 +144,12 @@ class Bonobo():
     def run_smaug(self, output_folder='smaug/', output_fmt='hd5', keep_in_memory=False, save_full=False,
                    online_partial_coexpression=False, delta=None, computing='cpu', cores=1, precision='single', sample_names=[],
                    sparsify=False, confidence=0.05, save_pvals=False):
-        """BONOBO algorithm
+        """SMAUG algorithm
 
         Args:
             output_folder (str, optional): output folder. If an empty string is passed the matrix is automatically kept
             in memory, overwriting the value of keep_in_memory
-            output_fmt (str, optional): format of output bonobo matrix. By default it is an hd5 file, can be a txt or csv.
+            output_fmt (str, optional): format of output matrix. By default it is an hd5 file, can be a txt or csv.
             keep_in_memory (bool, optional): if True, the partial correlation matrix is kept in memory, otherwise it is
             discarded after saving.
             save_full (bool, optional): whether to save the partial coexpression with the gene names. We recommend using True
@@ -209,12 +209,12 @@ class Bonobo():
 
         for s, sample in enumerate(sample_names):
             sample_start = time.time()
-            # first run bonobo
+            # first run Smaug
             print('SMAUG: network for sample %s' % str(sample))
             self._smaug_loop(sample, output_fmt=output_fmt, keep_in_memory=keep_in_memory, save_matrix=save_matrix,
                               computing=computing, output_folder=output_folder, delta=delta)
 
-    def _bonobo_loop(self, sample, output_fmt='.h5', keep_in_memory=False, save_matrix=True, online_partial_coexpression=False,
+    def _smaug_loop(self, sample, output_fmt='.h5', keep_in_memory=False, save_matrix=True, online_partial_coexpression=False,
                      computing='cpu', output_folder='./smaug/', delta=None):
         """Runs smaug on one sample. All samples are saved separately.
 
@@ -244,7 +244,7 @@ class Bonobo():
             print('Saving SMAUG for sample %s' % (str(sample)))
             output_fn = output_folder + 'smaug_' + str(sample) + output_fmt
             if output_fmt == '.h5':
-                df_smaug.to_hdf(output_fn, key='bonobo', index=False)
+                df_smaug.to_hdf(output_fn, key='smaug', index=False)
             elif output_fmt == '.csv':
                 df_smaug.to_csv(output_fn, index=False)
             elif output_fmt == '.txt':
