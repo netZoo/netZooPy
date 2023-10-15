@@ -16,6 +16,7 @@ import scipy.integrate as integrate
 import statsmodels.stats.multitest as multi
 from netZooPy.dragon import estimate_penalty_parameters_dragon
 from netZooPy.dragon import get_shrunken_covariance_dragon
+from netZooPy.smaug import io
 
 
 def compute_smaug(expression_matrix, methylation_matrix, expression_mean, methylation_mean, sample_idx, online_coexpression=False, computing='cpu', cores=1,
@@ -63,6 +64,92 @@ def compute_smaug(expression_matrix, methylation_matrix, expression_mean, methyl
     smaug_matrix = smaug_matrix - np.diag(np.diag(smaug_matrix))
 
     return (smaug_matrix)
+
+class Bonobo():
+    """
+    BONOBO
+
+
+    Parameters
+    ----------
+
+            expression_file : str
+                Path to file containing the gene expression data.
+            methylation_file : str
+                Path to file containing the methylation data.
+            output_folder: str
+                folder where to save the results
+            delta: float
+                posterior weight between 0 and 1 (If None (default) delta is tuned empirically from data)
+
+    Notes
+    ------
+
+    Toy data:The example gene expression and methylation data that we have available here contains
+    gene expression and methylation profiles for different samples in the columns.
+    This is a small simulated excample.
+    We provided these "toy" data so that the user can test the method.
+
+
+    Sample SMAUG results:\b
+        - Node1   Node2   Weight\n
+        - gene1 cpg1	0.0	-0.951416589143\n
+        - gene1 cpg2	0.0	-0.904241609324\n
+        .
+        .
+        .
+        - gene2 cpg1	0.0	-0.951416589143\n
+        - gene2 cpg2	0.0	-0.904241609324\n
+
+    Authors: Enakshi Saha
+    """
+
+    def __init__(
+            self,
+            expression_file,
+            methylation_file
+    ):
+        """Intialize instance of Smaug class and load data."""
+
+        self.expression_file = expression_file
+        self.methylation_file = methylation_file
+
+        # data read
+        self.samples = None
+        self.n_samples = None
+        self.expression_data = None
+        self.expression_genes = None
+        self.expression_samples = None
+        self.methylation_data = None
+        self.methylation_probes = None
+        self.methylation_samples = None
+        # prepare all the data
+        print('SMAUG: preparing expression and methylation')
+        self._prepare_data()
+        self.delta = {}
+        self.smaugs = {}
+        self.pvals = {}
+        self.save_pvals = False
+
+    ########################
+    ### METHODS ############
+    ########################
+    def _prepare_data(self):
+        with Timer("Reading expression data..."):
+            # Read expression
+            self.expression_data, self.expression_genes = io.prepare_expression(
+                self.expression_file, samples=self.samples
+            )
+
+        with Timer("Reading methylation data..."):
+            # Read expression
+            self.methylation_data_data, self.methylation_probes = io.prepare_expression(
+                self.methylation_file, samples=self.samples
+            )
+
+            self.expression_samples = self.expression_data.columns.tolist()
+            self.methylation_samples = self.methylation_data.columns.tolist()
+
 
 
 
