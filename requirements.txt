@@ -3,7 +3,7 @@ numpy
 pandas
 matplotlib
 scipy
-python-igraph
+igraph
 joblib
 statsmodels
 click

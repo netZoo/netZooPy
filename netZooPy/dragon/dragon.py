@@ -375,6 +375,92 @@ def estimate_p_values_dragon(r, n, p1, p2, lambdas, kappa='estimate', seed=1, si
 
     return(adj_pvalues_mat, p_mat)
 
+def MC_estimate(n, p1, p2, lambdas, seed=1):
+    Sigma1 = np.identity(p1)
+    Sigma2 = np.identity(p2)
+    np.random.seed(seed)
+    X1 = np.random.multivariate_normal(np.zeros(p1), Sigma1, n)
+    X2 = np.random.multivariate_normal(np.zeros(p2), Sigma2, n)
+    r_sim = get_partial_correlation_dragon(X1, X2, lambdas)
+    return(r_sim)
+
+def assign_p_to_r(r_target, r_null, idx1, idx2, verbose=True):
+    # check to make sure absolute value has been taken
+    if verbose and idx1%100 == 0 and idx2%100 == 0:
+        print("[netZooPy.dragon.dragon.assign_p_to_r] Assigning p at indices: " + str(idx1) + "," + str(idx2))
+    if np.min(r_null)<0:
+        return("[netZooPy.dragon.dragon.assign_p_to_r] Error: null distribution must be absoluted before using this function")
+    return np.sum(r_null>np.abs(r_target))/len(r_null)
+
+def estimate_p_values_mc(r, n, p1, p2, lambdas, seed = 1, verbose = True):
+    lam = lambdas
+    r_null = MC_estimate(n, p1, p2,lam, seed) 
+
+    # take absolute value, outside of assign_p_to_r function for efficiency
+    r_null_abs = np.abs(r_null)
+
+    # split r_null from MC_estimate into r11, r12/r21, and r22 to assign p-values
+    IDs = np.cumsum([0,p1,p2])
+    r_null_11 = r_null_abs[IDs[0]:IDs[1],IDs[0]:IDs[1]][np.triu_indices(p1,k=1)]
+    r_null_12 = r_null_abs[IDs[0]:IDs[1],IDs[1]:IDs[2]].flatten()
+    r_null_22 = r_null_abs[IDs[1]:IDs[2],IDs[1]:IDs[2]][np.triu_indices(p2,k=1)]
+    
+    # assign p-values
+    mc_p_11 = np.zeros(shape=[p1,p1])
+    mc_p_12 = np.zeros(shape=[p1,p2])
+    mc_p_22 = np.zeros(shape=[p2,p2])
+
+    if verbose:
+        print("[netZooPy.dragon.dragon.estimate_p_values_mc] Looping through partial correlation matrix to assign p-values...")
+        print("[netZooPy.dragon.dragon.estimate_p_values_mc] Assigning p-values in the [1,1] block")
+    for i in range(p1):
+        if i % 100 == 0 and verbose:
+            print("Layer 1: i=" + str(i))
+        for j in range(i):
+            mc_p_11[i,j] = assign_p_to_r(r[i,j],r_null_11,i,j)
+    
+    if verbose:
+        print("[netZooPy.dragon.dragon.estimate_p_values_mc] Assigning p-values in the [1,2] block")
+    for i in range(p1):
+        if i % 100 == 0 and verbose:
+            print("Layer 1 to Layer 2: i= " + str(i))
+        for j in range(IDs[1],IDs[2]):
+            mc_p_12[i,(j-p1)] = assign_p_to_r(r[i,j],r_null_12,i,j)
+    
+    if verbose:
+        print("[netZooPy.dragon.dragon.estimate_p_values_mc] Assigning p-values in the [2,2] block")
+    for i in range(IDs[1],IDs[2]):
+        if i % 100 == 0 and verbose:
+            print("Layer 2: i=" + str(i))
+        for j in range(IDs[1],i):
+            mc_p_22[(i-p1),(j-p1)] = assign_p_to_r(r[i,j],r_null_22,i,j)
+
+    # map back to matrix
+    # mapping symmetries as needed
+    # np.tril(A) + np.triu(A.T, 1)
+    mc_p = np.identity(p1+p2)
+
+    mc_p[IDs[0]:IDs[1],IDs[0]:IDs[1]] = np.tril(mc_p_11) + np.triu(mc_p_11.T,1)
+    mc_p[IDs[0]:IDs[1],IDs[1]:IDs[2]] = mc_p_12
+    mc_p[IDs[1]:IDs[2],IDs[0]:IDs[1]] = np.transpose(mc_p_12)
+    mc_p[IDs[1]:IDs[2],IDs[1]:IDs[2]] = np.tril(mc_p_22) + np.triu(mc_p_22.T,1)
+
+    # TODO: implement adjusted p-values
+
+    # adjust p-values
+    # _, padj11, _, _ = multi.multipletests(p11, alpha=0.05, method='fdr_bh')
+    # _, padj22, _, _ = multi.multipletests(p22, alpha=0.05, method='fdr_bh')
+    # _, padj12, _, _ = multi.multipletests(p12, alpha=0.05, method='fdr_bh')
+
+    # adj_pvalues_mat = np.zeros((p, p))
+    # adj_pvalues_mat[IDs[0]:IDs[1], IDs[0]:IDs[1]][np.triu_indices(p1,1)] = padj11
+    # adj_pvalues_mat[IDs[1]:IDs[2], IDs[1]:IDs[2]][np.triu_indices(p2,1)] = padj22
+    # adj_pvalues_mat[IDs[0]:IDs[1], IDs[1]:IDs[2]] = padj12.reshape((p1,p2))
+
+    # adj_pvalues_mat += adj_pvalues_mat.T
+
+    return(mc_p)
+
 def calculate_true_R(X1, X2, Sigma):
     x = np.arange(0., 1.01, 0.01)
     n_lams = len(x)

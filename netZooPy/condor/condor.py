@@ -121,15 +121,20 @@ class condor_object:
 
             self.net.columns = ["V1", "V2", "weight"]
             # Creates iGraph object from the DataFrame.
-            self.graph = Graph.DataFrame(self.net, directed=False)
+            print('hello')
+            print(self.net)
+            self.graph = Graph.DataFrame(self.net, directed=False, use_vids=False)
+            # from igraph 0.10 add parameter: use_vids=False
 
             self.reg_names = sorted(set(self.net.iloc[:, 0]))
             self.tar_names = sorted(set(self.net.iloc[:, 1]))
 
             # By construction of the graph object, and the fact that reg_ is sorted in front of tar_
             # we have that the graph nodes are sorted by first the reg nodes and then the tar nodes.
-            types = [0] * len(self.reg_names)
-            types.extend([1] * len(self.tar_names))
+            #types = [0] * len(self.reg_names)
+            #types.extend([1] * len(self.tar_names))
+            types = [0 if self.graph.vs[i]['name'].startswith('reg') else 1 for i in range(len(self.graph.vs))]
+            
             self.graph.vs["type"] = types
 
             # Dictionary to keep track of node indices and node names should they be rearranged.
