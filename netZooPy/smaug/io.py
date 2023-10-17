@@ -80,7 +80,7 @@ def prepare_expression(expression_filename, samples=None):
             expression_data = expression_filename
 
     else:
-        sys.exit('Filename needs to be a table string')
+        sys.exit('Filename needs to be a table string or a pandas dataframe')
 
     # keep names of expression genes
     expression_genes = set(expression_data.index.tolist())
