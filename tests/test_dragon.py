@@ -67,18 +67,9 @@ def test_dragon():
                                  [7/12.,7/12.,7/12.,0,5/6.,0,5/6.],
                                  [1,1,1,5/6.,5/6.,5/6.,0]])
     assert(np.array_equal(dragon_p_mc,ground_truth_mc_p))
+    return()
 
-def remove_zero_variance_preds(X1,X2): #X1 is n x p1 and X2 is n x p2
-    # check for any columns with zero variance in either dataset
-    layer_1_vars = np.var(X1, axis = 0)
-    layer_2_vars = np.var(X2, axis = 0)
-    layer_1_mask = layer_1_vars != 0
-    layer_2_mask = layer_2_vars != 0
-    X1_complete = X1[:,layer_1_mask] # filter out anything with zero variance
-    X2_complete = X2[:,layer_2_mask] # filter out anything with zero variance
-    return(X1_complete,X2_complete)
-
-def test_masking():
+def test_remove_zero_variance_preds():
     layer1 = np.array([[1,2,3],
                    [1,5,6],
                    [1,4,9],
@@ -91,8 +82,48 @@ def test_masking():
                    [5,6],
                    [4,9],
                    [10,11]])
-    layer1_complete,layer2_complete = remove_zero_variance_preds(layer1,layer2)
-    print(layer1_complete)
-    print(layer2_complete)
+    layer1_complete = dragon.dragon.remove_zero_variance_preds(layer1)
+    layer2_complete = dragon.dragon.remove_zero_variance_preds(layer2)
     assert(np.array_equal(layer1_complete, layer1_manual_complete))
     assert(np.array_equal(layer2_complete, layer2))
+    return()
+
+def test_zero_variance_exception_estimate_penalty_parameters_dragon():
+    layer1 = np.array([[1,2,3],
+                   [1,5,6],
+                   [1,4,9],
+                   [1,10,11]])
+    layer2 = np.array([[1,2,3],
+                   [2,5,6],
+                   [3,4,9],
+                   [4,10,11]])
+    with pytest.raises(Exception) as exc: 
+        dragon.dragon.estimate_penalty_parameters_dragon(X1 = layer1, X2 = layer2)
+
+    assert(str(exc.value) == "[netZooPy.dragon.dragon.estimate_penalty_parameters_dragon] Found variables with zero variance. These must be removed before use of DRAGON. Consider use of `dragon.dragon.remove_zero_variance_preds`.")
+    return()   
+
+def test_zero_variance_exception_get_shrunken_covariance_dragon():
+    layer1 = np.array([[1,2,3],
+                   [1,5,6],
+                   [1,4,9],
+                   [1,10,11]])
+    layer2 = np.array([[1,2,3],
+                   [2,5,6],
+                   [3,4,9],
+                   [4,10,11]])
+
+    with pytest.raises(Exception) as exc:
+        dragon.dragon.get_shrunken_covariance_dragon(X1 = layer1, X2 = layer2, lambdas = [0.5,0.5])
+    assert(str(exc.value) == "[netZooPy.dragon.dragon.get_shrunken_covariance_dragon] Found variables with zero variance. These must be removed before use of DRAGON. Consider use of `dragon.dragon.remove_zero_variance_preds`.")
+    return()  
+
+def test_singularity_exception():
+    layer1 = np.array([[1,2,3],
+                   [2,5,6]])
+    layer2 = np.array([[1,2,3],
+                   [2,5,6]])
+    with pytest.raises(Exception) as exc:
+        dragon.dragon.get_shrunken_covariance_dragon(X1 = layer1, X2 = layer2, lambdas=[0,0]) # no shrinkage
+    assert(str(exc.value) == "[dragon.dragon.get_shrunken_covariance_dragon] Sigma is not invertible for the input values of lambda. Make sure that you are using `estimate_penalty_parameters_dragon` to select lambda. You may have variables with very small variance or highly collinear variables in your data. Consider removing such variables.")
+    return()
