@@ -140,15 +140,11 @@ class LionessDragon():
         self._layer_2 = self._layer_2.rename(index=str, columns={self._merge_col+self._ext2:self._merge_col})
         print(self._layer_2.index)
 
-        self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner") 
-
-        # if the name of the merge column is not the name of the index
-        # assign the index to be the merge column
-        if(self._all_data.index.name != self._merge_col):
-            print("[LIONESS-DRAGON::__prepare_data] Resetting index for:" + self._merge_col)
-            self._all_data.index = self._all_data[self._merge_col]
-            print("[LIONESS-DRAGON::__prepare_data] New index:" + self._all_data.index)
-
+        if ((self._layer_1.index.name != self._merge_col) or (self._layer_2.index.name != self._merge_col)):
+            self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner").set_index(self._merge_col)
+        else:
+            self._all_data = pd.merge(self._layer_1,self._layer_2,on = self._merge_col, how="inner")
+            
     def set_cutoff(self,cutoff=0):
         self._cutoff = cutoff
         

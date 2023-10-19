@@ -81,4 +81,4 @@ Please report any issues to the [issues page](https://github.com/netZoo/netZooPy
 
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
 
-Latest version: 0.9.16
+Latest version: 0.9.17
