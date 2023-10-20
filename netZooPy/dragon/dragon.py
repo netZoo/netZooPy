@@ -6,6 +6,7 @@ from scipy import optimize
 import scipy.special as sc
 import scipy.integrate as integrate
 import statsmodels.stats.multitest as multi
+import sys
 
 def Scale(X):
     X_temp = X
@@ -32,6 +33,18 @@ def EsqS(X):
     ES2 = wbar**2*n**2/(n-1)**2
     return(ES2)
 
+def remove_zero_variance_preds(X): #X is n x p
+    # check for any columns with zero variance
+    layer_vars = np.var(X, axis = 0)
+    layer_mask = (layer_vars != 0)
+    X_complete = X[:,layer_mask] # filter out anything with zero variance
+    if sum(layer_vars == 0)>0 or sum(layer_vars == 0)>0:
+        print("[netZooPy.dragon.dragon.remove_zero_variance_preds] Found variables with zero variance in columns:")
+        print(str(np.where(layer_vars == 0)[0]))
+        print("These columns have been removed from the analysis.")
+    return(X_complete)
+
+
 def estimate_penalty_GeneNet(X):
     vaS = VarS(X)
     vaS = np.sum(vaS) - np.trace(vaS)
@@ -43,9 +56,17 @@ def estimate_penalty_GeneNet(X):
     return(lam)
 
 def estimate_penalty_parameters_dragon(X1, X2):    #X1 is n x p1 and X2 is n x p2
+    
+    # check for zero variance in either layer and throw an exception if found
+    X1_vars = np.var(X1, axis = 0)
+    X2_vars = np.var(X2, axis = 0)
+    if sum(X1_vars == 0)>0 or sum(X2_vars == 0)>0:
+        raise Exception("[netZooPy.dragon.dragon.estimate_penalty_parameters_dragon] Found variables with zero variance. These must be removed before use of DRAGON. Consider use of `dragon.dragon.remove_zero_variance_preds`.")
+
     n = X1.shape[0]
     p1 = X1.shape[1]
     p2 = X2.shape[1]
+
     X = np.append(X1, X2, axis=1)
     varS = VarS(X)
     eSqs = EsqS(X)
@@ -94,6 +115,12 @@ def estimate_penalty_parameters_dragon(X1, X2):    #X1 is n x p1 and X2 is n x p
     return(penalty_parameters, risk_grid_orig)
 
 def get_shrunken_covariance_dragon(X1, X2, lambdas):
+    # check for zero variance in either layer and throw an exception if found
+    X1_vars = np.var(X1, axis = 0)
+    X2_vars = np.var(X2, axis = 0)
+    if sum(X1_vars == 0)>0 or sum(X2_vars == 0)>0:
+        raise Exception("[netZooPy.dragon.dragon.get_shrunken_covariance_dragon] Found variables with zero variance. These must be removed before use of DRAGON. Consider use of `dragon.dragon.remove_zero_variance_preds`.")
+
     n = X1.shape[0]
     p1 = X1.shape[1]
     p2 = X2.shape[1]
@@ -113,6 +140,15 @@ def get_shrunken_covariance_dragon(X1, X2, lambdas):
                                     * S[IDs[i]:IDs[i+1],IDs[j]:IDs[j+1]])
                 Sigma[IDs[j]:IDs[j+1],IDs[i]:IDs[i+1]] = (
                                     Sigma[IDs[i]:IDs[i+1],IDs[j]:IDs[j+1]].T)
+    
+    # Raise an exception if Sigma is not invertible. 
+    # This could occur in the case where the user hand-selects values of lambda
+    # that result in a singular matrix, or if the data include variables with 
+    # very small variance or very large covariance.
+    # The proposed solution in this case is for the user to search for such variables
+    # and remove them from the analysis. 
+    if np.linalg.cond(Sigma) >= 1/sys.float_info.epsilon:
+        raise Exception("[dragon.dragon.get_shrunken_covariance_dragon] Sigma is not invertible for the input values of lambda. Make sure that you are using `estimate_penalty_parameters_dragon` to select lambda. You may have variables with very small variance or highly collinear variables in your data. Consider removing such variables.")                               
     return(Sigma)
 
 def get_shrunken_covariance_GGM(X, lam):
@@ -165,11 +201,11 @@ def estimate_kappa(n, p, lambda0, seed):
     X = np.random.multivariate_normal(np.zeros(p), Sigma, n)
     r_sim = get_partial_correlation(X, lambda0)
     r = r_sim[np.triu_indices(p,1)]
-    logliterm = lambda x: 0.5*np.log(1. - x**2/(1.-lambda0)**2)
-    term_Dlogli = np.sum(logliterm(r))
-    Dlogli = lambda x: (0.5*len(r)*(sc.digamma(x/2)-sc.digamma((x-1)/2))
+    logliterm = lambda y: 0.5*np.log(1. - y**2/(1.-lambda0)**2)
+    term_Dlogli = np.sum(logliterm(r)) # calculate log likelihood for null distribution
+    Dlogli = lambda k: (0.5*len(r)*(sc.digamma(k/2)-sc.digamma((k-1)/2))
                         +term_Dlogli)
-    DDlogli = lambda x: (1./4*len(r)*(sc.polygamma(1,x/2)-sc.polygamma(1,(x-1)/2)))
+    DDlogli = lambda k: (1./4*len(r)*(sc.polygamma(1,k/2)-sc.polygamma(1,(k-1)/2)))
     #res = optimize.bisect(Dlogli, 1.001, 1000)#bracket=[1.001, 100.*n], x0=100,
                                #method='bisect')
     res = optimize.bisect(Dlogli, 1.001, 1000*n)#optimize.newton(Dlogli, n, DDlogli)

@@ -6,7 +6,7 @@ import numpy as np
 
 def test_lioness_dragon_barcode():
     print("Start LIONESS-DRAGON test by merging on barcode!")
-    s = LionessDragon(layer1 = "tests/lioness/dragon/toy_data_layer11.tsv", layer2 = "tests/lioness/dragon/toy_data_layer12.tsv", output_dir = "tests/lioness/dragon/lioness_dragon_results_barcode",merge_col = 'barcode',delim="\t")
+    s = LionessDragon(layer1 = "tests/lioness/dragon/toy_data_layer11.tsv", layer2 = "tests/lioness/dragon/toy_data_layer12.tsv", output_dir = "tests/lioness/dragon/lioness_dragon_results",merge_col = 'barcode',delim="\t")
     s.lioness_loop()
     
 def test_lioness_dragon_id():
