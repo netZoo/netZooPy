@@ -5,7 +5,6 @@ import getopt
 import click
 from netZooPy.panda.panda import Panda
 from netZooPy.lioness import Lioness
-from netZooPy.ligress import Ligress
 from netZooPy.condor import condor_object
 
 #############################################################################
@@ -253,69 +252,4 @@ def condor(
     co.brim(delta_qmin, com_num, resolution)
     co.tar_memb.to_csv(tar_output)
     co.reg_memb.to_csv(reg_output)
-
-
-
-#############################################################################
-# TIGRESS ###################################################################
-#############################################################################
-
-@click.command()
-@click.option('-e', '--expression', 'expression', type=str, required=True,
-              help='Path to file containing the gene expression data. By default, \
-                  the expression file does not have a header, and the cells are separated by a tab.')
-@click.option('-pt', '--priors-table', 'priors_table', type=str, required=True,
-              help='Path to file containing the sample-prior table.' )
-@click.option('-ol', '--out-lioness', 'output_lioness', type=str, required=True,
-              help='Output lioness folder')
-@click.option('-p','--ppi', type=str, show_default=True, default=None,
-              help='PPI table file. Sample-PPI table')
-@click.option('--ppitable', type=str, show_default=True, default='',
-              help='PPI table file. Sample-PPI table')
-@click.option('--fmt', type=str, show_default=True, default='npy',
-              help='Lioness network files output format. Choose one between .npy,.txt,.mat')
-@click.option('--computing', type=str, show_default=True, default='cpu',
-              help='computing option, choose one between cpu and gpu')
-@click.option('--precision', type=str, show_default=True, default='double',
-              help='precision option')
-@click.option('--ncores', type=int, show_default=True, default=1,
-              help='Number of cores. Lioness CPU parallelizes over ncores')
-@click.option('--save_memory', is_flag=True, show_default=False,
-              help='panda option. When true the result network is weighted adjacency matrix of size (nTFs, nGenes).\
-                  when false The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.')
-@click.option('--save_coexpression', is_flag=True, show_default=True,
-              help='save ')
-@click.option('--rm_missing', is_flag=True, show_default=False,
-              help='Removes the genes and TFs that are not present in one of the priors. Works only if modeProcess=legacy')
-@click.option('--mode_process', type=str, default='union', show_default=True,
-              help='panda option for input data processing. Choose between union(default), \
-                  legacy and intersection')
-@click.option('--alpha', type=float, default=0.1, show_default=True,
-              help='panda and lioness first sample')
-@click.option('--output_type', type=str, default='txt', show_default=True,
-              help='Output type. Now unused')
-@click.option('--th_motifs', type=int, show_default=True, default=3,
-              help='Threshold for the motifs. Reads motif only once if possible.')      
-@click.option('--delta', type=float, default=0.3, show_default=True,
-              help='posterior weight for single-sample coexpression estimation')
-@click.option('--tune_delta', is_flag=True, show_default=True,
-              help='tune the posterior weight for the single-sample coexpression estimation')
-def ligress(expression, priors_table, ppi,output_lioness,ppitable, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs, delta, tune_delta):
-    """Run Lioness to extract single-sample coexpression networks. 
-    Then run Panda on each sample with sample-specific priors.
-    """
-    
-    print('Input data:')
-    print('Expression:', expression)
-
-    # read expression data, prepare ppi+motif+expression universes
-    print('Initialise ligress...')
-    if ppitable!="":
-        ligress_obj = Ligress(expression, priors_table, ppi_table_file=ppitable, output_folder=output_lioness, mode_process=mode_process)
-    else:
-        ligress_obj = Ligress(expression, priors_table, ppi_file = ppi, output_folder=output_lioness, mode_process=mode_process)
-     
-    print('Running ligress computations ...')
-    ligress_obj.run_ligress(keep_coexpression=save_coexpression,cores=ncores, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs, delta=delta, tune_delta=tune_delta)
-    print('All done!')
 
