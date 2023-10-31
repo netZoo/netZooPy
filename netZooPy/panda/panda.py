@@ -139,7 +139,7 @@ class Panda(object):
             start=start,
             end=end,
             with_header=with_header, 
-            cobra_design_matrix=design_matrix,
+            cobra_design_matrix=cobra_design_matrix,
             cobra_covariate_to_keep=cobra_covariate_to_keep
         )
         print(modeProcess,motif_file,expression_file,ppi_file,save_memory,remove_missing,keep_expression_matrix)
