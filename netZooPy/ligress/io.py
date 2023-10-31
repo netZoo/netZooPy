@@ -214,17 +214,17 @@ def prepare_expression(expression_filename, samples = None):
     # a list of sample of interest is passed
     print(samples)
     if type(expression_filename) is str:
-        columns = read_expression(expression_filename, nrows = 1)
-        usecols = samples.copy()
-        usecols.insert(0,columns.index.name)
+        
         if (isinstance(samples, list)):
-            expression_data = read_expression(expression_filename, usecols = usecols)
+            expression_data = read_expression(expression_filename, usecols = samples)
         else:
             expression_data = read_expression(expression_filename)
-
-        
+            
     elif isinstance(expression_filename, pd.DataFrame):
-        expression_data = expression_filename.loc[:,samples]
+        if (isinstance(samples, list)):
+            expression_data = expression_filename.loc[:,samples]
+        else:
+            expression_data = expression_filename
 
     else: 
         sys.exit('Expression filename needs to be either a table string or a panda dataframe')
