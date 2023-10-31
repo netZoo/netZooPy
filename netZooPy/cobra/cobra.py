@@ -3,7 +3,7 @@ import numpy as np
 from scipy.linalg import eigh,pinv
 
 
-def cobra(X, expression, standardize=True):
+def cobra(X, expression):
     """
          COBRA decomposes a (partial) gene co-expression matrix as a
          linear combination of covariate-specific components.
@@ -16,8 +16,6 @@ def cobra(X, expression, standardize=True):
                 design matrix of size (n, q), n = number of samples, q = number of covariates
             expression : np.ndarray, pd.DataFrame
                 gene expression as a matrix of size (g, n), g = number of genes
-            standardize : bool
-                flag to standardize the gene expression as a pre-processing step
     	Returns
         ---------
             psi : array
@@ -27,7 +25,7 @@ def cobra(X, expression, standardize=True):
             D   : array
                 list of length n containing the non-zero eigenvalues
             G   : array
-                (standardized) gene expression as a matrix of size (g, n)
+                standardized gene expression as a matrix of size (g, n)
         """
     # Covert Types
     if isinstance(X, pd.DataFrame):
@@ -45,7 +43,7 @@ def cobra(X, expression, standardize=True):
     _, q = X.shape
 
     # Standardize Gene Expressions
-    g = expression - expression.mean(axis=1).reshape(-1, 1) if standardize else expression.copy()
+    g = expression - expression.mean(axis=1).reshape(-1, 1) 
     g = g / np.linalg.norm(g, axis=1)[:, None]
 
     # Co-expression Matrix
