@@ -56,8 +56,8 @@ class Panda(object):
             start : int
                 First sample of the expression dataset. This replicates the behavior of Lioness (default : 1)
             end : int
-            Last sample of the expression dataset. This replicates the behavior of Lioness (default : None )
-            design_matrix  : np.ndarray, pd.DataFrame
+                Last sample of the expression dataset. This replicates the behavior of Lioness (default : None )
+            cobra_design_matrix  : np.ndarray, pd.DataFrame
                 COBRA design matrix of size (n, q), n = number of samples, q = number of covariates
             cobra_covariate_to_keep : int
                 Zero-indedex base of COBRA co-expression component to use
@@ -122,7 +122,7 @@ class Panda(object):
         start=1,
         end=None,
         with_header=False, 
-        design_matrix = None, 
+        cobra_design_matrix = None, 
         cobra_covariate_to_keep = 0
     ):
         """ Intialize instance of Panda class and load data.
@@ -139,7 +139,7 @@ class Panda(object):
             start=start,
             end=end,
             with_header=with_header, 
-            design_matrix=design_matrix,
+            cobra_design_matrix=design_matrix,
             cobra_covariate_to_keep=cobra_covariate_to_keep
         )
         print(modeProcess,motif_file,expression_file,ppi_file,save_memory,remove_missing,keep_expression_matrix)
@@ -284,7 +284,7 @@ class Panda(object):
         start=1,
         end=None,
         with_header = False,
-        design_matrix=None,
+        cobra_design_matrix=None,
         cobra_covariate_to_keep=0
     ):
         """ Processes data files into data matrices.
@@ -496,8 +496,8 @@ class Panda(object):
             if self.expression_data is None:
                 self.correlation_matrix = np.identity(self.num_genes, dtype=int)
             else:
-                if design_matrix is not None:
-                    psi, Q, d, g = cobra(design_matrix, self.expression_data)
+                if cobra_design_matrix is not None:
+                    psi, Q, d, g = cobra(cobra_design_matrix, self.expression_data)
                     if cobra_covariate_to_keep < 0 or cobra_covariate_to_keep >= psi.shape[0]:
                         raise AttributeError(
                             "Invalid COBRA component! Valid COBRA components are in range " + str(0) + " - " + str(psi.shape[0] - 1)
