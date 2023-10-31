@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='netZooPy',
-    version='0.9.8',
+    version='0.9.17',
     description='Python implementation of netZoo.',
     url='https://github.com/netZoo/netZooPy',
     author='netZoo team',
@@ -14,10 +14,10 @@ setup(name='netZooPy',
     'matplotlib>=3.3.4',
     'scipy>=1.5.3',
     'igraph',
-    'python-igraph<0.10.0',
     'joblib>=1.1.0',
     'statsmodels>=0.12.2',
-    'click'
+    'click',
+    'tables'
     ],
     zip_safe=False,
     # add cli interface

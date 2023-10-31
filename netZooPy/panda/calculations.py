@@ -5,13 +5,13 @@ import numpy as np
 from scipy.stats import zscore
 import sys
 
+
 #
 # Calculation functions:
 # These functions were defined in Panda, but are
 # also shared by Puma and possibly others.
 # We are going to start putting these here so they can be
 # shared by all classes as they are independent from the class
-
 
 def t_function(x, y=None):
     """
@@ -38,7 +38,6 @@ def t_function(x, y=None):
             - np.abs(a_matrix)
         )
     return a_matrix
-
 
 def update_diagonal(diagonal_matrix, num, alpha, step):
     """
@@ -75,6 +74,7 @@ def compute_panda_cpu(
         threshold (float, optional): hamming distance threshold for stop. Defaults to 0.001.
         alpha (float, optional): learning rate. Defaults to 0.1
     """
+    print("Computing panda on CPU")
     motif_matrix = motif_matrix.copy()
     ppi_matrix = ppi_matrix.copy()
     correlation_matrix = correlation_matrix.copy()
@@ -138,6 +138,7 @@ def compute_panda(
             ppi_matrix,
             motif_matrix,
             alpha=alpha,
+            threshold=threshold
         )
 
     elif computing == "gpu":
@@ -148,6 +149,7 @@ def compute_panda(
             ppi_matrix,
             motif_matrix,
             alpha=alpha,
+            threshold=threshold
         )
     else:
         sys.error("ERROR: %s is not an existing computing device" % str(computing))

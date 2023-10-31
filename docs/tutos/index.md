@@ -1,8 +1,8 @@
 # Tutorials
 
-You will find a comprehensive tutorial for all the animals at [https://netzoo.github.io/](https://netzoo.github.io/)
+You will find a comprehensive tutorial for all the animals at [https://netzoo.github.io/contribute/issues/](https://netzoo.github.io/contribute/issues/).
 
-Tutorials in netZooPy use [Jupter](https://jupyter.org/) notebooks.
+Tutorials in netZooPy use [Jupter](https://jupyter.org/) notebooks. An updated and cloud-hosted versions of these notebook is available in [Netbooks](http://netbooks.networkmedicine.org/).
 
 - [Up_and_running_with_PANDA_and_netZooPy](https://github.com/netZoo/netZooPy/tree/master/tutorials/panda) by Daniel C. Morgan.
 

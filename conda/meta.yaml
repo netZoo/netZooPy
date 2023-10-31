@@ -1,6 +1,6 @@
 package:
   name: netzoopy
-  version: 0.9.8
+  version: 0.9.17
 
 source:
   path: ..
@@ -17,11 +17,12 @@ requirements:
     - matplotlib>=3.3.4
     - scipy>=1.5.3
     - igraph
-    - python-igraph<0.10.0
+    - python-igraph
     - joblib>=1.1.0
     - statsmodels>=0.12.2
     - click
     - pandas
+    - pytables
   run:
     - numpy>=1.19.2
     - python {{ python }}
@@ -29,11 +30,12 @@ requirements:
     - matplotlib>=3.3.4
     - scipy>=1.5.3
     - igraph
-    - python-igraph<0.10.0
+    - python-igraph
     - joblib>=1.1.0
     - statsmodels>=0.12.2
     - click
     - pandas
+    - pytables
 
 test:
   commands:

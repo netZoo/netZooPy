@@ -26,8 +26,8 @@ def test_condor():
     res2=pd.read_csv(output_file2, sep=',', header=None)
     gt1 =pd.read_csv(gt_file1, sep=',', header=None)
     gt2 =pd.read_csv(gt_file2, sep=',', header=None)
-    pd.testing.assert_frame_equal(res1,gt1,check_less_precise=False,check_exact=False)
-    pd.testing.assert_frame_equal(res2,gt2,check_less_precise=False,check_exact=False)
+    pd.testing.assert_frame_equal(res1,gt1,check_exact=False)
+    pd.testing.assert_frame_equal(res2,gt2,check_exact=False)
     print('finished condor test')
 
     np.random.seed(0)
@@ -46,7 +46,7 @@ def test_condor():
 
     print(res1.columns)
     print(gt1.columns)
-    pd.testing.assert_frame_equal(res1,gt1,check_less_precise=False,check_exact=False)
-    pd.testing.assert_frame_equal(res2,gt2,check_less_precise=False,check_exact=False)
+    pd.testing.assert_frame_equal(res1,gt1,check_exact=False)
+    pd.testing.assert_frame_equal(res2,gt2,check_exact=False)
 
     print('finished comparison with command line')

@@ -5,7 +5,7 @@ import pandas as pd
 from .timer import Timer
 import numpy as np
 from netZooPy.panda import calculations as calc
-
+import os
 
 class Panda(object):
     """ 
@@ -21,14 +21,14 @@ class Panda(object):
     ----------
 
             expression_file : str
-                Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
+                Either i) a string of a path to file containing the gene expression data or ii) a pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
             motif_file : str 
-                Path to file containing the transcription factor DNA binding motif data in the form of
-                TF-gene-weight(0/1) as a tab-separated file without a header or pandas dataframe.
+                Either i) a string of a path to file containing the transcription factor DNA binding motif data in the form of
+                TF-gene-weight(0/1) as a tab-separated file without a header or ii) a pandas dataframe.
                 If set to none, the gene coexpression matrix is returned as a result network.
             ppi_file : str
-                Path to file containing the PPI data. or pandas dataframe. 
-                The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
+                Either i) a path to file containing the PPI data or a ii) pandas dataframe. 
+                The PPI has to  reflect an undirected network (A - B), if not, it will be transformed into an undirected network by building a  symmetrical adjacency matrix (A -> B, B -> A).
             computing : str
                 'cpu' uses Central Processing Unit (CPU) to run PANDA.
                 'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
@@ -36,7 +36,8 @@ class Panda(object):
                 - 'double' computes the regulatory network in double precision (15 decimal digits).
                 - 'single' computes the regulatory network in single precision (7 decimal digits) which is fastaer, requires half the memory but less accurate.
             save_memory : bool
-                - True : removes temporary results from memory. The result network is weighted adjacency matrix of size (nTFs, nGenes).
+                - True : removes temporary results from memory. The result network is weighted adjacency matrix of size
+                  (nTFs, nGenes).
                 - False: keeps the temporary files in memory. The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.
             save_tmp : bool
                 Save temporary variables.
@@ -58,7 +59,7 @@ class Panda(object):
 
     Examples
     --------
-
+	Note these examples use a small toy data that may not reflect an actual use case. To use actual gene expression, motif, and PPI data, please refer to [GRAND](https://grand.networkmedicine.org/) database.
         >>> #Import the classes in the pypanda library:  
         >>> from netZooPy.panda.panda import Panda
         >>> #Run the Panda algorithm, leave out motif and PPI data to use Pearson correlation network:
@@ -75,9 +76,12 @@ class Panda(object):
     Notes
     ------
 
-    Toy data:The example gene expression data that we have available here contains gene expression profiles 
+    Toy data: The example gene expression data that we have available here contains gene expression profiles 
     for different samples in the columns. Of note, this is just a small subset of a larger gene 
     expression dataset. We provided these "toy" data so that the user can test the method.
+
+    Gene naming nomeclature: Gene names have to be consistent between gene expresssion and motif columns; and TF PPI matrix and motif rows.
+    For example, gene expression and motif columns can be in Ensembl gene IDs (ENSG), and TF PPI and motif rows can be in HUGO gene symbols.
 
 
     Sample PANDA results:\b
@@ -105,7 +109,7 @@ class Panda(object):
         computing="cpu",
         precision="double",
         save_memory=True,
-        save_tmp=True,
+        save_tmp=False,
         remove_missing=False,
         keep_expression_matrix=False,
         modeProcess="union",
@@ -117,6 +121,7 @@ class Panda(object):
         """ Intialize instance of Panda class and load data.
         """
         # Read data
+        
         self.processData(
             modeProcess,
             motif_file,
@@ -136,6 +141,8 @@ class Panda(object):
         # Network normalization
         # =====================================================================
 
+        self.precision = precision
+        
         with Timer("Normalizing networks ..."):
             self.correlation_matrix = self._normalize_network(self.correlation_matrix)
             with np.errstate(invalid="ignore"):  # silly warning bothering people
@@ -143,7 +150,7 @@ class Panda(object):
                     self.motif_matrix_unnormalized
                 )
             self.ppi_matrix = self._normalize_network(self.ppi_matrix)
-            if precision == "single":
+            if self.precision == "single":
                 self.correlation_matrix = np.float32(self.correlation_matrix)
                 self.motif_matrix = np.float32(self.motif_matrix)
                 self.ppi_matrix = np.float32(self.ppi_matrix)
@@ -155,12 +162,13 @@ class Panda(object):
         if (save_memory==True):
             print("Clearing motif and ppi data, unique tfs, and gene names for speed")
             del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
-
+            print("WARNING: save_memory will be uncoupled from the output behavior.\n Pass as_adjacency to save the output panda as adjacency matrix")
         # =====================================================================
         # Saving middle data to tmp
         # =====================================================================
         if save_tmp:
             with Timer("Saving expression matrix and normalized networks ..."):
+                os.makedirs('./tmp',exist_ok=True) 
                 if self.expression_data is not None:
                     np.save("/tmp/expression.npy", self.expression_data.values)
                 np.save("/tmp/motif.normalized.npy", self.motif_matrix)
@@ -301,7 +309,9 @@ class Panda(object):
         # =====================================================================
         # Data loading
         # =====================================================================
+        ### Loading Motif
         if type(motif_file) is str:
+            # If motif_file is a filename
             with Timer("Loading motif data ..."):
                 self.motif_data = pd.read_csv(motif_file, sep="\t", header=None)
                 self.motif_tfs = sorted(set(self.motif_data[0]))
@@ -309,11 +319,14 @@ class Panda(object):
                 # self.num_tfs = len(self.unique_tfs)
                 # print('Unique TFs:', self.num_tfs)
         elif type(motif_file) is not str:
+            # If motif_file is an object
             if motif_file is None:
+                # Computation without motif
                 self.motif_data = None
                 self.motif_genes = []
                 self.motif_tfs = []
             else:
+                # If motif_file is an object, it needs to be a dataframe
                 if not isinstance(motif_file, pd.DataFrame):
                     raise Exception(
                         "Please provide a pandas dataframe for motif data with column names as 'source', 'target', and 'weight'."
@@ -329,7 +342,9 @@ class Panda(object):
             # self.num_tfs = len(self.unique_tfs)
             # print('Unique TFs:', self.num_tfs)
 
+        ### Loading expression
         if type(expression_file) is str:
+            # If we pass an expression file, check if we have a 'with header' flag and read it
             with Timer("Loading expression data ..."):
                 if with_header:
                     # Read data with header
@@ -340,13 +355,14 @@ class Panda(object):
                     self.expression_data = pd.read_csv(
                         expression_file, sep="\t", header=None, index_col=0
                     )
-
+                # assign expression data and samples/gene names
                 self.expression_data = self.expression_data.iloc[:, (start-1):end]
                 self.expression_genes = self.expression_data.index.tolist()
                 self.expression_samples = self.expression_data.columns.astype(str)
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
+            # Pass expression as a dataframe 
             if expression_file is not None:
                 if not isinstance(expression_file, pd.DataFrame):
                     raise Exception(
@@ -358,6 +374,7 @@ class Panda(object):
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
             else:
+                # If no expression is passed
                 self.gene_names = self.motif_genes
                 self.expression_genes = self.motif_genes
                 self.num_genes = len(self.gene_names)
@@ -365,6 +382,7 @@ class Panda(object):
                     None  # pd.DataFrame(np.identity(self.num_genes, dtype=int))
                 )
                 print(
+                    # TODO: Marouen check here. Here we do not pass the identity matrix
                     "No Expression data given: correlation matrix will be an identity matrix of size",
                     len(self.motif_genes),
                 )
@@ -374,6 +392,7 @@ class Panda(object):
                 "Duplicate gene symbols detected. Consider averaging before running PANDA"
             )
 
+        ### Loading the PPI
         if type(ppi_file) is str:
             with Timer("Loading PPI data ..."):
                 self.ppi_data = pd.read_csv(ppi_file, sep="\t", header=None)
@@ -391,6 +410,7 @@ class Panda(object):
                 )
                 print("Number of PPIs:", self.ppi_data.shape[0])
             else:
+                # TODO: marouen, here we do not have an identiy matrix
                 print(
                     "No PPI data given: ppi matrix will be an identity matrix of size",
                     len(self.motif_tfs),
@@ -398,6 +418,8 @@ class Panda(object):
                 self.ppi_data = None
                 self.ppi_tfs = self.motif_tfs
 
+
+        ### Data combination
         if modeProcess == "legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
             print('new case')
@@ -450,9 +472,10 @@ class Panda(object):
         ):
             # Initialize data & Populate gene expression
             self.expression = np.zeros((self.num_genes, self.expression_data.shape[1]))
-            idx_geneEx = [gene2idx.get(x, 0) for x in self.expression_genes]
-            
-            self.expression[idx_geneEx, :] = self.expression_data.values
+            idx_geneEx = [gene2idx.get(x, np.nan) for x in self.expression_genes]
+            filtered_genes = [i for (i, v) in zip(self.expression_genes, idx_geneEx) if ~np.isnan(v)]
+            idx_geneEx = [x for x in idx_geneEx if str(x) != 'nan']
+            self.expression[idx_geneEx, :] = self.expression_data.loc[filtered_genes].values
             self.expression_data = pd.DataFrame(data=self.expression)
 
         # =====================================================================
@@ -492,24 +515,30 @@ class Panda(object):
 
         with Timer("Creating motif network ..."):
             self.motif_matrix_unnormalized = np.zeros((self.num_tfs, self.num_genes))
-            idx_tfs = [tf2idx.get(x, 0) for x in self.motif_data[0]]
-            idx_genes = [gene2idx.get(x, 0) for x in self.motif_data[1]]
+            idx_tfs = [tf2idx.get(x, np.nan) for x in self.motif_data[0]]
+            idx_genes = [gene2idx.get(x, np.nan) for x in self.motif_data[1]]
+            commind1 = ~np.isnan(idx_tfs) & ~np.isnan(idx_genes)
+            idx_tfs = [i for (i, v) in zip(idx_tfs, commind1) if v]
+            idx_genes = [i for (i, v) in zip(idx_genes, commind1) if v]
             idx = np.ravel_multi_index(
                 (idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape
             )
-            self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2]
+            self.motif_matrix_unnormalized.ravel()[idx] = self.motif_data[2][commind1]
 
         if self.ppi_data is None:
             self.ppi_matrix = np.identity(self.num_tfs, dtype=int)
         else:
             with Timer("Creating PPI network ..."):
                 self.ppi_matrix = np.identity(self.num_tfs)
-                idx_tf1 = [tf2idx.get(x, 0) for x in self.ppi_data[0]]
-                idx_tf2 = [tf2idx.get(x, 0) for x in self.ppi_data[1]]
+                idx_tf1 = [tf2idx.get(x, np.nan) for x in self.ppi_data[0]]
+                idx_tf2 = [tf2idx.get(x, np.nan) for x in self.ppi_data[1]]
+                commind2 = ~np.isnan(idx_tf1) & ~np.isnan(idx_tf2)
+                idx_tf1 = [i for (i, v) in zip(idx_tf1, commind2) if v]
+                idx_tf2 = [i for (i, v) in zip(idx_tf2, commind2) if v]
                 idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
-                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                self.ppi_matrix.ravel()[idx] = self.ppi_data[2][commind2]
                 idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
-                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                self.ppi_matrix.ravel()[idx] = self.ppi_data[2][commind2]
 
         return
 
@@ -541,7 +570,6 @@ class Panda(object):
             computing=computing,
             alpha=alpha,
         )
-
         print("Running panda took: %.2f seconds!" % (time.time() - panda_loop_time))
         # Ale: reintroducing the export_panda_results array if Panda called with save_memory=False
 
@@ -570,29 +598,58 @@ class Panda(object):
         self.export_panda_results = self.export_panda_results[["tf", "gene", "force"]]
         return None
 
-    def save_panda_results(self, path="panda.npy"):
+    def save_panda_results(self, path="panda.npy", save_adjacency=False, old_compatible=True ):
         """ Saves PANDA network.
 
         Parameters
         ----------
             path: str
                 Path to save the network.
+            save_adjacency: bool
+                if True the output is an adjacency matrix and not the edge list
+            old_compatible: bool
+                if True saves the data as it was saved until netzoopy 0.9.11
         """
         with Timer("Saving PANDA network to %s ..." % path):
             # Because there are two modes of operation (save_memory), save to file will be different
-            if not hasattr(self, "unique_tfs"):
-                toexport = self.panda_network
-            else:
-                toexport = self.export_panda_results
+
             # Export to file
-            if path.endswith(".txt"):
-                np.savetxt(path, toexport, fmt="%s", delimiter=" ")
-            elif path.endswith(".csv"):
-                np.savetxt(path, toexport, fmt="%s", delimiter=",")
-            elif path.endswith(".tsv"):
-                np.savetxt(path, toexport, fmt="%s", delimiter="/t")
+            if old_compatible:
+                if not hasattr(self, "unique_tfs"):
+                    toexport = self.panda_network
+                else:
+                    # save the network with names
+                    toexport = self.export_panda_results
+                print('WARNING: saving without header will soon become obsolete. \n\
+                    Use old_compatible=False to save the panda results with correct column naming')
+                if path.endswith(".txt"):
+                    np.savetxt(path, toexport, fmt="%s", delimiter=" ")
+                elif path.endswith(".csv"):
+                    np.savetxt(path, toexport, fmt="%s", delimiter=",")
+                elif path.endswith(".tsv"):
+                    np.savetxt(path, toexport, fmt="%s", delimiter="\t")
+                else:
+                    np.save(path, toexport)
             else:
-                np.save(path, toexport)
+                print('WARNING: panda is now saved with the column names. \nUse old_compatible=True to save the panda results as previous versions without header')
+                if not hasattr(self, "unique_tfs"):
+                    toexport = self.panda_network
+                    toexport = toexport.reset_index()
+                else:
+                    # save the network with names
+                    toexport = self.export_panda_results
+                    #saving as adjacency matrix
+                    if (save_adjacency):
+                        toexport = pd.pivot_table(toexport, values = 'force', index = 'tf', columns='gene', dropna=False)
+                        toexport = toexport.reset_index()
+                if path.endswith(".txt"):
+                    toexport.to_csv(path, sep=" ", index=False)
+                elif path.endswith(".csv"):
+                    toexport.to_csv(path, sep=",", index=False)
+                elif path.endswith(".tsv"):
+                    toexport.to_csv(path, sep="\t", index=False)
+                else:
+                    np.save(path, toexport)
 
     def top_network_plot(self, top=100, file="panda_top_100.png", plot_bipart=False):
         """ Selects top genes.
