@@ -1,0 +1,32 @@
+name: test conda 39
+on:
+  push:
+    branches:
+      - master
+      - devel
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.10']
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Setup Conda"
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: false
+          python-version: '3.9'
+          conda-channels: anaconda, conda-forge, bioconda
+      - name: "Install Conda development packages"
+        run: |
+          conda install conda-build
+          conda install -c anaconda anaconda-client
+      - name: "Build and upload package"
+        run: |
+          mkdir conda-build
+          conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
+          conda install "urllib3<2"
+          conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build --dry-run
