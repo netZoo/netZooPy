@@ -33,7 +33,17 @@ netZooPy currently integrates
 
 * **DRAGON** (Determining Regulatory Associations using Graphical models on Omics Networks) [[Shutta et al.]]("https://arxiv.org/abs/2104.01690") is a method for estimating multiomic Gaussian graphical models (GGMs, also known as partial correlation networks) that incorporate two different omics data types. DRAGON builds off of the popular covariance shrinkage method of Ledoit and Wolf with an optimization approach that explicitly accounts for the differences in two separate omics "layers" in the shrinkage estimator. The resulting sparse covariance matrix is then inverted to obtain a precision matrix estimate and a corresponding GGM.  Although GGMs assume normally distributed data, DRAGON can be used on any type of continuous data by transforming data to approximate normality prior to network estimation. Currently, DRAGON can be applied to estimate networks with two different types of omics data. Investigators interested in applying DRAGON to more than two types of omics data can consider estimating pairwise networks and "chaining" them together.
 
+* **COBRA** (Co-expression Batch Reduction Adjustment). Batch effects and other covariates are known to induce spurious associations in co-expression networks and confound differential gene expression analyses. These effects are corrected for using various methods prior to downstream analyses such as the inference of co-expression networks and computing differences between them. In differential co-expression analysis, the pairwise joint distribution of genes is considered rather than independently analyzing the distribution of expression levels for each individual gene. Computing co-expression matrices after standard batch correction on gene expression data is not sufficient to account for the possibility of batch-induced changes in the correlation between genes as existing batch correction methods act solely on the marginal distribution of each gene. Consequently, uncorrected, artifactual differential co-expression can skew the correlation structure such that network-based methods that use gene co-expression can produce false, nonbiological associations even using data corrected using standard batch correction. Co-expression Batch Reduction Adjustment (COBRA) addresses this question by computing a batch-corrected gene co-expression matrix based on estimating a conditional covariance matrix. COBRA estimates a reduced set of parameters that express the co-expression matrix as a function of the sample covariates and can be used to control for continuous and categorical covariates. The method is computationally fast and makes use of the inherently modular structure of genomic data to estimate accurate gene regulatory associations and enable functional analysis for high-dimensional genomic data.
+
+
+
+
+
+
+
+
 * **BONOBO** (Bayesian Optimized Networks Obtained By assimilating Omics data) is a scalable Bayesian model for deriving individual sample-specific co-expression networks by recognizing variations in molecular interactions across individuals. For every sample, BONOBO assumes a Gaussian distribution on the log-transformed centered gene expression and a conjugate prior distribution on the sample-specific co-expression matrix constructed from all other samples in the data. Combining the sample-specific gene expression with the prior distribution, BONOBO yields a closed-form solution for the posterior distribution of the sample-specific co-expression matrices
+
 
 
 ## Quick guide
