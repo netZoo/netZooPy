@@ -1,4 +1,4 @@
-name: test conda manual
+name: test conda manual 310
 on:
   workflow_dispatch:
     branches:
@@ -22,7 +22,7 @@ jobs:
         uses: s-weigand/setup-conda@v1
         with:
           update-conda: false
-          python-version: '3.10'
+          python-version:  '3.10'
           conda-channels: anaconda,conda-forge,bioconda
       - name: "Install Conda development packages"
         run: |

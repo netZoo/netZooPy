@@ -1,13 +1,9 @@
-name: test conda manual
+name: test conda 39
 on:
-  workflow_dispatch:
+  push:
     branches:
       - master
-      - devel  
-    pull_request: 
-      branches:
-        - master
-        - devel
+      - devel
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -22,8 +18,8 @@ jobs:
         uses: s-weigand/setup-conda@v1
         with:
           update-conda: false
-          python-version: '3.10'
-          conda-channels: anaconda,conda-forge,bioconda
+          python-version: '3.9'
+          conda-channels: anaconda, conda-forge, bioconda
       - name: "Install Conda development packages"
         run: |
           conda install conda-build
@@ -33,4 +29,4 @@ jobs:
           mkdir conda-build
           conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
           conda install "urllib3<2"
-          conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build
+          conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build --dry-run
