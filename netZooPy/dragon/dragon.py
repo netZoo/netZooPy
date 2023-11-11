@@ -6,6 +6,7 @@ from scipy import optimize
 import scipy.special as sc
 import scipy.integrate as integrate
 import statsmodels.stats.multitest as multi
+import sys
 
 def Scale(X):
     X_temp = X
@@ -32,6 +33,18 @@ def EsqS(X):
     ES2 = wbar**2*n**2/(n-1)**2
     return(ES2)
 
+def remove_zero_variance_preds(X): #X is n x p
+    # check for any columns with zero variance
+    layer_vars = np.var(X, axis = 0)
+    layer_mask = (layer_vars != 0)
+    X_complete = X[:,layer_mask] # filter out anything with zero variance
+    if sum(layer_vars == 0)>0 or sum(layer_vars == 0)>0:
+        print("[netZooPy.dragon.dragon.remove_zero_variance_preds] Found variables with zero variance in columns:")
+        print(str(np.where(layer_vars == 0)[0]))
+        print("These columns have been removed from the analysis.")
+    return(X_complete)
+
+
 def estimate_penalty_GeneNet(X):
     vaS = VarS(X)
     vaS = np.sum(vaS) - np.trace(vaS)
@@ -43,9 +56,17 @@ def estimate_penalty_GeneNet(X):
     return(lam)
 
 def estimate_penalty_parameters_dragon(X1, X2):    #X1 is n x p1 and X2 is n x p2
+    
+    # check for zero variance in either layer and throw an exception if found
+    X1_vars = np.var(X1, axis = 0)
+    X2_vars = np.var(X2, axis = 0)
+    if sum(X1_vars == 0)>0 or sum(X2_vars == 0)>0:
+        raise Exception("[netZooPy.dragon.dragon.estimate_penalty_parameters_dragon] Found variables with zero variance. These must be removed before use of DRAGON. Consider use of `dragon.dragon.remove_zero_variance_preds`.")
+
     n = X1.shape[0]
     p1 = X1.shape[1]
     p2 = X2.shape[1]
+
     X = np.append(X1, X2, axis=1)
     varS = VarS(X)
     eSqs = EsqS(X)
@@ -94,6 +115,12 @@ def estimate_penalty_parameters_dragon(X1, X2):    #X1 is n x p1 and X2 is n x p
     return(penalty_parameters, risk_grid_orig)
 
 def get_shrunken_covariance_dragon(X1, X2, lambdas):
+    # check for zero variance in either layer and throw an exception if found
+    X1_vars = np.var(X1, axis = 0)
+    X2_vars = np.var(X2, axis = 0)
+    if sum(X1_vars == 0)>0 or sum(X2_vars == 0)>0:
+        raise Exception("[netZooPy.dragon.dragon.get_shrunken_covariance_dragon] Found variables with zero variance. These must be removed before use of DRAGON. Consider use of `dragon.dragon.remove_zero_variance_preds`.")
+
     n = X1.shape[0]
     p1 = X1.shape[1]
     p2 = X2.shape[1]
@@ -113,6 +140,15 @@ def get_shrunken_covariance_dragon(X1, X2, lambdas):
                                     * S[IDs[i]:IDs[i+1],IDs[j]:IDs[j+1]])
                 Sigma[IDs[j]:IDs[j+1],IDs[i]:IDs[i+1]] = (
                                     Sigma[IDs[i]:IDs[i+1],IDs[j]:IDs[j+1]].T)
+    
+    # Raise an exception if Sigma is not invertible. 
+    # This could occur in the case where the user hand-selects values of lambda
+    # that result in a singular matrix, or if the data include variables with 
+    # very small variance or very large covariance.
+    # The proposed solution in this case is for the user to search for such variables
+    # and remove them from the analysis. 
+    if np.linalg.cond(Sigma) >= 1/sys.float_info.epsilon:
+        raise Exception("[dragon.dragon.get_shrunken_covariance_dragon] Sigma is not invertible for the input values of lambda. Make sure that you are using `estimate_penalty_parameters_dragon` to select lambda. You may have variables with very small variance or highly collinear variables in your data. Consider removing such variables.")                               
     return(Sigma)
 
 def get_shrunken_covariance_GGM(X, lam):
@@ -165,11 +201,11 @@ def estimate_kappa(n, p, lambda0, seed):
     X = np.random.multivariate_normal(np.zeros(p), Sigma, n)
     r_sim = get_partial_correlation(X, lambda0)
     r = r_sim[np.triu_indices(p,1)]
-    logliterm = lambda x: 0.5*np.log(1. - x**2/(1.-lambda0)**2)
-    term_Dlogli = np.sum(logliterm(r))
-    Dlogli = lambda x: (0.5*len(r)*(sc.digamma(x/2)-sc.digamma((x-1)/2))
+    logliterm = lambda y: 0.5*np.log(1. - y**2/(1.-lambda0)**2)
+    term_Dlogli = np.sum(logliterm(r)) # calculate log likelihood for null distribution
+    Dlogli = lambda k: (0.5*len(r)*(sc.digamma(k/2)-sc.digamma((k-1)/2))
                         +term_Dlogli)
-    DDlogli = lambda x: (1./4*len(r)*(sc.polygamma(1,x/2)-sc.polygamma(1,(x-1)/2)))
+    DDlogli = lambda k: (1./4*len(r)*(sc.polygamma(1,k/2)-sc.polygamma(1,(k-1)/2)))
     #res = optimize.bisect(Dlogli, 1.001, 1000)#bracket=[1.001, 100.*n], x0=100,
                                #method='bisect')
     res = optimize.bisect(Dlogli, 1.001, 1000*n)#optimize.newton(Dlogli, n, DDlogli)
@@ -374,6 +410,92 @@ def estimate_p_values_dragon(r, n, p1, p2, lambdas, kappa='estimate', seed=1, si
     adj_pvalues_mat += adj_pvalues_mat.T
 
     return(adj_pvalues_mat, p_mat)
+
+def MC_estimate(n, p1, p2, lambdas, seed=1):
+    Sigma1 = np.identity(p1)
+    Sigma2 = np.identity(p2)
+    np.random.seed(seed)
+    X1 = np.random.multivariate_normal(np.zeros(p1), Sigma1, n)
+    X2 = np.random.multivariate_normal(np.zeros(p2), Sigma2, n)
+    r_sim = get_partial_correlation_dragon(X1, X2, lambdas)
+    return(r_sim)
+
+def assign_p_to_r(r_target, r_null, idx1, idx2, verbose=True):
+    # check to make sure absolute value has been taken
+    if verbose and idx1%100 == 0 and idx2%100 == 0:
+        print("[netZooPy.dragon.dragon.assign_p_to_r] Assigning p at indices: " + str(idx1) + "," + str(idx2))
+    if np.min(r_null)<0:
+        return("[netZooPy.dragon.dragon.assign_p_to_r] Error: null distribution must be absoluted before using this function")
+    return np.sum(r_null>np.abs(r_target))/len(r_null)
+
+def estimate_p_values_mc(r, n, p1, p2, lambdas, seed = 1, verbose = True):
+    lam = lambdas
+    r_null = MC_estimate(n, p1, p2,lam, seed) 
+
+    # take absolute value, outside of assign_p_to_r function for efficiency
+    r_null_abs = np.abs(r_null)
+
+    # split r_null from MC_estimate into r11, r12/r21, and r22 to assign p-values
+    IDs = np.cumsum([0,p1,p2])
+    r_null_11 = r_null_abs[IDs[0]:IDs[1],IDs[0]:IDs[1]][np.triu_indices(p1,k=1)]
+    r_null_12 = r_null_abs[IDs[0]:IDs[1],IDs[1]:IDs[2]].flatten()
+    r_null_22 = r_null_abs[IDs[1]:IDs[2],IDs[1]:IDs[2]][np.triu_indices(p2,k=1)]
+    
+    # assign p-values
+    mc_p_11 = np.zeros(shape=[p1,p1])
+    mc_p_12 = np.zeros(shape=[p1,p2])
+    mc_p_22 = np.zeros(shape=[p2,p2])
+
+    if verbose:
+        print("[netZooPy.dragon.dragon.estimate_p_values_mc] Looping through partial correlation matrix to assign p-values...")
+        print("[netZooPy.dragon.dragon.estimate_p_values_mc] Assigning p-values in the [1,1] block")
+    for i in range(p1):
+        if i % 100 == 0 and verbose:
+            print("Layer 1: i=" + str(i))
+        for j in range(i):
+            mc_p_11[i,j] = assign_p_to_r(r[i,j],r_null_11,i,j)
+    
+    if verbose:
+        print("[netZooPy.dragon.dragon.estimate_p_values_mc] Assigning p-values in the [1,2] block")
+    for i in range(p1):
+        if i % 100 == 0 and verbose:
+            print("Layer 1 to Layer 2: i= " + str(i))
+        for j in range(IDs[1],IDs[2]):
+            mc_p_12[i,(j-p1)] = assign_p_to_r(r[i,j],r_null_12,i,j)
+    
+    if verbose:
+        print("[netZooPy.dragon.dragon.estimate_p_values_mc] Assigning p-values in the [2,2] block")
+    for i in range(IDs[1],IDs[2]):
+        if i % 100 == 0 and verbose:
+            print("Layer 2: i=" + str(i))
+        for j in range(IDs[1],i):
+            mc_p_22[(i-p1),(j-p1)] = assign_p_to_r(r[i,j],r_null_22,i,j)
+
+    # map back to matrix
+    # mapping symmetries as needed
+    # np.tril(A) + np.triu(A.T, 1)
+    mc_p = np.identity(p1+p2)
+
+    mc_p[IDs[0]:IDs[1],IDs[0]:IDs[1]] = np.tril(mc_p_11) + np.triu(mc_p_11.T,1)
+    mc_p[IDs[0]:IDs[1],IDs[1]:IDs[2]] = mc_p_12
+    mc_p[IDs[1]:IDs[2],IDs[0]:IDs[1]] = np.transpose(mc_p_12)
+    mc_p[IDs[1]:IDs[2],IDs[1]:IDs[2]] = np.tril(mc_p_22) + np.triu(mc_p_22.T,1)
+
+    # TODO: implement adjusted p-values
+
+    # adjust p-values
+    # _, padj11, _, _ = multi.multipletests(p11, alpha=0.05, method='fdr_bh')
+    # _, padj22, _, _ = multi.multipletests(p22, alpha=0.05, method='fdr_bh')
+    # _, padj12, _, _ = multi.multipletests(p12, alpha=0.05, method='fdr_bh')
+
+    # adj_pvalues_mat = np.zeros((p, p))
+    # adj_pvalues_mat[IDs[0]:IDs[1], IDs[0]:IDs[1]][np.triu_indices(p1,1)] = padj11
+    # adj_pvalues_mat[IDs[1]:IDs[2], IDs[1]:IDs[2]][np.triu_indices(p2,1)] = padj22
+    # adj_pvalues_mat[IDs[0]:IDs[1], IDs[1]:IDs[2]] = padj12.reshape((p1,p2))
+
+    # adj_pvalues_mat += adj_pvalues_mat.T
+
+    return(mc_p)
 
 def calculate_true_R(X1, X2, Sigma):
     x = np.arange(0., 1.01, 0.01)

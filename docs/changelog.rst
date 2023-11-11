@@ -3,6 +3,20 @@ Changelog
 ==========
 
 
+0.10.0
+-------------------------
+
+- Added BONOBO to the zoo! 
+- Cobra has been updated and integrated with PANDA.
+
+0.9.16
+-------------------------
+
+- Added COBRA to the zoo! 
+- We no longer costrain the igraph version to be older than 0.10. This will probably change the community assignment
+  results, but the upgrade has been recommended by the igraph developers.
+
+
 0.9.13
 -------------------------
 

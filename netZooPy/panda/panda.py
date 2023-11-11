@@ -4,6 +4,7 @@ import time
 import pandas as pd
 from .timer import Timer
 import numpy as np
+from netZooPy.cobra import cobra
 from netZooPy.panda import calculations as calc
 import os
 
@@ -21,14 +22,14 @@ class Panda(object):
     ----------
 
             expression_file : str
-                Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
+                Either i) a string of a path to file containing the gene expression data or ii) a pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.
             motif_file : str 
-                Path to file containing the transcription factor DNA binding motif data in the form of
-                TF-gene-weight(0/1) as a tab-separated file without a header or pandas dataframe.
+                Either i) a string of a path to file containing the transcription factor DNA binding motif data in the form of
+                TF-gene-weight(0/1) as a tab-separated file without a header or ii) a pandas dataframe.
                 If set to none, the gene coexpression matrix is returned as a result network.
             ppi_file : str
-                Path to file containing the PPI data. or pandas dataframe. 
-                The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.
+                Either i) a path to file containing the PPI data or a ii) pandas dataframe. 
+                The PPI has to  reflect an undirected network (A - B), if not, it will be transformed into an undirected network by building a  symmetrical adjacency matrix (A -> B, B -> A).
             computing : str
                 'cpu' uses Central Processing Unit (CPU) to run PANDA.
                 'gpu' use the Graphical Processing Unit (GPU) to run PANDA.
@@ -55,11 +56,15 @@ class Panda(object):
             start : int
                 First sample of the expression dataset. This replicates the behavior of Lioness (default : 1)
             end : int
-            Last sample of the expression dataset. This replicates the behavior of Lioness (default : None )
+                Last sample of the expression dataset. This replicates the behavior of Lioness (default : None )
+            cobra_design_matrix  : np.ndarray, pd.DataFrame
+                COBRA design matrix of size (n, q), n = number of samples, q = number of covariates
+            cobra_covariate_to_keep : int
+                Zero-indedex base of COBRA co-expression component to use
 
     Examples
     --------
-
+	Note these examples use a small toy data that may not reflect an actual use case. To use actual gene expression, motif, and PPI data, please refer to [GRAND](https://grand.networkmedicine.org/) database.
         >>> #Import the classes in the pypanda library:  
         >>> from netZooPy.panda.panda import Panda
         >>> #Run the Panda algorithm, leave out motif and PPI data to use Pearson correlation network:
@@ -76,9 +81,12 @@ class Panda(object):
     Notes
     ------
 
-    Toy data:The example gene expression data that we have available here contains gene expression profiles 
+    Toy data: The example gene expression data that we have available here contains gene expression profiles 
     for different samples in the columns. Of note, this is just a small subset of a larger gene 
     expression dataset. We provided these "toy" data so that the user can test the method.
+
+    Gene naming nomeclature: Gene names have to be consistent between gene expresssion and motif columns; and TF PPI matrix and motif rows.
+    For example, gene expression and motif columns can be in Ensembl gene IDs (ENSG), and TF PPI and motif rows can be in HUGO gene symbols.
 
 
     Sample PANDA results:\b
@@ -113,7 +121,9 @@ class Panda(object):
         alpha=0.1,
         start=1,
         end=None,
-        with_header=False
+        with_header=False, 
+        cobra_design_matrix = None, 
+        cobra_covariate_to_keep = 0
     ):
         """ Intialize instance of Panda class and load data.
         """
@@ -128,7 +138,9 @@ class Panda(object):
             keep_expression_matrix,
             start=start,
             end=end,
-            with_header=with_header
+            with_header=with_header, 
+            cobra_design_matrix=cobra_design_matrix,
+            cobra_covariate_to_keep=cobra_covariate_to_keep
         )
         print(modeProcess,motif_file,expression_file,ppi_file,save_memory,remove_missing,keep_expression_matrix)
         if hasattr(self, "export_panda_results"):
@@ -272,6 +284,8 @@ class Panda(object):
         start=1,
         end=None,
         with_header = False,
+        cobra_design_matrix=None,
+        cobra_covariate_to_keep=0
     ):
         """ Processes data files into data matrices.
 
@@ -306,7 +320,9 @@ class Panda(object):
         # =====================================================================
         # Data loading
         # =====================================================================
+        ### Loading Motif
         if type(motif_file) is str:
+            # If motif_file is a filename
             with Timer("Loading motif data ..."):
                 self.motif_data = pd.read_csv(motif_file, sep="\t", header=None)
                 self.motif_tfs = sorted(set(self.motif_data[0]))
@@ -314,11 +330,14 @@ class Panda(object):
                 # self.num_tfs = len(self.unique_tfs)
                 # print('Unique TFs:', self.num_tfs)
         elif type(motif_file) is not str:
+            # If motif_file is an object
             if motif_file is None:
+                # Computation without motif
                 self.motif_data = None
                 self.motif_genes = []
                 self.motif_tfs = []
             else:
+                # If motif_file is an object, it needs to be a dataframe
                 if not isinstance(motif_file, pd.DataFrame):
                     raise Exception(
                         "Please provide a pandas dataframe for motif data with column names as 'source', 'target', and 'weight'."
@@ -334,7 +353,9 @@ class Panda(object):
             # self.num_tfs = len(self.unique_tfs)
             # print('Unique TFs:', self.num_tfs)
 
+        ### Loading expression
         if type(expression_file) is str:
+            # If we pass an expression file, check if we have a 'with header' flag and read it
             with Timer("Loading expression data ..."):
                 if with_header:
                     # Read data with header
@@ -345,13 +366,14 @@ class Panda(object):
                     self.expression_data = pd.read_csv(
                         expression_file, sep="\t", header=None, index_col=0
                     )
-
+                # assign expression data and samples/gene names
                 self.expression_data = self.expression_data.iloc[:, (start-1):end]
                 self.expression_genes = self.expression_data.index.tolist()
                 self.expression_samples = self.expression_data.columns.astype(str)
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
         elif type(expression_file) is not str:
+            # Pass expression as a dataframe 
             if expression_file is not None:
                 if not isinstance(expression_file, pd.DataFrame):
                     raise Exception(
@@ -363,6 +385,7 @@ class Panda(object):
                 # self.num_genes = len(self.gene_names)
                 # print('Expression matrix:', self.expression_data.shape)
             else:
+                # If no expression is passed
                 self.gene_names = self.motif_genes
                 self.expression_genes = self.motif_genes
                 self.num_genes = len(self.gene_names)
@@ -370,6 +393,7 @@ class Panda(object):
                     None  # pd.DataFrame(np.identity(self.num_genes, dtype=int))
                 )
                 print(
+                    # TODO: Marouen check here. Here we do not pass the identity matrix
                     "No Expression data given: correlation matrix will be an identity matrix of size",
                     len(self.motif_genes),
                 )
@@ -379,6 +403,7 @@ class Panda(object):
                 "Duplicate gene symbols detected. Consider averaging before running PANDA"
             )
 
+        ### Loading the PPI
         if type(ppi_file) is str:
             with Timer("Loading PPI data ..."):
                 self.ppi_data = pd.read_csv(ppi_file, sep="\t", header=None)
@@ -396,6 +421,7 @@ class Panda(object):
                 )
                 print("Number of PPIs:", self.ppi_data.shape[0])
             else:
+                # TODO: marouen, here we do not have an identiy matrix
                 print(
                     "No PPI data given: ppi matrix will be an identity matrix of size",
                     len(self.motif_tfs),
@@ -403,6 +429,8 @@ class Panda(object):
                 self.ppi_data = None
                 self.ppi_tfs = self.motif_tfs
 
+
+        ### Data combination
         if modeProcess == "legacy" and remove_missing and motif_file is not None:
             self.__remove_missing()
             print('new case')
@@ -468,7 +496,15 @@ class Panda(object):
             if self.expression_data is None:
                 self.correlation_matrix = np.identity(self.num_genes, dtype=int)
             else:
-                self.correlation_matrix = np.corrcoef(self.expression_data)
+                if cobra_design_matrix is not None:
+                    psi, Q, d, g = cobra(cobra_design_matrix, self.expression_data)
+                    if cobra_covariate_to_keep < 0 or cobra_covariate_to_keep >= psi.shape[0]:
+                        raise AttributeError(
+                            "Invalid COBRA component! Valid COBRA components are in range " + str(0) + " - " + str(psi.shape[0] - 1)
+                        )
+                    self.correlation_matrix = Q.dot(np.diag(psi[cobra_covariate_to_keep,])).dot(Q.T)
+                else:
+                    self.correlation_matrix = np.corrcoef(self.expression_data)
             if np.isnan(self.correlation_matrix).any():
                 np.fill_diagonal(self.correlation_matrix, 1)
                 self.correlation_matrix = np.nan_to_num(self.correlation_matrix)
@@ -519,7 +555,7 @@ class Panda(object):
                 idx_tf1 = [i for (i, v) in zip(idx_tf1, commind2) if v]
                 idx_tf2 = [i for (i, v) in zip(idx_tf2, commind2) if v]
                 idx = np.ravel_multi_index((idx_tf1, idx_tf2), self.ppi_matrix.shape)
-                self.ppi_matrix.ravel()[idx] = self.ppi_data[2]
+                self.ppi_matrix.ravel()[idx] = self.ppi_data[2][commind2]
                 idx = np.ravel_multi_index((idx_tf2, idx_tf1), self.ppi_matrix.shape)
                 self.ppi_matrix.ravel()[idx] = self.ppi_data[2][commind2]
 

@@ -52,3 +52,6 @@ panda.txt
 panda_remove.txt
 pan_test_panda.txt
 tests/lioness/dragon/lioness_dragon_results/
+docs/_build/
+netZooPy/panda/io.py
+debug_bonobo.py

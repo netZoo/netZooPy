@@ -15,6 +15,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath("../../netZooPy"))
 sys.path.insert(0, os.path.abspath("../netZooPy"))
@@ -28,7 +29,7 @@ copyright = u'2019, netZoo'
 author    = u'netZoo'
 
 # The short X.Y version
-__version__ = "0.9.13"
+__version__ = "0.10.0"
 version     = ".".join(__version__.split(".")[:2])
 # The full version, including alpha/beta/rc tags
 release     = __version__
