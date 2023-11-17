@@ -44,6 +44,7 @@ class LionessPuma(Puma):
         save_dir="lioness_output",
         save_fmt="npy",
         precision="double",
+        computing='cpu',
         alpha=0.1,
     ):
         """
@@ -105,6 +106,7 @@ class LionessPuma(Puma):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
+        self.computing = computing
         # Run LIONESS
         self.__lioness_loop()
 
@@ -138,9 +140,11 @@ class LionessPuma(Puma):
                 # subset_puma_network = self.puma_loop(correlation_matrix, np.copy(self.motif_matrix), np.copy(self.ppi_matrix), alpha=self.alpha)
                 subset_puma_network = compute_puma(
                     correlation_matrix,
-                    np.copy(self.ppi_matrix),
                     np.copy(self.motif_matrix),
-                    alpha=self.alpha,
+                    np.copy(self.ppi_matrix),
+                    self.s1,
+                    computing = self.computing,
+                    alpha=self.alpha
                 )
                 lioness_network = (
                     self.n_conditions * (self.network - subset_puma_network)

@@ -40,7 +40,6 @@ reg_memb.txt
 tar_memb.txt
 gt_panda*.txt
 
-
 !tests/lioness
 !tests/lioness/*
 .DS_Store
@@ -48,3 +47,10 @@ gt_panda*.txt
 */debug*
 
 .vscode/*
+ligress/
+panda.txt
+panda_remove.txt
+pan_test_panda.txt
+tests/lioness/dragon/lioness_dragon_results/
+docs/_build/
+netZooPy/panda/io.py

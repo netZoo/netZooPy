@@ -12,6 +12,13 @@ from netZooPy.condor import condor_object
 # PANDA #####################################################################
 #############################################################################
 
+def get_list_from_str(a):
+    print(a)
+    if a=='':
+        return(None)
+    else:
+        return([int(b) for b in a.split(',')])
+
 @click.command()
 @click.option('-e', '--expression', 'expression', type=str, required=True,
               help='Path to file containing the gene expression data. By default, \
@@ -26,9 +33,15 @@ from netZooPy.condor import condor_object
               help='computing option, choose one between cpu and gpu')
 @click.option('--precision', type=str, show_default=True, default='double',
               help='precision option')
+@click.option('--with_header', is_flag=True, show_default=False,
+              help='Pass if the expression file has a header. It will be used to save samples with the correct name.')
 @click.option('--save_memory', is_flag=True, show_default=True,
               help='panda option. When true the result network is weighted adjacency matrix of size (nTFs, nGenes).\
                   when false The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.')
+@click.option('--as_adjacency', is_flag=True, show_default=True,
+              help='If true, the final PANDA is saved as an adjacency matrix. Works only when save_memory is false')
+@click.option('--old_compatible', is_flag=True, show_default=True,
+              help='If true, PANDA is saved without headers. Pass this if you want the same results of netzoopy before v0.9.11')
 @click.option('--save_tmp', is_flag=True, show_default=True,
               help='panda option')
 @click.option('--rm_missing', is_flag=True, show_default=False,
@@ -44,7 +57,7 @@ from netZooPy.condor import condor_object
               help='panda first sample')
 @click.option('--end', type=int, default=None, show_default=True,
               help='panda last sample')
-def panda(expression, motif, ppi, output, computing='cpu', precision='double', save_memory=False, save_tmp=False, rm_missing=False, keep_expr=False, mode_process='union', alpha=0.1, start=1, end=None):
+def panda(expression, motif, ppi, output, computing='cpu', precision='double',with_header=False, save_memory=False, as_adjacency=False, old_compatible=False, save_tmp=False, rm_missing=False, keep_expr=False, mode_process='union', alpha=0.1, start=1, end=None):
     """ Run panda using expression, motif and ppi data. 
     Use flags to modify the function behavior. By default, boolean flags are false.
     Output is a text file, with the TF, Gene, Motif, Force columns, where TF and Gene 
@@ -69,6 +82,8 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
 
 
     """
+    print('NEW: We changed the default behavior of save_tmp (now False). Pass --save_tmp for retrocompatibility')
+    print('NEW: We changed the default beavior of save_panda_results. Now all PANDA outputs have column headers by default. Pass old_compatible for the previous behavior')
     print('Input data:')
     print('Expression:', expression)
     print('Motif data:', motif)
@@ -76,8 +91,8 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
 
     # Run PANDA
     print('Start Panda run ...')
-    panda_obj = Panda(expression, motif, ppi, computing=computing,precision = precision,  save_tmp=True, remove_missing=rm_missing, keep_expression_matrix=keep_expr, save_memory=save_memory,modeProcess=mode_process, alpha=alpha,start=start, end=end)
-    panda_obj.save_panda_results(output)
+    panda_obj = Panda(expression, motif, ppi, computing=computing,precision = precision,  save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=keep_expr, save_memory=save_memory,modeProcess=mode_process, alpha=alpha,start=start, end=end, with_header=with_header)
+    panda_obj.save_panda_results(output, save_adjacency=as_adjacency, old_compatible=old_compatible)
 
 #############################################################################
 # LIONESS ###################################################################
@@ -119,16 +134,31 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double', s
               help='lioness option for output format. Choose one between network, gene_targeting, tf_targeting')
 @click.option('--alpha', type=float, default=0.1, show_default=True,
               help='panda and lioness first sample')
+@click.option('--panda_start', type=int, default=1, show_default=True,
+              help='panda first sample')
+@click.option('--panda_end', type=int, default=None, show_default=True,
+              help='panda last sample')
 @click.option('--start', type=int, default=1, show_default=True,
-              help='panda and lioness first sample')
+              help='lioness first sample')
 @click.option('--end', type=int, default=None, show_default=True,
-              help='panda and lioness last sample')
+              help='lioness last sample')
+@click.option('--subset_numbers', type=str, default='', show_default=True,
+              help='Specify a list of samples (numbers,comma separated) to run lioness on. \
+                  Background is the one specified by panda_start and panda_end')
+@click.option('--subset_names', type=str, default='', show_default=True,
+              help='Specify a list of samples (sample names,comma separated) to run lioness on. \
+                  Background is the one specified by panda_start and panda_end')
 @click.option('--with_header', is_flag=True, show_default=False,
               help='Pass if the expression file has a header. It will be used to save samples with the correct name.')
 @click.option('--save_single_lioness', is_flag=True, show_default=False,
               help='Pass this flag to save all single lioness networks generated.')
-
-def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, start, end, with_header, save_single_lioness):
+@click.option('--ignore_final', is_flag=True, show_default=False,
+              help='The whole lioness data is not kept in memory. Always use save_single_lioness for this')
+@click.option('--as_adjacency', is_flag=True, show_default=True,
+              help='If true, the final PANDA is saved as an adjacency matrix. Works only when save_memory is false')
+@click.option('--old_compatible', is_flag=True, show_default=True,
+              help='If true, PANDA is saved without headers. Pass this if you want the same results of netzoopy before v0.9.11')
+def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_memory, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False,ignore_final=False, as_adjacency=False, old_compatible=False):
     """Run Lioness to extract single-sample networks.
     First runs panda using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
@@ -153,13 +183,17 @@ def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, compu
     # Run PANDA
     print('Start Panda run ...')
     
-    panda_obj = Panda(expression, motif, ppi, computing=computing, save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=True, save_memory=save_memory, modeProcess=mode_process, start=start, end=end, with_header=with_header)
+    panda_obj = Panda(expression, motif, ppi, precision=precision, computing=computing, save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=True, save_memory=save_memory, modeProcess=mode_process, start=panda_start, end=panda_end, with_header=with_header)
     print('Panda saved. Computing Lioness...')
-    panda_obj.save_panda_results(output_panda)
+    panda_obj.save_panda_results(output_panda, save_adjacency=as_adjacency, old_compatible=old_compatible)
 
     if el=='None':
         el = None
-    Lioness(panda_obj, computing=computing, precision=precision,ncores=ncores, save_dir=output_lioness, save_fmt=fmt, output = output_type, alpha = alpha, export_filename=el, save_single=save_single_lioness)
+
+    subset_numbers = get_list_from_str(subset_numbers)
+    subset_names = get_list_from_str(subset_names)
+
+    Lioness(panda_obj, computing=computing, precision=precision,ncores=ncores, save_dir=output_lioness, save_fmt=fmt, output = output_type, alpha = alpha, export_filename=el, save_single=save_single_lioness,ignore_final=ignore_final, start=start, end=end, subset_names=subset_names, subset_numbers=subset_numbers)
 
     print('All done!')
     
@@ -262,7 +296,11 @@ def condor(
               help='Output type. Now unused')
 @click.option('--th_motifs', type=int, show_default=True, default=3,
               help='Threshold for the motifs. Reads motif only once if possible.')      
-def ligress(expression, priors_table, ppi,output_lioness,ppitable, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs):
+@click.option('--delta', type=float, default=0.3, show_default=True,
+              help='posterior weight for single-sample coexpression estimation')
+@click.option('--tune_delta', is_flag=True, show_default=True,
+              help='tune the posterior weight for the single-sample coexpression estimation')
+def ligress(expression, priors_table, ppi,output_lioness,ppitable, fmt, computing, precision, ncores, save_memory, save_coexpression, rm_missing, mode_process,output_type, alpha, th_motifs, delta, tune_delta):
     """Run Lioness to extract single-sample coexpression networks. 
     Then run Panda on each sample with sample-specific priors.
     """
@@ -278,6 +316,6 @@ def ligress(expression, priors_table, ppi,output_lioness,ppitable, fmt, computin
         ligress_obj = Ligress(expression, priors_table, ppi_file = ppi, output_folder=output_lioness, mode_process=mode_process)
      
     print('Running ligress computations ...')
-    ligress_obj.run_ligress(keep_coexpression=save_coexpression,cores=ncores, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs)
+    ligress_obj.run_ligress(keep_coexpression=save_coexpression,cores=ncores, save_memory=save_memory,computing_panda = computing, precision=precision, alpha = alpha, th_motifs=th_motifs, delta=delta, tune_delta=tune_delta)
     print('All done!')
 
