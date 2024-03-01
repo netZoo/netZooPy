@@ -39,3 +39,5 @@ Lioness
 ~~~~~~~~~
 
 .. autofunction:: netZooPy.lioness.run_lioness.main
+
+Common usage

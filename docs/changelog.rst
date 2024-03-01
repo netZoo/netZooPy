@@ -2,6 +2,12 @@
 Changelog
 ==========
 
+0.10.1
+-------------------------
+
+- Added BONOBO to docs.
+- Added LIONESS examples to docs.
+- Fixed mistake in README.
 
 0.10.0
 -------------------------
