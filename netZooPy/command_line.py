@@ -167,6 +167,22 @@ def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, compu
 
             netzoopy lioness -e tests/puma/ToyData/ToyExpressionData.txt -m tests/puma/ToyData/ToyMotifData.txt -p tests/puma/ToyData/ToyPPIData.txt -op test_panda.txt -ol lioness/
     
+    **Example for GPU computing**. Here the biggest limitation is GPU size, hence we need to optimize the precision and make
+    sure we don't use all genes, but only the intersection with the PANDA priors. We also save the single lioness
+    networks as they are computed:
+    
+        netzoopy lioness -e <expression_file> -m <motif_file> -p <ppi_file> -op output_panda.txt -ol output_lioness_folder/ --computing gpu --precision single --mode_process intersection --save_single_lioness --ignore_final
+
+    **LIONESS on a subset of samples**. This is especially useful if you need to test whether your data is suitable for
+    LIONESS/you have enough resources. By specifying --panda_start and --panda_end the number of samples are restricted
+    and only the samples in the subset are used for LIONESS. The background is the one specified by panda_start and
+    panda_end. Alternatively you can use the --subset_numbers and --subset_names flags to specify the samples to use. In this case
+    the PANDA will be computed on all samples, but then LIONESS will be computed and saved only for a subset of samples:
+    
+        netzoopy lioness -e <expression_file> -m <motif_file> -p <ppi_file> -op output_panda.txt -ol output_lioness_folder/ --computing <gpu|cpu> --panda_start 1 --panda_end 5 --precision single --mode_process intersection --save_single_lioness --ignore_final
+    
+
+
     Reference:
         Kuijjer, Marieke Lydia, et al. "Estimating sample-specific regulatory networks." Iscience 14 (2019): 226-240.
     
