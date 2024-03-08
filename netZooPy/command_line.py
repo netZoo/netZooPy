@@ -5,6 +5,7 @@ import getopt
 import click
 from netZooPy.panda.panda import Panda
 from netZooPy.lioness import Lioness
+from netZooPy.ligress import Bonobo
 from netZooPy.condor import condor_object
 
 #############################################################################
@@ -119,9 +120,9 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double',wi
               help='precision option')
 @click.option('--ncores', type=int, show_default=True, default=1,
               help='Number of cores. Lioness CPU parallelizes over ncores')
-@click.option('--save_memory', is_flag=True, show_default=False,
-              help='panda option. When true the result network is weighted adjacency matrix of size (nTFs, nGenes).\
-                  when false The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.')
+#@click.option('--save_memory', is_flag=True, show_default=False,
+#              help='panda option. When true the result network is weighted adjacency matrix of size (nTFs, nGenes).\
+#                  when false The result network has 4 columns in the form gene - TF - weight in motif prior - PANDA edge.')
 @click.option('--save_tmp', is_flag=True, show_default=True,
               help='panda option')
 @click.option('--rm_missing', is_flag=True, show_default=False,
@@ -198,7 +199,8 @@ def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, compu
     # Run PANDA
     print('Start Panda run ...')
     
-    panda_obj = Panda(expression, motif, ppi, precision=precision, computing=computing, save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=True, save_memory=save_memory, modeProcess=mode_process, start=panda_start, end=panda_end, with_header=with_header)
+    # For now we keep save_memory=False always, otherwise we won't have the needed information for lioness
+    panda_obj = Panda(expression, motif, ppi, precision=precision, computing=computing, save_tmp=save_tmp, remove_missing=rm_missing, keep_expression_matrix=True, save_memory=False, modeProcess=mode_process, start=panda_start, end=panda_end, with_header=with_header)
     print('Panda saved. Computing Lioness...')
     panda_obj.save_panda_results(output_panda, save_adjacency=as_adjacency, old_compatible=old_compatible)
 
@@ -268,4 +270,74 @@ def condor(
     co.brim(delta_qmin, com_num, resolution)
     co.tar_memb.to_csv(tar_output)
     co.reg_memb.to_csv(reg_output)
+
+
+
+################################################
+###### BONOBO ##################################
+################################################
+
+@click.command()
+@click.option('-e', '--expression_file', 'expression_file', type=str, required=True,
+              help='Path to file containing the gene expression data or pandas dataframe. By default, the expression file does not have a header, and the cells ares separated by a tab.')
+@click.option('--output_folder', type=str, show_default=True, default='bonobo/',
+              help='Output folder for the bonobo files. If not specified, the bonobo files are saved in the current directory, in the bonobo subdirectory.')
+@click.option('--output_format', type=str, show_default=True, default='.h5',
+              help='format of output bonobo matrix. By default it is an hdf file, can be a txt or csv.')
+@click.option('--keep_in_memory', is_flag=True, show_default=True,
+              help='if True, the bonobo coexpression matrix is kept in memory, otherwise it is discarded after saving')    
+@click.option('--delta', type=float, show_default=True, default=None,
+              help='delta parameter. If default (None) delta is trained, otherwise pass a value.Recommended is 0.3.')
+@click.option('--sparsify', is_flag=True, show_default=True,
+              help='if True, bonobo gets sparsified and relative pvalues are returned')    
+@click.option('--confidence', type=float, show_default=True, default=0.05,
+              help='if sparsify is True, this is the CI for the approximate zscore.')
+@click.option('--save_pvals', is_flag=True, show_default=True,
+              help='if True, bonobo gets sparsified and relative pvalues are saved in the same format and folder of bonobo')    
+@click.option('--precision', type=str, show_default=True, default='single',
+              help='matrix precision (single or double), defaults to single precision.')
+@click.option('--sample_names', type=str, show_default=True, default='',
+              help='Compute BONOBO only on a subset of samples. Pass a comma separated list of sample names. If not specified, all samples are used.')
+def bonobo(
+    expression_file,
+    output_folder = 'bonobo/',
+    output_format = '.h5',
+    keep_in_memory = False, 
+    delta = None, 
+    sparsify = False, 
+    confidence = 0.05, 
+    save_pvals = False,
+    precision = 'single',
+    sample_names = '',
+):
+    """
+        Compute BONOBOs from an expression file. 
+        
+        Parameters the user cannot access from the CLI:
+        - computing: for now it is only CPU
+        - cores: number of cores to use, for now there is no parallelization
+        - online_coexpression: we have not implemented the online coexpression yet
+    """
+
+    if sample_names!='':
+        sample_names = sample_names.split(',')
+        print('WARNING: computing BOBOBO only on a subset of samples. The sample names are:')
+        print(sample_names)
+    else:
+        sample_names = []
+
+    print('Initializing BONOBO object ...')
+    bonobo_obj_sparse = Bonobo(expression_file)
+    print('Running BONOBO ...')
+    print('Files saved in %s' %output_folder)
+
+    bonobo_obj_sparse.run_bonobo(keep_in_memory=keep_in_memory, 
+                                 output_fmt=output_format, 
+                                 delta = delta, 
+                                 sparsify=sparsify, 
+                                 output_folder=output_folder, 
+                                 confidence = confidence,
+                                 save_pvals=save_pvals, 
+                                 precision = precision, 
+                                 sample_names=sample_names)
 

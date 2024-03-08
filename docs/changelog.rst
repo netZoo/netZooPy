@@ -2,6 +2,13 @@
 Changelog
 ==========
 
+0.10.2
+-------------------------
+
+- Fixed readthedocs
+- Removed save_memory from LIONESS (CLI). The first PANDA needs to keep the PANDA value in memory
+- Added BONOBO to CLI
+
 0.10.1
 -------------------------
 
