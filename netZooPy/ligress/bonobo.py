@@ -227,6 +227,7 @@ class Bonobo:
             precision (str, optional): matrix precision, defaults to single precision.
             sparsify (bool, optiona): if True, bonobo gets sparsified and relative pvalues are returned
             confidence (float, optional): if sparsify is True, this is the CI for the approximate zscore.
+            save_pvals (bool, optional): if True, the pvalues are saved and returned
         """
 
         ligress_start = time.time()
@@ -238,7 +239,7 @@ class Bonobo:
         elif precision == "double":
             atype = "float64"
         else:
-            sys.exit("Precision %s unknonw" % str(precision))
+            sys.exit("ERROR: Precision %s unknonw" % str(precision))
 
         # let's sort the expression and ppi data
         self.expression_data = self.expression_data.astype(atype)
