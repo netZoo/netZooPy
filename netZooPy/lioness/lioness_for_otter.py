@@ -138,7 +138,74 @@ class LionessOtter():
         self.expression_data = self.expression_data.loc[self.universe_genes,self.samples]
         self.ppi_data = self.ppi_data.loc[self.universe_tfs,self.universe_tfs]
         self.motif_data = self.motif_data.loc[self.universe_tfs, self.universe_genes]
-    
+        
+
+    def run_otter(self, output_file = 'otter.h5', computing= 'cpu', precision = 'single', lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
+        
+        """Run LIONESS otter
+
+        Args:
+            output_file(str): file to save the otter network. Pass with an extension (txt/h5/csv/npy/mat)
+            computing (str, optional): computing for coexpression lioness. Defaults to 'cpu'.
+            precision (str, optional): precision. Defaults to single
+            lam (float, optional): lambda parameter for otter. Defaults to 0.035
+            gamma (float, optional): gamma parameter for otter. Defaults to 0.335
+            Iter (int, optional): Iterations for otter. Defaults to 60
+            eta (float, optional):  eta parameter for otter. Defaults to 0.00001
+            bexp (float, optional): bexp parameter for otter. Defaults to 1
+            
+        """
+
+        lioness_start = time.time()
+
+        self.save_fmt = output_file.split('.')[-1]
+        
+        self.output_file = output_file
+        
+        if precision=='single':
+            self.atype = 'float32'
+        elif precision=='double':
+            self.atype = 'float64'
+        else: 
+            sys.exit('Precision %s unknonw' %str(precision))
+        
+        # let's sort the expression and ppi data
+
+        self.expression_data = self.expression_data.astype(self.atype)
+        self.motif_data = self.motif_data.astype(self.atype)
+        self.ppi_data = self.ppi_data.astype(self.atype)
+        
+        # First we get the 
+        if computing=='cpu':
+            correlation_complete = np.corrcoef(self.expression_data.values)
+            
+            with Timer("Running OTTER for all samples ..."):
+                # running otter for all samples
+                self.all_otter = otter(self.motif_data.values, self.ppi_data.values, correlation_complete, lam=lam, gamma=gamma, Iter=Iter, eta=eta, bexp=bexp)
+            
+        elif computing=='gpu':
+            import cupy as cp
+            cp._default_memory_pool.free_all_blocks() 
+            
+            correlation_complete = cp.corrcoef(self.expression_data.values).astype(self.atype)
+
+            with Timer("Running OTTER for all samples ..."):
+                # running otter for all samples
+                self.all_otter = otter_gpu(self.motif_data.values, self.ppi_data.values, correlation_complete, lam=lam, gamma=gamma, Iter=Iter, eta=eta, bexp=bexp)
+                del correlation_complete
+                cp._default_memory_pool.free_all_blocks() 
+        else:
+            sys.exit('Use one of gpu/cpu for computations')
+                
+        with Timer("Saving OTTER for all samples ..."):
+                   
+            print('Saving %s' %self.output_file)
+            self.__lioness_to_disk(self.all_otter, path = self.output_file)
+                
+        print('FINISHED! OTTER took %.2f sec.' % (time.time() - lioness_start))
+
+        
+        
     def run_lioness_otter(self, output_folder, save_single = False, save_memory = False, save_fmt = '.h5', online_coexpression = False, computing= 'cpu', cores = 1, precision = 'single', lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
         
         """Run LIONESS otter
@@ -276,23 +343,21 @@ class LionessOtter():
         
         
 
-    def _save_single_panda_net(self, net, prior, sample, prefix, pivot = False):
+    def _save_single_panda_net(self, net, output_file):
 
         tab = pd.DataFrame(net, columns = self.universe_genes )
         tab['tf'] = self.universe_tfs
 
-        if pivot:
-            tab.set_index('tf').to_csv(prefix+sample+'.csv')
-        else:
-            tab = pd.melt(tab, id_vars='tf', value_vars=tab.columns,var_name='gene', value_name='force')
-            tab['motif'] = prior.flatten(order = 'F')
-            tab.to_csv(prefix+sample+'.txt', sep = '\t', index = False, columns = ['tf', 'gene','motif','force'])
+        tab = pd.melt(tab, id_vars='tf', value_vars=tab.columns,var_name='gene', value_name='otter')
+        tab['motif'] = self.motif_data.values.flatten(order = 'F')
+        tab.to_csv(output_file, sep = '\t', index = False, columns = ['tf', 'gene','motif','otter'])
 
     def __lioness_to_disk(self, net, path):
         if self.save_fmt == "txt":
+            self._save_single_panda_net(net, path)
             np.savetxt(path, net)
         elif self.save_fmt == "h5":
-            pd.DataFrame(data = net, columns=self.universe_genes, index = self.universe_tfs).to_hdf(path, key = 'lioness' ,mode='w')
+            pd.DataFrame(data = net, columns=self.universe_genes, index = self.universe_tfs).to_hdf(path, key = 'network' ,mode='w')
         elif self.save_fmt == 'csv':
             pd.DataFrame(data = net, columns=self.universe_genes, index = self.universe_tfs).to_csv(path)
         elif self.save_fmt == "npy":
