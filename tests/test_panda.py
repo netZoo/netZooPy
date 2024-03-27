@@ -343,3 +343,66 @@ def test_panda():
     assert(np.allclose(W_gt, W_res, rtol=1e-05, atol=1e-08))
 
 
+def test_incorrect_gene_ids_raises_exception():
+    '''
+    This test checks that an appropriately descriptive exception
+    is raised if one attempts to run PANDA on an expression matrix
+    that does not have genes intersecting with those in the motif
+    prior matrix
+    '''
+
+    # these numbers are arbitrary but don't need to be large
+    # to trigger the exception since it would be raised prior
+    # to any Panda iterations.
+    num_genes = 20 # number of genes in the expression mtx
+    num_samples = 30 # number of samples in the expression mtx
+    num_tfs = 10 # number of transcription factors in the motif prior
+    num_motif_genes = 10 # number of genes in the motif prior
+
+    # create a dataframe of mock expression data
+    exp_mtx_genes = [f'g{_}' for _ in range(num_genes)]
+    exp_mtx_samples = [f's{_}' for _ in range(num_samples)]
+    expression_data = pd.DataFrame(
+        np.random.randint(0, 100, size=(num_genes, num_samples)),
+        index=exp_mtx_genes,
+        columns=exp_mtx_samples
+    )
+
+    # mock motif prior. Note that the genes (2nd col) start with 'G'
+    # instead of 'g' in the expression matrix
+    tf_list = [f'tf{_}' for _ in range(num_tfs)]
+    motif_gene_list = [f'G{_}' for _ in range(num_motif_genes)]
+    motif_data = pd.DataFrame(
+        {
+            0: np.repeat(tf_list, num_motif_genes),
+            1: np.tile(motif_gene_list, num_tfs),
+            2: np.random.random(num_tfs*num_motif_genes)
+        }
+    )
+
+    # mock ppi prior
+    ppi_data = pd.DataFrame(
+        {
+            0: np.repeat(tf_list, num_tfs),
+            1: np.tile(tf_list, num_tfs),
+            2: np.random.random(num_tfs**2)
+        }
+    )
+
+    with pytest.raises(Exception,
+                       match='Error when creating the motif network!.*'):
+        panda_obj1 = Panda(
+            expression_data,
+            motif_data,
+            ppi_data,
+            modeProcess='legacy'
+        )
+
+    with pytest.raises(Exception,
+                       match='Error when creating the motif network!.*'):
+            panda_obj2 = Panda(
+            expression_data,
+            motif_data,
+            ppi_data,
+            modeProcess='intersection'
+        )
