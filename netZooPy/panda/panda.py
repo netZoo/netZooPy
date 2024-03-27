@@ -539,7 +539,7 @@ class Panda(object):
             commind1 = ~np.isnan(idx_tfs) & ~np.isnan(idx_genes)
             idx_tfs = [i for (i, v) in zip(idx_tfs, commind1) if v]
             idx_genes = [i for (i, v) in zip(idx_genes, commind1) if v]
-            if (len(idx_genes) == 0) or (len(idx_tfs)):
+            if (len(idx_genes) == 0) or (len(idx_tfs) == 0):
                 raise Exception('Error when creating the motif network!'
                              ' Typically this exception is raised if your'
                              ' expression matrix genes and motif priors'
