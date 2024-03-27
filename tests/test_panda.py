@@ -1,4 +1,3 @@
-from re import U
 import pytest
 import os
 from netZooPy.panda.panda import Panda
