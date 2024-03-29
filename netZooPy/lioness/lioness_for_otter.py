@@ -39,7 +39,6 @@ class LionessOtter():
                 - (Default)'union': takes the union of all TFs and genes across priors and fills the missing genes in the priors with zeros.
                 - 'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
 
-
     Notes
     ------
 
@@ -341,8 +340,7 @@ class LionessOtter():
         else:
             return(lioness_otter)
         
-        
-
+    
     def _save_single_panda_net(self, net, output_file):
 
         tab = pd.DataFrame(net, columns = self.universe_genes )
