@@ -29,13 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest pytest-cov codecov
           echo ${{ matrix.os }}
-          if [ "${{ matrix.os }}"=="macos-latest" ]
-          then 
-            echo "running this"
-            brew install hdf5 c-blosc
-            export HDF5_DIR=/opt/homebrew/opt/hdf5 
-            export BLOSC_DIR=/opt/homebrew/opt/c-blosc
-          fi
+          if [ "${{ matrix.os }}"=="macos-latest" ];then echo "running this";brew install hdf5 c-blosc;export HDF5_DIR=/opt/homebrew/opt/hdf5;export BLOSC_DIR=/opt/homebrew/opt/c-blosc;fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -e .
       - name: Lint with flake8
