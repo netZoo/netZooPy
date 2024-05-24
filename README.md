@@ -16,6 +16,9 @@ netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.7 + Python v3
 
 netZooPy is a python package to reconstruct, analyse, and plot biological networks.
 
+**WARNING**: for macos arm64 architectures you might have to manually install pytables. We are only testing macos-13
+intel architecture for the moment
+
 ## Features
 
 netZooPy currently integrates
