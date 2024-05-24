@@ -16,12 +16,26 @@ netZooPy is tested on: (OS: Ubuntu + Macos) X (Language: Python v3.7 + Python v3
 
 netZooPy is a python package to reconstruct, analyse, and plot biological networks.
 
+**WARNING**: for macos arm64 architectures you might have to manually install pytables. We are only testing macos-13
+intel architecture for the moment
+
 ## Features
 
 netZooPy currently integrates
 (gpu)PANDA, (gpu)LIONESS, (gpu)PUMA, SAMBAR, CONDOR, OTTER, DRAGON, COBRA, and BONOBO.
 
 * **PANDA** (Passing Attributes between Networks for Data Assimilation) [[Glass et al. 2013]](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0064832): PANDA is a method for estimating bipartite gene regulatory networks (GRNs) consisting of two types of nodes: transcription factors (TFs) and genes. An edge between TF $i$ and gene $j$ indicates that gene $j$ is regulated by TF $i$. The edge weight represents the strength of evidence for this regulatory relationship obtained by integrating three types of biological data: gene expression data, protein-protein interaction (PPI) data, and transcription factor binding motif (TFBM) data. PANDA is an iterative approach that begins with a seed GRN estimated from TFBMs and uses message passing between data types to refine the seed network to a final GRN that is consistent with the information contained in gene expression, PPI, and TFBM data. 
+  
+* **PUMA** (PANDA Using MicroRNA Associations) [[Kuijjer et al.]]("https://www.sciencedirect.com/science/article/pii/S2589004219300872") extends the PANDA framework to model how
+microRNAs (miRNAs) participate in gene regulatory networks. PUMA networks are bipartite networks that consist of a
+regulatory layer and a layer of genes being regulated, similar to PANDA networks. While the regulatory layer of PANDA
+networks consists only of transcription factors (TFs), the regulatory layer of PUMA networks consists of both TFs and
+miRNAs. A PUMA network is seeded using a combination of input data sources such as motif scans or ChIP-seq data (for
+TF-gene edges) and an miRNA target prediction tool such as TargetScan or miRanda (for miRNA-gene edges). PUMA uses a
+message passing framework similar to PANDA to integrate this prior information with gene-gene coexpression and
+protein-protein interactions to estimate a final regulatory network incorporating miRNAs. Kuijjer and colleagues [7]
+apply PUMA to 38 GTEx tissues and demonstrate that PUMA can identify important patterns in tissue-specific regulation of
+genes by miRNA.
 
 * **CONDOR** (COmplex Network Description Of Regulators) [[Platig et al. 2016]](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005033): CONDOR is a tool for community detection in bipartite networks. Many community detection methods for unipartite networks are based on the concept of maximizing a modularity metric that compares the weight of edges within communities to the weight of edges between communities, prioritizing community assignments with higher values of the former relative to the latter. CONDOR extends this concept to bipartite networks by optimizing a bipartite version of modularity defined by [[Barber (2007)]](https://pubmed.ncbi.nlm.nih.gov/18233893/). To enable bipartite community detection on large networks such gene regulatory networks, CONDOR uses a fast unipartite modularity maximization method on one of the two unipartite projections of the bipartite network.  In Platig et al. (2016), CONDOR is applied to bipartite networks of single nucleotide polymorphisms (SNPs) and gene expression, where a network edge from a SNP node to a gene node is indicative of an association between the SNP and the gene expression level, commonly known as an expression quantitative trait locus (eQTL). Communities detected with CONDOR contained local hub nodes ("core SNPs") enriched for association with disease, suggesting that functional eQTL relationships are encoded at the community level.
 
@@ -87,4 +101,4 @@ Please report any issues to the [issues page](https://github.com/netZoo/netZooPy
 
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
 
-Latest version: 0.10.3
+Latest version: 0.10.4
