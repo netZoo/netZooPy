@@ -94,13 +94,17 @@ def test_lioness():
     assert result.returncode == 0
 
     # 1. Test command line
-    #positional: expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers, subset_names,with_header, save_single_lioness):
-    #            expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False,ignore_final=False, as_adjacency=False, old_compatible=False):
-   
+
+        #positional: expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers, subset_names,with_header, save_single_lioness):
+    #            expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_tmp,
+    #            rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='',
+    #            subset_names='',with_header=False, save_single_lioness=False,ignore_final=False, as_adjacency=False,
+    #            old_compatible=False):
+
     cmd.lioness.callback(expression_data, motif, ppi, 'panda.txt','lioness_output_cmd',None,'npy','cpu','double',1,True,rm_missing,'legacy','network',0.1,1,4,1,None,save_single_lioness=True)
     # Now lioness is saved with lioness.sample_name.sample_index
     res = np.load("lioness_output/lioness.1.0.npy")
-    gt = res = np.load("lioness_output_cmd/lioness.1.0.npy")
+    gt  = np.load("lioness_output_cmd/lioness.1.0.npy")
     assert np.allclose(gt, res)
 
     # 2. Testing Lioness with motif set to None to compute Lioness on coexpression networks

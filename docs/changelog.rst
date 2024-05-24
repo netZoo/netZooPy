@@ -2,6 +2,12 @@
 Changelog
 ==========
 
+0.10.3
+-------------------------
+
+- Fixed LIONESS CLI that was broken after removing the save_memory flag
+- Added exception for case where the motif genes do not match the expression genes
+
 0.10.2
 -------------------------
 

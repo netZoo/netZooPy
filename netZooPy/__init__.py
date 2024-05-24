@@ -7,4 +7,4 @@ from netZooPy import lioness
 from netZooPy import condor
 from netZooPy import sambar
 
-__version__ = "0.10.1"
+__version__ = "0.10.3"

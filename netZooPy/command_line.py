@@ -158,7 +158,9 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double',wi
               help='If true, the final PANDA is saved as an adjacency matrix. Works only when save_memory is false')
 @click.option('--old_compatible', is_flag=True, show_default=True,
               help='If true, PANDA is saved without headers. Pass this if you want the same results of netzoopy before v0.9.11')
-def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False,ignore_final=False, as_adjacency=False, old_compatible=False):
+
+def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False,ignore_final=False, as_adjacency=False, old_compatible=False):    
+
     """Run Lioness to extract single-sample networks.
     First runs panda using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
