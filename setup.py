@@ -17,7 +17,7 @@ setup(name='netZooPy',
     'joblib>=1.1.0',
     'statsmodels>=0.12.2',
     'click',
-    'tables'
+    'tables<3.9.0'
     ],
     zip_safe=False,
     # add cli interface
