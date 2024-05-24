@@ -26,7 +26,7 @@ netZooPy currently integrates
 
 * **PANDA** (Passing Attributes between Networks for Data Assimilation) [[Glass et al. 2013]](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0064832): PANDA is a method for estimating bipartite gene regulatory networks (GRNs) consisting of two types of nodes: transcription factors (TFs) and genes. An edge between TF $i$ and gene $j$ indicates that gene $j$ is regulated by TF $i$. The edge weight represents the strength of evidence for this regulatory relationship obtained by integrating three types of biological data: gene expression data, protein-protein interaction (PPI) data, and transcription factor binding motif (TFBM) data. PANDA is an iterative approach that begins with a seed GRN estimated from TFBMs and uses message passing between data types to refine the seed network to a final GRN that is consistent with the information contained in gene expression, PPI, and TFBM data. 
   
-**PUMA** (PANDA Using MicroRNA Associations) [[Kuijjer et al.]]("https://www.sciencedirect.com/science/article/pii/S2589004219300872") extends the PANDA framework to model how
+* **PUMA** (PANDA Using MicroRNA Associations) [[Kuijjer et al.]]("https://www.sciencedirect.com/science/article/pii/S2589004219300872") extends the PANDA framework to model how
 microRNAs (miRNAs) participate in gene regulatory networks. PUMA networks are bipartite networks that consist of a
 regulatory layer and a layer of genes being regulated, similar to PANDA networks. While the regulatory layer of PANDA
 networks consists only of transcription factors (TFs), the regulatory layer of PUMA networks consists of both TFs and
