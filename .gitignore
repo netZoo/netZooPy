@@ -47,6 +47,7 @@ gt_panda*.txt
 */debug*
 
 .vscode/*
+bonobo/
 ligress/
 panda.txt
 panda_remove.txt
