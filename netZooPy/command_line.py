@@ -5,7 +5,7 @@ import getopt
 import click
 from netZooPy.panda.panda import Panda
 from netZooPy.lioness import Lioness
-from netZooPy.ligress import Bonobo
+from netZooPy.bonobo import Bonobo
 from netZooPy.condor import condor_object
 
 #############################################################################

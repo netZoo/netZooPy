@@ -2,6 +2,12 @@
 Changelog
 ==========
 
+0.10.4
+-------------------------
+
+- Adding PUMA to the readme and documentation
+- Folder renamed from ligress to bonobo
+
 0.10.3
 -------------------------
 
