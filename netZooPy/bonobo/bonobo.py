@@ -98,7 +98,7 @@ def compute_bonobo(
         a2 = (d - g - 1) / ((d - g) * (d - g - 3))
 
         # m1 = a1*(np.multiply(sscov, sscov))
-        v = np.sqrt(np.diag(sscov))
+        v = np.diag(sscov)
         # m2 = a2 * (np.outer(v, v))
 
         # Pointwise variance: v = m1 + m2
