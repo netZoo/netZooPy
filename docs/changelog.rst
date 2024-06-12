@@ -2,6 +2,23 @@
 Changelog
 ==========
 
+0.10.5
+-------------------------
+
+- Fixed BONOBO pvalue computation
+
+0.10.4
+-------------------------
+
+- Adding PUMA to the readme and documentation
+- Folder renamed from ligress to bonobo
+
+0.10.3
+-------------------------
+
+- Fixed LIONESS CLI that was broken after removing the save_memory flag
+- Added exception for case where the motif genes do not match the expression genes
+
 0.10.2
 -------------------------
 

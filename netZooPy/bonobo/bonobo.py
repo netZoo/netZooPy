@@ -6,7 +6,7 @@ from .timer import Timer
 import numpy as np
 from netZooPy.panda.panda import Panda
 from netZooPy.panda import calculations as calc
-from netZooPy.ligress import io
+from netZooPy.bonobo import io
 import sys
 import os
 import pandas as pd
@@ -98,7 +98,7 @@ def compute_bonobo(
         a2 = (d - g - 1) / ((d - g) * (d - g - 3))
 
         # m1 = a1*(np.multiply(sscov, sscov))
-        v = np.sqrt(np.diag(sscov))
+        v = np.diag(sscov)
         # m2 = a2 * (np.outer(v, v))
 
         # Pointwise variance: v = m1 + m2
@@ -230,7 +230,7 @@ class Bonobo:
             save_pvals (bool, optional): if True, the pvalues are saved and returned
         """
 
-        ligress_start = time.time()
+        bonobo_start = time.time()
 
         # first let's reorder the expression data
 
@@ -261,7 +261,7 @@ class Bonobo:
         # we automatically multiply the correlation with the number of samples
 
         # Center expression data to make mean = 0
-        # let's remove this from here, and keep it only inside the ligress computation
+        # let's remove this from here, and keep it only inside the bonobo computation
         # self.expression_data_centered = (self.expression_data - np.mean(self.expression_data.values,axis = 1, keepdims=True))
         self.expression_mean = np.mean(
             self.expression_data.values, axis=1, keepdims=True
