@@ -113,6 +113,7 @@ def otter_gpu(W, P, C, lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
 
     W = cp.asarray(W)
     P= cp.asarray(P)
+    C= cp.asarray(C)
 
 
     C = C  / cp.trace(C)

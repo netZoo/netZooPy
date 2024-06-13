@@ -33,7 +33,6 @@ def test_otter():
     
     LOGGER.warning('Test Otter class')
     
-    
     expression_fn = 'tests/puma/ToyData/ToyExpressionData.txt'
     ppi_fn = 'tests/puma/ToyData/ToyPPIData.txt'
     motif_fn = 'tests/puma/ToyData/ToyMotifData.txt'
@@ -59,6 +58,19 @@ def test_otter():
     P = panda_obj.ppi_matrix
     C = panda_obj.correlation_matrix
     
-    panda_otter = otter.otter(W, P, C, Iter=60, lam=0.0035, gamma=0.335, eta = 0.00001, bexp = 1)
+
+    
+    assert (W == lioobj.motif_data.values).all()
+    assert (P == lioobj.ppi_data.values).all()
+    assert (np.isclose(C, np.corrcoef(lioobj.expression_data.values), rtol=1e-04, atol=1e-07)).all()
+    
+    panda_otter = otter.otter(W, P, C, Iter=1, lam=0.0035, gamma=0.335)
+    assert (np.isclose(panda_otter, lioobj.all_otter)).all()
+
+    lioobj = LionessOtter(expression_fn, motif_fn, ppi_fn, mode_process='intersection')
+    lioobj.run_otter('./lio_otter_test.txt', Iter=10, lam=0.1, gamma=0.2)
+    panda_otter = otter.otter(W, P, C, Iter=10, lam=0.1, gamma=0.2)
+
+    assert (np.isclose(panda_otter, lioobj.all_otter)).all()
     
     
