@@ -384,6 +384,8 @@ def otterlioness(expression, motif, ppi, output_folder, fmt, computing, precisio
     """Run Lioness otter to extract single-sample networks.
     First runs otter using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
+    WARNING: the OTTER CLI and class are still relying on a simple approach for reading and merging. Please be careful
+    if you have NAs and want a non-intersection between W,P,C please rely on PANDA or on your own filtering. 
 
     Example:
 
@@ -439,7 +441,9 @@ def otter(expression, motif, ppi, output_file='otter.txt', computing='cpu', prec
     """Run Lioness otter to extract single-sample networks.
     First runs otter using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
-
+    
+    WARNING: the OTTER CLI and class are still relying on a simple approach for reading and merging. Please be careful
+    if you have NAs and want a non-intersection between W,P,C please rely on PANDA or on your own filtering. 
     Example:
 
             netzoopy otterlioness -e tests/puma/ToyData/ToyExpressionData.txt -m tests/puma/ToyData/ToyMotifData.txt -p tests/puma/ToyData/ToyPPIData.txt -of lioness_otter/
