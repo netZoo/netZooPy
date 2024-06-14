@@ -2,6 +2,13 @@
 Changelog
 ==========
 
+0.10.6
+-------------------------
+
+- OTTER on command line
+- OTTER LIONESS class
+- OTTER LIONESS command line
+
 0.10.5
 -------------------------
 
