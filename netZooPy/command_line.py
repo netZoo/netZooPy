@@ -158,7 +158,9 @@ def panda(expression, motif, ppi, output, computing='cpu', precision='double',wi
               help='If true, the final PANDA is saved as an adjacency matrix. Works only when save_memory is false')
 @click.option('--old_compatible', is_flag=True, show_default=True,
               help='If true, PANDA is saved without headers. Pass this if you want the same results of netzoopy before v0.9.11')
+
 def lioness(expression, motif, ppi, output_panda, output_lioness, el, fmt, computing, precision, ncores, save_tmp, rm_missing, mode_process,output_type, alpha, panda_start, panda_end, start, end, subset_numbers='', subset_names='',with_header=False, save_single_lioness=False,ignore_final=False, as_adjacency=False, old_compatible=False):    
+
     """Run Lioness to extract single-sample networks.
     First runs panda using expression, motif and ppi data. 
     Then runs lioness and puts results in the output_lioness folder.
@@ -340,4 +342,120 @@ def bonobo(
                                  save_pvals=save_pvals, 
                                  precision = precision, 
                                  sample_names=sample_names)
+
+
+
+#####################################################################################
+############## OTTER LIONESS ########################################################
+#####################################################################################
+    
+from netZooPy.lioness.lioness_for_otter import LionessOtter
+
+@click.command()
+@click.option('-e', '--expression', 'expression', type=str, required=True,
+              help='Path to file containing the gene expression data. By default, \
+                  the expression file does not have a header, and the cells are separated by a tab.')
+@click.option('-m', '--motif', 'motif', type=str, required=True,
+              help='Path to pair file containing the transcription factor DNA binding motif edges in the form of TF-gene-weight(0/1). If not provided, the gene coexpression matrix is returned as a result network.')
+@click.option('-p', '--ppi', 'ppi', type=str, required=True,
+              help='Path to pair file containing the PPI edges. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.')
+@click.option('-of', '--out-folder', 'output_folder', type=str, required=True,
+              help='Output lioness otter folder')
+@click.option('--fmt', type=str, show_default=True, default='h5',
+              help='Lioness network files output format. Choose one between .npy,.txt,.mat')
+@click.option('--computing', type=str, show_default=True, default='cpu',
+              help='computing option, choose one between cpu and gpu')
+@click.option('--precision', type=str, show_default=True, default='double',
+              help='precision option')
+@click.option('--mode_process', type=str, default='intersection', show_default=True,
+              help='panda option for input data processing. Choose between union(default), \
+                  legacy and intersection')
+@click.option('--iterations', type=int, default=60, show_default=True,
+              help='otter iterations, Iter')
+@click.option('--lam', type=float, default=0.035, show_default=True,
+              help='lambda parameter')
+@click.option('--gamma', type=float, default=0.335, show_default=True,
+              help='gamma parameter')
+@click.option('--eta', type=float, default=0.00001, show_default=True,
+              help='eta parameter')
+@click.option('--bexp', type=int, default=1., show_default=True,
+              help='bexp parameter')
+def otterlioness(expression, motif, ppi, output_folder, fmt, computing, precision, mode_process='intersection', iterations=60, lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
+    """Run Lioness otter to extract single-sample networks.
+    First runs otter using expression, motif and ppi data. 
+    Then runs lioness and puts results in the output_lioness folder.
+    WARNING: the OTTER CLI and class are still relying on a simple approach for reading and merging. Please be careful
+    if you have NAs and want a non-intersection between W,P,C please rely on PANDA or on your own filtering. 
+
+    Example:
+
+            netzoopy otterlioness -e tests/puma/ToyData/ToyExpressionData.txt -m tests/puma/ToyData/ToyMotifData.txt -p tests/puma/ToyData/ToyPPIData.txt -of lioness_otter/
+    
+    """
+    # Run PANDA
+    print('Start Otter run ...')
+
+    # First we create the LIONESS OTTER instance with the expression, motif, ppi files        
+    lioobj = LionessOtter(expression, motif, ppi, mode_process=mode_process)
+    
+    print('Starting Otter Lioness')
+    lioobj.run_lioness_otter(output_folder, save_fmt = fmt, save_single=True, precision = precision, computing = computing, Iter = iterations, lam=lam, gamma=gamma, eta=eta, bexp=bexp)
+
+
+
+
+#####################################################################################
+############## OTTER ################################################################
+#####################################################################################
+    
+from netZooPy.lioness.lioness_for_otter import LionessOtter
+
+@click.command()
+@click.option('-e', '--expression', 'expression', type=str, required=True,
+              help='Path to file containing the gene expression data. By default, \
+                  the expression file does not have a header, and the cells are separated by a tab.')
+@click.option('-m', '--motif', 'motif', type=str, required=True,
+              help='Path to pair file containing the transcription factor DNA binding motif edges in the form of TF-gene-weight(0/1). If not provided, the gene coexpression matrix is returned as a result network.')
+@click.option('-p', '--ppi', 'ppi', type=str, required=True,
+              help='Path to pair file containing the PPI edges. The PPI can be symmetrical, if not, it will be transformed into a symmetrical adjacency matrix.')
+@click.option('-o', '--out-file', 'output_file', type=str, default = 'otter.txt',
+              help='Output otter file. Use one of the extensions between .npy,.txt,.mat')
+@click.option('--computing', type=str, show_default=True, default='cpu',
+              help='computing option, choose one between cpu and gpu')
+@click.option('--precision', type=str, show_default=True, default='double',
+              help='precision option')
+@click.option('--mode_process', type=str, default='intersection', show_default=True,
+              help='panda option for input data processing. Choose between union(default), \
+                  legacy and intersection')
+@click.option('--iterations', type=int, default=60, show_default=True,
+              help='otter iterations, Iter')
+@click.option('--lam', type=float, default=0.035, show_default=True,
+              help='lambda parameter')
+@click.option('--gamma', type=float, default=0.335, show_default=True,
+              help='gamma parameter')
+@click.option('--eta', type=float, default=0.00001, show_default=True,
+              help='eta parameter')
+@click.option('--bexp', type=int, default=1., show_default=True,
+              help='bexp parameter')
+def otter(expression, motif, ppi, output_file='otter.txt', computing='cpu', precision='double', mode_process='intersection', iterations=60, lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
+    """Run Lioness otter to extract single-sample networks.
+    First runs otter using expression, motif and ppi data. 
+    Then runs lioness and puts results in the output_lioness folder.
+    
+    WARNING: the OTTER CLI and class are still relying on a simple approach for reading and merging. Please be careful
+    if you have NAs and want a non-intersection between W,P,C please rely on PANDA or on your own filtering. 
+    Example:
+
+            netzoopy otterlioness -e tests/puma/ToyData/ToyExpressionData.txt -m tests/puma/ToyData/ToyMotifData.txt -p tests/puma/ToyData/ToyPPIData.txt -of lioness_otter/
+    
+    """
+    # Run PANDA
+    print('Start Otter run ...')
+
+    # First we create the LIONESS OTTER instance with the expression, motif, ppi files        
+    lioobj = LionessOtter(expression, motif, ppi, mode_process=mode_process)
+    
+    print('Starting Otter Lioness')
+    
+    lioobj.run_otter(output_file, precision = precision, computing = computing, Iter = iterations, lam=lam, gamma=gamma, eta=eta, bexp=bexp )
 
