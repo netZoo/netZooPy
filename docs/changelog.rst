@@ -5,9 +5,15 @@ Changelog
 0.10.6
 -------------------------
 
+This release is adding key features to the OTTER class and command
+
+- OTTER GPU
 - OTTER on command line
 - OTTER LIONESS class
 - OTTER LIONESS command line
+
+We'll need to reconcile the the OTTER and PANDA reading functions to be consistent, 
+but for the moment we are keeping them separate.
 
 0.10.5
 -------------------------
