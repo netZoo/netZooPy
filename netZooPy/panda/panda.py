@@ -179,9 +179,9 @@ class Panda(object):
             with Timer("Saving expression matrix and normalized networks ..."):
                 os.makedirs('./tmp',exist_ok=True) 
                 if self.expression_data is not None:
-                    np.save("/tmp/expression.npy", self.expression_data.values)
-                np.save("/tmp/motif.normalized.npy", self.motif_matrix)
-                np.save("/tmp/ppi.normalized.npy", self.ppi_matrix)
+                    np.save("./tmp/expression.npy", self.expression_data.values)
+                np.save("./tmp/motif.normalized.npy", self.motif_matrix)
+                np.save("./tmp/ppi.normalized.npy", self.ppi_matrix)
 
         # delete expression data
         del self.expression_data
