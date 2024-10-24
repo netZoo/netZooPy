@@ -141,8 +141,7 @@ class Panda(object):
             end=end,
             with_header=with_header, 
             cobra_design_matrix=cobra_design_matrix,
-            cobra_covariate_to_keep=cobra_covariate_to_keep,
-            tmp_folder=tmp_folder
+            cobra_covariate_to_keep=cobra_covariate_to_keep
         )
         print(modeProcess,motif_file,expression_file,ppi_file,save_memory,remove_missing,keep_expression_matrix)
         if hasattr(self, "export_panda_results"):
@@ -177,13 +176,14 @@ class Panda(object):
         # =====================================================================
         # Saving middle data to tmp
         # =====================================================================
+        self.tmp_folder = tmp_folder
         if save_tmp:
             with Timer("Saving expression matrix and normalized networks ..."):
-                os.makedirs(tmp_folder,exist_ok=True) 
+                os.makedirs(self.tmp_folder,exist_ok=True) 
                 if self.expression_data is not None:
-                    np.save(tmp_folder + "expression.npy", self.expression_data.values)
-                np.save(tmp_folder + "motif.normalized.npy", self.motif_matrix)
-                np.save(tmp_folder + "ppi.normalized.npy", self.ppi_matrix)
+                    np.save(self.tmp_folder + "expression.npy", self.expression_data.values)
+                np.save(self.tmp_folder + "motif.normalized.npy", self.motif_matrix)
+                np.save(self.tmp_folder + "ppi.normalized.npy", self.ppi_matrix)
 
         # delete expression data
         del self.expression_data
@@ -316,6 +316,8 @@ class Panda(object):
                 - 'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
             with_header: bool
                 pass True when the expression file has a header with the sample names
+            tmp_folder: str
+                Path to the folder to save temporary files
         """
 
         # if modeProcess=="legacy":
