@@ -29,7 +29,7 @@ copyright = u'2019, netZoo'
 author    = u'netZoo'
 
 # The short X.Y version
-__version__ = "0.10.6"
+__version__ = "0.10.7"
 version     = ".".join(__version__.split(".")[:2])
 # The full version, including alpha/beta/rc tags
 release     = __version__
