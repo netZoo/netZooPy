@@ -5,10 +5,6 @@ on:
       branches:
         - master
         - devel
-    pull_request: 
-        branches:
-        - master
-        - devel
 jobs:
   build:
     name: Build distribution
@@ -60,6 +56,8 @@ jobs:
         path: dist/
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
 
   github-release:
     name: >-
