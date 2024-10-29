@@ -7,6 +7,9 @@ setup(name='netZooPy',
     author='netZoo team',
     author_email='vfanfani@hsph.harvard.edu',
     license='GPL-3',
+    long_description="""# netZooPy\n netZooPy is a python package to reconstruct, analyse, and plot biological networks.\n netZooPy currently integrates
+    (gpu)PANDA, (gpu)LIONESS, (gpu)PUMA, SAMBAR, CONDOR, OTTER, DRAGON, COBRA, and BONOBO.\n""",
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     install_requires=[
     'h5py',    
