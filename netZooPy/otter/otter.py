@@ -50,8 +50,7 @@ def otter(W, P, C, lam=0.035, gamma=0.335, Iter=60, eta=0.00001, bexp=1):
     W = W / np.sqrt(np.trace(W @ W.T))
     diagP =  np.trace(P)
     if diagP > 0:
-	P = P / np.trace(P)
-    
+        P = P / np.trace(P)
 
     P = P * (-(1 - lam)) + gamma * np.identity(t)
     C = C * (-lam)
