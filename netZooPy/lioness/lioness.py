@@ -4,6 +4,7 @@ import os, os.path, sys
 import numpy as np
 import pandas as pd
 from .timer import Timer
+from .onlineCoexpression import onlineCoexpression
 from joblib.externals.loky import set_loky_pickler
 from joblib import parallel_backend
 from joblib import Parallel, delayed
@@ -67,6 +68,8 @@ class Lioness(Panda):
                 samples as column name
             ignore_final: bool
                 if True, no lioness network is kept in memory. This requires saving single networks at each step
+            online_coexpression: bool
+                if True, each LIONESS correlation is computed using the online coexpression method.
     Returns
     --------
     export_lioness_results : _
@@ -127,6 +130,7 @@ class Lioness(Panda):
         save_single = False,
         export_filename = None,
         ignore_final=False, 
+        online_coexpression=False,
     ):
         """ Initialize instance of Lioness class and load data.
         """
@@ -168,6 +172,7 @@ class Lioness(Panda):
             self.gene_names = gene_names
             self.tf_names = tf_names
             del obj
+            self.online_coexpression = online_coexpression
 
         # Get sample range to iterate
         # the number of conditions is the N parameter used for the number of samples in the whole background
@@ -217,9 +222,33 @@ class Lioness(Panda):
         # We create the folder
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
+
+        # if we are using online_coexpression
+        if self.online_coexpression:
+            self.mi_all = np.mean(self.expression_matrix, axis=1)
+            # Here we need to specify the ddof=1 to get the estimator that matches corrcoef
+            self.std_all = np.std(self.expression_matrix, axis=1, ddof = 1)
+            self.cov_all = np.cov(self.expression_matrix)
+            # We need to set the diagonal to 1 if na and 0 elsewhere
+            # Get indices of the matrix
+            rows, cols = np.indices(self.cov_all.shape)
+            # Create mask for NaNs
+            nan_mask = np.isnan(self.cov_all)
+            # Replace NaNs based on diagonal condition
+            self.cov_all[nan_mask & (rows == cols)] = 1  # Diagonal NaNs → 1
+            self.cov_all[nan_mask & (rows != cols)] = 0  # Off-diagonal NaNs → 0
+            
+            # we need n_conditions as number of samples
+            assert(self.n_conditions>0)
+            
+            
+            
+            
         #############
         # Run LIONESS
         #############
+
+        
         if int(self.n_conditions) >= int(self.n_cores) and self.computing == "cpu":
             # the total_lioness_network here is a list of 1d
             # arrays (network:(tfXgene,1),gene_targeting:(gene,1),tf_targeting:(tf,1))
@@ -231,6 +260,11 @@ class Lioness(Panda):
             for i in self.indexes:
                 self.total_lioness_network = self.__lioness_loop(i)
             self.total_lioness_network = self.total_lioness_network.T
+        
+        #############
+        # OUTPUT ####
+        #############
+        
         # create result data frame
         if self.ignore_final:
             print('WARNING: we do not keep all lionesses in memory. They have been saved singularly.')
@@ -279,34 +313,47 @@ class Lioness(Panda):
             else:
                 self.save_lioness_results()
 
-    def __lioness_loop(self, i):
-        #TODO: this is now for GPU only in practice
-        """ Initialize instance of Lioness class and load data.
+    def __compute_subset_panda(self,i):
+        """ Compute the subset panda network using the correlation matrix and the motif matrix.
 
+        Parameters
+        ----------
+            correlation_matrix: array
+                The coexpression network to be used for computing the subset panda network.
+        
         Returns
-        --------
-            self.total_lioness_network: array
-                An edge-by-sample matrix containing sample-specific networks.
+        -------
+            subset_panda_network: array
+                The subset panda network.
         """
-        # for i in self.indexes:
-        print("Running LIONESS for sample %d/%d:" %((i),(self.n_conditions)))
         idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
-        with Timer("Computing coexpression network:"):
-            if self.computing == "gpu":
-                import cupy as cp
-                
-                correlation_matrix_cp = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
-                if cp.isnan(correlation_matrix_cp).any():
-                    cp.fill_diagonal(correlation_matrix_cp, 1)
-                    correlation_matrix_cp = cp.nan_to_num(correlation_matrix_cp)
-                correlation_matrix = cp.asnumpy(correlation_matrix_cp)
-                del correlation_matrix_cp
-                cp._default_memory_pool.free_all_blocks()
-            else:
-                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                if np.isnan(correlation_matrix).any():
-                    np.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = np.nan_to_num(correlation_matrix)
+        
+        if self.online_coexpression:
+            print("Computing online coexpression")
+            correlation_matrix = onlineCoexpression(
+                self.expression_matrix[:, i],
+                self.n_conditions,
+                self.mi_all,
+                self.std_all,
+                self.cov_all,
+            )
+        else:
+            with Timer("Computing coexpression network:"):
+                if self.computing == "gpu":
+                    import cupy as cp
+                    
+                    correlation_matrix_cp = cp.corrcoef(self.expression_matrix[:, idx].astype(self.np_dtype)).astype(self.np_dtype)
+                    if cp.isnan(correlation_matrix_cp).any():
+                        cp.fill_diagonal(correlation_matrix_cp, 1)
+                        correlation_matrix_cp = cp.nan_to_num(correlation_matrix_cp)
+                    correlation_matrix = cp.asnumpy(correlation_matrix_cp)
+                    del correlation_matrix_cp
+                    cp._default_memory_pool.free_all_blocks()
+                else:
+                    correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
+                    if np.isnan(correlation_matrix).any():
+                        np.fill_diagonal(correlation_matrix, 1)
+                        correlation_matrix = np.nan_to_num(correlation_matrix)
 
         with Timer("Normalizing networks:"):
             correlation_matrix_orig = (
@@ -327,6 +374,23 @@ class Lioness(Panda):
             else:
                 del correlation_matrix
                 subset_panda_network = correlation_matrix_orig
+
+        return subset_panda_network
+
+    def __lioness_loop(self, i):
+        #TODO: this is now for GPU only in practice
+        """ Initialize instance of Lioness class and load data.
+
+        Returns
+        --------
+            self.total_lioness_network: array
+                An edge-by-sample matrix containing sample-specific networks.
+        """
+        # for i in self.indexes:
+        print("Running LIONESS for sample %d/%d:" %((i),(self.n_conditions)))
+
+        # get subset panda network
+        subset_panda_network = self.__compute_subset_panda(i)
 
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
         lioness_network = (self.n_conditions * self.network) - (
@@ -367,7 +431,7 @@ class Lioness(Panda):
 
     @delayed
     @wrap_non_picklable_objects
-    def __par_lioness_loop(self, i, output):
+    def __par_lioness_loop(self, i, output, online_coexpression=None):
         """ Initialize instance of Lioness class and load data.
 
         Returns
@@ -376,44 +440,10 @@ class Lioness(Panda):
                 An edge-by-sample matrix containing sample-specific networks.
         """
         # for i in self.indexes:
-        print("Running LIONESS for sample %d:" % (i + 1))
-        idx = [x for x in range(self.n_conditions) if x != i]  # all samples except i
-        with Timer("Computing coexpression network:"):
-            if self.computing == "gpu":
-                import cupy as cp
+        print("Running LIONESS for sample %d/%d:" %((i),(self.n_conditions)))
 
-                correlation_matrix = cp.corrcoef(self.expression_matrix[:, idx])
-                if cp.isnan(correlation_matrix).any():
-                    cp.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = cp.nan_to_num(correlation_matrix)
-                correlation_matrix = cp.asnumpy(correlation_matrix)
-            else:
-                # run on CPU with numpy
-                correlation_matrix = np.corrcoef(self.expression_matrix[:, idx])
-                if np.isnan(correlation_matrix).any():
-                    np.fill_diagonal(correlation_matrix, 1)
-                    correlation_matrix = np.nan_to_num(correlation_matrix)
-
-        with Timer("Normalizing networks:"):
-            correlation_matrix_orig = (
-                correlation_matrix  # save matrix before normalization
-            )
-            correlation_matrix = self._normalize_network(correlation_matrix)
-
-        with Timer("Inferring LIONESS network:"):
-            # TODO: fix this correlation matrix+delete
-            if self.motif_matrix is not None:
-                del correlation_matrix_orig
-                subset_panda_network = compute_panda(
-                    correlation_matrix,
-                    np.copy(self.ppi_matrix),
-                    np.copy(self.motif_matrix),
-                    computing = self.computing,
-                    alpha = self.alpha,
-                )
-            else:
-                del correlation_matrix
-                subset_panda_network = correlation_matrix_orig
+        # get subset panda network
+        subset_panda_network = self.__compute_subset_panda(i)
 
         # For consistency with R, we are using the N panda_all - (N-1) panda_all_but_q
         #lioness_network = self.n_conditions * (self.network - subset_panda_network) + subset_panda_network
