@@ -29,9 +29,9 @@ def onlineCoexpression(si,n,mi,std,cov):
         # Then we compute the new std online using the orthogonality trick
         newstd = np.sqrt((np.square(std) - (1/n) * np.square(si - newm)) * ((n-1)/(n-2)))
         # Then we compute the new covariance online
-        onCov= (1/(n-2)) * ( (cov*(n-1)) - ( (n/(n-1)) * (np.matmul((si-mi).T,(si-mi))) ) )
+        onCov= (1/(n-2)) * ( (cov*(n-1)) - ( (n/(n-1)) * (np.outer((si-mi).T,(si-mi))) ) )
         # Finally, we derive the new coexpression online
-        onCoex= onCov / np.matmul(newstd.T,newstd)
+        onCoex= onCov / np.outer(newstd.T,newstd)
         # We set the diagonal explicitly to avoid numerical instability
         np.fill_diagonal(onCoex, 1)
 
