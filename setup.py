@@ -14,7 +14,7 @@ setup(name='netZooPy',
     install_requires=[
     'h5py',    
     'pandas',
-    'numpy>=1.19.2',
+    'numpy>=1.19.2,<2.0',
     'networkx>=2.6.3',
     'matplotlib>=3.3.4',
     'scipy>=1.5.3',
