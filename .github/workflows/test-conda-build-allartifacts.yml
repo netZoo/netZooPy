@@ -2,7 +2,7 @@ name: Build Conda Packages (.conda format)
 
 on:
   push:
-    branches: [main]
+    branches: [devel]
   pull_request:
 
 jobs:
