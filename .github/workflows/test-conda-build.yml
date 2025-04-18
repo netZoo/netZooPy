@@ -31,7 +31,7 @@ jobs:
       - name: "Build and upload package"
         run: |
           mkdir conda-build
-          conda build . --no-build-id  --output-folder ./conda-build -c conda-forge --no-conda-package-format --old-build-string
-          ls conda-build/**/netzoopy*.bz2
+          conda build . --no-build-id  --output-folder ./conda-build -c conda-forge --old-build-string
+          ls conda-build/**/netzoopy*
           conda install "urllib3<2"
           conda convert -p all "./conda-build/**/netzoopy*.bz2" --output-dir ./conda-build --dry-run
