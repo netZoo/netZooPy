@@ -1,0 +1,44 @@
+name: Build .conda Packages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          activate-environment: build-env
+          environment-file: environment.yml  # optional
+          miniforge-variant: Mambaforge
+          use-mamba: true
+
+      - name: Set CONDA_PACKAGE_FORMAT=2
+        run: echo "CONDA_PACKAGE_FORMAT=2" >> $GITHUB_ENV
+
+      - name: Install conda-build
+        run: mamba install -y conda-build
+
+      - name: Build conda package (.conda format)
+        run: |
+          mkdir -p conda-build
+          conda build . --output-folder conda-build
+
+      - name: Upload .conda package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: conda-packages-${{ matrix.os }}
+          path: conda-build/**/*.conda
