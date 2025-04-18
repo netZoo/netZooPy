@@ -2,7 +2,7 @@ name: Build .conda Packages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ devel, main ]
   pull_request:
 
 jobs:
@@ -22,7 +22,6 @@ jobs:
         with:
           auto-update-conda: true
           activate-environment: build-env
-          environment-file: environment.yml  # optional
           miniforge-variant: Mambaforge
           use-mamba: true
 
@@ -35,7 +34,7 @@ jobs:
       - name: Build conda package (.conda format)
         run: |
           mkdir -p conda-build
-          conda build . --output-folder conda-build
+          conda build conda/ --output-folder conda-build
 
       - name: Upload .conda package artifacts
         uses: actions/upload-artifact@v4
