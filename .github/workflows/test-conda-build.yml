@@ -30,7 +30,7 @@ jobs:
           conda list | grep conda-build
       - name: "Debug Conda Build"
         run: |
-          conda build . --no-build-id --output-folder ./conda-build -c conda-forge
+          conda build . --no-build-id -c conda-forge --output-folder ./conda-build --no-conda-package-format --old-build-string
           echo "Checking the contents of the conda-build directory:"
           ls -R ./conda-build
           echo "Checking for build errors in the logs:"
