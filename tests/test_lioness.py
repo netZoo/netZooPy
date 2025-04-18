@@ -27,6 +27,22 @@ def test_lioness():
     output_results_mat = "lioness_output/toy-lioness-res.mat"
     toy_r_file = 'tests/lioness/toy-lioness-first4-1.txt'
 
+
+    # Check that online coexpression is the same. 
+    # Here we are also using some of the newer processing options
+    print('\n\nTest online coexpression\n\n')
+    panda_obj = Panda(expression_data, motif, ppi,computing='cpu',precision='single',save_tmp=False,save_memory = False, remove_missing=True, keep_expression_matrix = True, modeProcess = 'intersection')
+
+    lioness_obj = Lioness(panda_obj,computing='cpu', save_dir='lioness_dir', save_single = True, export_filename=None, save_fmt='h5', output = 'network', subset_numbers=[1,2,10])
+
+    # Test with online coexpression
+    lioness_obj_online = Lioness(panda_obj,computing='cpu', save_dir='lioness_dir', save_single = True, export_filename=None, save_fmt='h5', output = 'network', subset_numbers=[1,2,10], online_coexpression=True)
+
+    print('\n\nActual test coexpression\n\n')
+    print(np.array_equal(lioness_obj.total_lioness_network, lioness_obj_online.total_lioness_network))
+    assert np.array_equal(lioness_obj.total_lioness_network, lioness_obj_online.total_lioness_network)
+
+    
     panda_obj = Panda(
         expression_data,
         motif,
@@ -62,8 +78,11 @@ def test_lioness():
     np.allclose(panda_obj.motif_matrix, lioness_obj.motif_matrix)
     np.allclose(panda_obj.ppi_matrix, lioness_obj.ppi_matrix)
 
+
+
+
     # Compare with R
-    print("Compare with R")
+    print("\n\nCompare with R")
     rdf = pd.read_csv(toy_r_file, sep = ' ', header=None, )
     pydf = pd.read_csv(output_table, sep = ' ').iloc[:,0:3]
 
@@ -107,12 +126,13 @@ def test_lioness():
     gt  = np.load("lioness_output_cmd/lioness.1.0.npy")
     assert np.allclose(gt, res)
 
+    print("\n\nTest lioness with no motif")
     # 2. Testing Lioness with motif set to None to compute Lioness on coexpression networks
-    motif = None
+    motif_none = None
     # Make sure to keep epxression matrix for next step
     panda_obj_2 = Panda(
         expression_data,
-        motif,
+        motif_none,
         ppi,
         save_tmp=True,
         remove_missing=rm_missing,
@@ -128,6 +148,7 @@ def test_lioness():
     assert np.allclose(gt, res)
     
     print('test3')
+    print("\n\nTest lioness with no motif")
     # 3. Testing Lioness in parallel
     # Set parameters
     os.remove("lioness_output/lioness.1.0.npy")
