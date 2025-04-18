@@ -26,11 +26,11 @@ jobs:
           conda install conda-verify
           conda install -c anaconda anaconda-client
       - name: "Verify Conda Build Installation"
-          run: |
-            conda list | grep conda-build
+        run: |
+          conda list | grep conda-build
       - name: "Build and upload package"
-          run: |
-            mkdir conda-build
-            CONDA_NO_PLUGINS=true conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
-            conda install "urllib3<2"
-            conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build --dry-run
+        run: |
+          mkdir conda-build
+          CONDA_NO_PLUGINS=true conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
+          conda install "urllib3<2"
+          conda convert -p all ./conda-build/**/netzoopy*.bz2 --output-dir ./conda-build --dry-run
