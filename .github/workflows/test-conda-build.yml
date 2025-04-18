@@ -1,4 +1,4 @@
-name: test conda
+name: test conda build
 on:
   push:
     branches:
