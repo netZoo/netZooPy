@@ -22,7 +22,7 @@ jobs:
           conda-channels: anaconda, conda-forge, bioconda
       - name: "Install Conda development packages"
         run: |
-          conda install conda-build
+          conda install conda-build=3.21.5
           conda install conda-verify
           conda install -c anaconda anaconda-client
       - name: "Verify Conda Build Installation"
