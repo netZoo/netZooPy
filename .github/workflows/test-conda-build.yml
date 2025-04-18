@@ -28,6 +28,13 @@ jobs:
       - name: "Verify Conda Build Installation"
         run: |
           conda list | grep conda-build
+      - name: "Debug Conda Build"
+        run: |
+          conda build . --no-build-id --output-folder ./conda-build -c conda-forge
+          echo "Checking the contents of the conda-build directory:"
+          ls -R ./conda-build
+          echo "Checking for build errors in the logs:"
+          cat ./conda-build/**/conda_build.log || echo "No build log found."
       - name: "Build and upload package"
         run: |
           mkdir conda-build
