@@ -8,4 +8,4 @@ from netZooPy import condor
 from netZooPy import sambar
 from netZooPy import bonobo
 
-__version__ = "0.10.8"
+__version__ = "0.10.9"
