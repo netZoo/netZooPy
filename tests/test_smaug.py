@@ -1,3 +1,5 @@
+import pytest
+import pandas as pd
 from netZooPy import dragon
 from netZooPy import smaug
 
@@ -9,5 +11,7 @@ def test_smaug():
     p2 = 100
     expr, meth, theta, _ = dragon.simulate_dragon_data(eta11=0.005, eta12=0.005, eta22=0.05,
                                                        p1=p1, p2=p2, epsilon=[0.1, 0.1], n=n, seed=123)
+    expr = pd.DataFrame(expr).T
+    meth = pd.DataFrame(meth).T
     smaug_obj = smaug.Smaug(expr, meth)
     smaug_obj.run_smaug(keep_in_memory=False, output_fmt='.txt')

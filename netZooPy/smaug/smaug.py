@@ -1,60 +1,15 @@
 from __future__ import print_function
 import time
 from netZooPy.smaug.timer import Timer
-import numpy as np
 import sys
 import os
 import pandas as pd
-from netZooPy.dragon import estimate_penalty_parameters_dragon
-from netZooPy.dragon import get_shrunken_covariance_dragon
+import numpy as np
+import math
 from netZooPy.smaug import io
-
-
-def compute_smaug(expression_matrix, methylation_matrix, expression_mean, methylation_mean, sample_idx, online_partial_coexpression=False, computing='cpu', cores=1,
-                   delta=None, compute_sparse=False, confidence=0.05, save_pvals=False):
-    """Compute one smaug matrix. Takes as input an expression matrix, a methylation matrix, and the
-    index of the sample for which smaug is computed (index of the columns).
-
-    expression_matrix (numpy array): genes as rows, samples as columns
-    expression_mean (numpy array): row-wise mean of expression.
-    methylation_matrix (numpy array): methylation probes as rows, samples as columns
-    methylation_mean (numpy array): row-wise mean of methylation.
-    sample_idx (int): index of the sample of interest
-    delta (float, optional): delta value for the computation. Defaults to None, which means that delta is tuned
-
-    """
-
-    mask_include = [True] * expression_matrix.shape[1]
-    mask_include[sample_idx] = False
-
-    # Compute covariance matrix from the rest of the data, leaving out sample
-    lambdas = estimate_penalty_parameters_dragon(expression_matrix[:, mask_include], methylation_matrix[:, mask_include])
-    covariance_matrix = get_shrunken_covariance_dragon(expression_matrix[:, mask_include], methylation_matrix[:, mask_include], lambdas)
-
-    # Compute posterior weight delta from data
-    if (delta == None):
-        delta = 1 / (3 + 2 * np.sqrt(covariance_matrix.diagonal()).mean() / covariance_matrix.diagonal().var())
-    else:
-        assert type(delta) == float
-
-    # Append expression amd methylation matrix by row
-    combined_data = np.concatenate((expression_matrix, methylation_matrix), axis=0)
-
-    # Append mean expression and mean methylation
-    combined_mean = np.concatenate((expression_mean, methylation_mean))
-
-    # Compute sample-specific covariance matrix
-    sscov = delta * np.outer((combined_data - combined_mean)[:, sample_idx],
-                             (combined_data - combined_mean)[:, sample_idx]) + (1 - delta) * covariance_matrix
-
-    # Compute sample-specific DRAGON from sample-specific covariance
-    Theta = np.linalg.inv(sscov)
-    p = Theta.shape[0]
-    A = np.sqrt(np.zeros((p, p)) + np.diag(Theta))
-    smaug_matrix = -Theta / A / A.T
-    smaug_matrix = smaug_matrix - np.diag(np.diag(smaug_matrix))
-
-    return (smaug_matrix)
+from netZooPy.dragon import *      # To load DRAGON
+from scipy.stats import norm # To get normal quantiles
+from scipy.stats import false_discovery_control as fdr # To get adjusted p-values
 
 class Smaug():
     """
@@ -118,9 +73,10 @@ class Smaug():
         print('SMAUG: preparing expression and methylation')
         self._prepare_data()
         self.delta = None
-        self.smaugs = {}
-        self.pvals = {}
-        self.save_pvals = False
+        self.smaugs = []
+        self.precisions = []
+        self.pvals = []
+        self.adjPvals = []
 
     ########################
     ### METHODS ############
@@ -128,38 +84,35 @@ class Smaug():
     def _prepare_data(self):
         with Timer("Reading expression data..."):
             # Read expression
-            self.expression_data, self.expression_genes = io.prepare_expression(
+            self.expression_data, self.expression_genes = io.prepare_data(
                 self.expression_file, samples=self.samples
             )
 
         with Timer("Reading methylation data..."):
             # Read expression
-            self.methylation_data_data, self.methylation_probes = io.prepare_expression(
+            self.methylation_data, self.methylation_probes = io.prepare_data(
                 self.methylation_file, samples=self.samples
             )
 
             self.expression_samples = self.expression_data.columns.tolist()
             self.methylation_samples = self.methylation_data.columns.tolist()
 
-    def run_smaug(self, output_folder='smaug/', output_fmt='hd5', keep_in_memory=False, save_full=False,
-                   online_partial_coexpression=False, delta=None, computing='cpu', cores=1, precision='single', sample_names=[],
-                   sparsify=False, confidence=0.05, save_pvals=False):
+            self.expression_data = self.expression_data.T
+            self.methylation_data = self.methylation_data.T
+
+    def run_smaug(self, keep_in_memory=False, output_fmt=".hdf", output_folder='./smaug_output/',
+                   delta=None, precision='single', sample_names=[]):
         """SMAUG algorithm
 
         Args:
             output_folder (str, optional): output folder. If an empty string is passed the matrix is automatically kept
             in memory, overwriting the value of keep_in_memory
-            output_fmt (str, optional): format of output matrix. By default it is an hd5 file, can be a txt or csv.
+            output_fmt (str, optional): format of output matrix. By default it is an hdf file, can be a txt or csv.
             keep_in_memory (bool, optional): if True, the partial correlation matrix is kept in memory, otherwise it is
             discarded after saving.
-            save_full (bool, optional): whether to save the partial coexpression with the gene names. We recommend using True
             only when the number of genes is not very big to avoid saving huge matrices.
-            online_partial_coexpression (bool, optional): if true partial coexpression is computed with a closed form
-            cores (int, optional): cores. Defaults to 1.
             delta (float, optional): delta parameter. If default (None) delta is trained, otherwise pass a value.
             precision (str, optional): matrix precision, defaults to single precision.
-            sparsify (bool, optional): if True, smaug gets sparsified and relative pvalues are returned
-            confidence (float, optional): if sparsify is True, this is the CI for the approximate zscore.
         """
 
         smaug_start = time.time()
@@ -173,31 +126,37 @@ class Smaug():
         else:
             sys.exit('Precision %s unknonwn' % str(precision))
 
-        # let's sort the expression and ppi data
+        # sort expression and methylation data
         self.expression_data = self.expression_data.astype(atype)
-        self.sparsify = sparsify
-        self.confidence = confidence
-        self.save_pvals = save_pvals
+        self.methylation_data = self.methylation_data.astype(atype)
+        self.output_fmt = output_fmt
+        self.output_folder = output_folder
         # If output folder is an empty string, keep the matrix in memory and don't save it to disk
         # Otherwise the output folder can be created and the matrix saved
-        if output_folder == '':
+        if self.output_folder == '':
             keep_in_memory = True
-            save_matrix = False
         else:
-            if not os.path.exists(output_folder):
-                os.makedirs(output_folder)
-            save_matrix = True
+            if not os.path.exists(self.output_folder):
+                os.makedirs(self.output_folder)
 
-        # Compute mean expression and mean methylation
-        self.expression_mean = np.mean(self.expression_data.values, axis=1, keepdims=True)
-        self.methylation_mean = np.mean(self.methylation_data.values, axis=1, keepdims=True)
+        # Compute lambda penalty parameters for DRAGON
+        lambdas, lambdas_landscape = estimate_penalty_parameters_dragon(self.expression_data, self.methylation_data)
+
+        # Compute population dragon
+        pop_precision, _ = get_precision_matrix_dragon(self.expression_data, self.methylation_data, lambdas)
+
+        # Append both omics data
+        fulldata = np.append(self.expression_data, self.methylation_data, axis=1).T
+
+        # Compute centered omics data
+        z = fulldata - np.mean(fulldata, axis=0)
 
         print('SMAUG: We are starting to compute the networks...')
         if sample_names == []:
             sample_names = self.expression_samples
             sample_names = set(sample_names).intersection(set(self.methylation_samples))
         else:
-            different = set(sample_names).difference(set(self.expression_samples))
+            different = set(sample_names).difference(set(self.expression_samples).union(set(self.methylation_samples)))
             sample_names = set(sample_names).intersection(set(self.expression_samples))
             sample_names = set(sample_names).intersection(set(self.methylation_samples))
             if len(different) > 0:
@@ -211,67 +170,159 @@ class Smaug():
             sample_start = time.time()
             # first run Smaug
             print('SMAUG: network for sample %s' % str(sample))
-            self._smaug_loop(sample, output_fmt=output_fmt, keep_in_memory=keep_in_memory, save_matrix=save_matrix,
-                              computing=computing, output_folder=output_folder, delta=delta)
+            if keep_in_memory:
+                result_smaug, result_precision, result_pval_precision, result_pval_precision_adjusted = self.compute_individual_smaug(
+                    fulldata, pop_precision, z, s, sample, delta, keep_in_memory)
+                self.smaugs.append(result_smaug)
+                self.precisions.append(result_precision)
+                self.pvals.append(result_pval_precision)
+                self.adjPvals.append(result_pval_precision_adjusted)
+            else:
+                self.compute_individual_smaug(fulldata, pop_precision, z, s, sample, delta, keep_in_memory)
 
-    def _smaug_loop(self, sample, output_fmt='.h5', keep_in_memory=False, save_matrix=True, online_partial_coexpression=False,
-                     computing='cpu', output_folder='./smaug/', delta=None):
+        if keep_in_memory:
+            return self
+
+    def compute_individual_smaug(self, fulldata, pop_precision, z, s, sample, delta, keep_in_memory):
         """Runs smaug on one sample. All samples are saved separately.
 
         Args:
-            sample (_type_): _description_
-            online_partial_coexpression (bool, optional): _description_. Defaults to False.
-            computing (str, optional): _description_. Defaults to 'cpu'.
-            output_folder (str, optional): _description_. Defaults to './coexpression/'.
+            fulldata: combined expression and methylation
+            pop_precision: population level precision matrix
+            z: centered omics data for the sample
+            s, sample: sample index and name
+            delta: delta parameter
+            output_folder (str, optional): _description_.
         """
 
-        touse = list(set(self.expression_samples).difference(set([sample])))
-        sample_idx = list(self.expression_samples).index(sample)
+        mask_include = [True] * fulldata.shape[1]
+        mask_include[s] = False
 
         print('SMAUG: computing network for sample %s' % str(sample))
-        sample_smaug, sample_delta, pval = compute_smaug(self.expression_data.values, self.methylation_data.values,
-                                                         self.expression_mean, self.methylation_mean,
-                                                         sample_idx, delta=delta,
-                                                         online_partial_coexpression=online_partial_coexpression,
-                                                         computing=computing, compute_sparse=self.sparsify,
-                                                         confidence=self.confidence, save_pvals=self.save_pvals)
+        # Compute covariance matrix from the rest of the data, leaving out sample
+        covariance_matrix = np.cov(fulldata[:, mask_include])
 
-        self.delta[sample] = sample_delta
+        # Compute posterior weight delta from data
+        if delta == None:
+            delta = 1 / (3 + 2 * np.sqrt(covariance_matrix.diagonal()).mean()
+                         / covariance_matrix.diagonal().var())
+        else:
+            assert type(delta) == float
 
-        df_smaug = pd.DataFrame(data=sample_smaug, columns=self.expression_data.index.tolist())
+        # Compute sample-specific precision matrix
+        M = np.outer(z[:, s], z[:, s])
+        df = 1 / delta + covariance_matrix.shape[0] + 1
+        numerator = pop_precision @ M @ pop_precision * delta / (1 - delta) ** 2
+        denominator = 1 + delta / (1 - delta) * np.inner(z[:, s], pop_precision @ z[:, s])
+        ssprecision = pop_precision / (1 - delta) - numerator / denominator
 
-        if save_matrix:
+        # Compute sample-specific partial correlation
+        p = ssprecision.shape[0]
+        A = np.sqrt(np.zeros((p, p)) + np.diag(ssprecision))
+        ssdragon = -ssprecision / A / A.T
+        ssdragon = ssdragon - np.diag(np.diag(ssdragon))
+
+        # Compute p-value
+        pval_precision = self.compute_precision_pvalue_normal(ssprecision, df)
+        # Compute FDR-corrected p-value using Benjamini-Hochberg
+        pval_precision_adjusted = self.benjamini_hochberg(pval_precision)
+
+        if not keep_in_memory:
             print('Saving SMAUG for sample %s' % (str(sample)))
-            output_fn = output_folder + 'smaug_' + str(sample) + output_fmt
-            if output_fmt == '.h5':
-                df_smaug.to_hdf(output_fn, key='smaug', index=False)
-            elif output_fmt == '.csv':
-                df_smaug.to_csv(output_fn, index=False)
-            elif output_fmt == '.txt':
-                df_smaug.to_csv(output_fn, index=False, sep='\t')
-            else:
-                print('WARNING: output format (%s) not recognised. We are saving in hdf' % str(output_fmt))
-                output_fn = output_folder + 'smaug_' + str(sample) + '.h5'
-                df_smaug.to_hdf(output_fn, key='smaug', index=False)
+            ssdragon = pd.DataFrame(ssdragon)
+            ssprecision = pd.DataFrame(ssprecision)
+            pval_precision = pd.DataFrame(pval_precision)
+            pval_precision_adjusted = pd.DataFrame(pval_precision_adjusted)
+            sfolder = self.output_folder + './smaug/'
+            pfolder = self.output_folder + './precision/'
+            pvalfolder = self.output_folder + './pval/'
+            adjPvalfolder = self.output_folder + './adjPval/'
+            if not os.path.exists(sfolder):
+                os.makedirs(sfolder)
+            if not os.path.exists(pfolder):
+                os.makedirs(pfolder)
+            if not os.path.exists(pvalfolder):
+                os.makedirs(pvalfolder)
+            if not os.path.exists(adjPvalfolder):
+                os.makedirs(adjPvalfolder)
 
-        if (self.sparsify and self.save_pvals):
-            df_pval = pd.DataFrame(data=pval, columns=self.expression_data.index.tolist())
-            print('Saving pvalues for sample %s' % (str(sample)))
-            output_fn = output_folder + 'pvals_' + str(sample) + output_fmt
-            if output_fmt == '.h5':
-                df_pval.to_hdf(output_fn, key='pvals', index=False)
-            elif output_fmt == '.csv':
-                df_pval.to_csv(output_fn, index=False)
-            elif output_fmt == '.txt':
-                df_pval.to_csv(output_fn, index=False, sep='\t')
-            else:
-                print('WARNING: output format (%s) not recognised. We are saving in hdf' % str(output_fmt))
-                output_fn = output_folder + 'pvals_' + str(sample) + '.h5'
-                df_pval.to_hdf(output_fn, key='pvals', index=False)
+            output_fn_smaug = sfolder + 'smaug_' + str(sample) + self.output_fmt
+            output_fn_precision = pfolder + 'precision_' + str(sample) + self.output_fmt
+            output_fn_pval = pvalfolder + 'pval_' + str(sample) + self.output_fmt
+            output_fn_adjPval = adjPvalfolder + 'adjPval_' + str(sample) + self.output_fmt
+            if self.output_fmt == '.h5':
+                ssdragon.to_hdf(output_fn_smaug, key='smaug', index=False)
+                ssprecision.to_hdf(output_fn_precision, key='precision', index=False)
+                pval_precision.to_hdf(output_fn_pval, key='pval', index=False)
+                pval_precision_adjusted.to_hdf(output_fn_adjPval, key='adjPval', index=False)
+            elif self.output_fmt == '.csv':
+                ssdragon.to_csv(output_fn_smaug, index=False)
+                ssprecision.to_csv(output_fn_precision, index=False)
+                pval_precision.to_csv(output_fn_pval, index=False)
+                pval_precision_adjusted.to_csv(output_fn_adjPval, index=False)
+            elif self.output_fmt == '.txt':
+                ssdragon.to_csv(output_fn_smaug, index=False, sep='\t')
+                ssprecision.to_csv(output_fn_precision, index=False, sep='\t')
+                pval_precision.to_csv(output_fn_pval, index=False, sep='\t')
+                pval_precision_adjusted.to_csv(output_fn_adjPval, index=False, sep='\t')
 
-        if keep_in_memory:
-            self.smaugs[sample] = df_smaug
-            self.pvals[sample] = df_pval
+            else:
+                print('WARNING: output format (%s) not recognised. We are saving in hdf' % str(self.output_fmt))
+                ssdragon.to_hdf(output_fn_smaug, key='smaug', index=False)
+                ssprecision.to_hdf(output_fn_precision, key='precision', index=False)
+                pval_precision.to_hdf(output_fn_pval, key='pval', index=False)
+                pval_precision_adjusted.to_hdf(output_fn_adjPval, key='adjPval', index=False)
+        else:
+            return ssdragon, ssprecision, pval_precision, pval_precision_adjusted
+
+    def compute_precision_pvalue_normal(self, ssprecision, df):
+        """
+            Compute element-wise p-value
+
+            Parameters:
+            ssprecision (2D array-like): sample-specific precision matrix
+            df: degrees of freedom of Wishart distribution
+
+            Returns:
+            np.ndarray: p-values matrix, same shape as input.
+        """
+
+        # Extract the diagonal elements
+        diag_elements = np.diag(ssprecision)
+
+        # Create an outer product of the diagonal elements
+        outer_diag_product = np.outer(diag_elements, diag_elements)
+
+        v = np.sqrt(outer_diag_product) / df ** 0.75 # under null, off-diagonals of ssprecision = 0
+
+        v = np.divide(ssprecision , v)
+
+        # Two-sided p-value: 2 * (1 - CDF(|z|)) = 2 * SF(|z|)
+        p_val = 2 * (1 - norm.cdf(np.abs(v)))
+
+        return p_val
+
+    def benjamini_hochberg(self, pvals):
+        """
+        Vectorized Benjamini-Hochberg correction for a 2D matrix of p-values.
+
+        Parameters:
+        pvals (2D array-like): Input matrix of p-values.
+
+        Returns:
+        np.ndarray: Adjusted p-values matrix, same shape as input.
+        """
+        shape = pvals.shape  # save original shape
+        flat_pvals = pvals.flatten()  # flatten to 1D
+
+        # Apply BH correction
+        adj_pvals = fdr(flat_pvals, method='bh')
+
+        # Reshape back to 2D
+        return adj_pvals.reshape(shape)
+
+
+
 
 
 

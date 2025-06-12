@@ -9,87 +9,87 @@ import numpy as np
 from netZooPy.panda import calculations as calc
 import sys
 
-def check_expression_integrity(df):
+def check_data_integrity(df):
     """Check data integrity
     - Number of NA
 
     Args:
-        df (dataframe): gene expression dataframe
+        df (dataframe): expression or methylation dataframe
     """
 
     # check that for each
     if (df.isna().sum(axis = 1)>(len(df.columns)-3)).any():
-        sys.exit('Too many nan in gene expression (need more than 1 sample to compute coexpression)')
+        sys.exit('Too many nan in data (need more than 1 sample to compute partial correlation)')
 
 
-def read_expression(expression_fn, header=0, usecols=None, nrows=None):
-    """Read expression data.
+def read_data(data_file_name, header=0, usecols=None, nrows=None):
+    """Read data.
 
     Parameters
     -----------
-        expression_fn: str
-            filename of the expression file
+        data_file_name: str
+            filename of the expression or methylation file
         header: str or int
             header row
         usecols:list
             pass a list of the columns that need to be read
     """
-    with open(expression_fn, 'r') as f:
-        if expression_fn.endswith('.txt'):
+    with open(data_file_name, 'r') as f:
+        if data_file_name.endswith('.txt'):
             df = pd.read_csv(f, sep='\t', usecols=usecols, index_col=0, nrows=nrows)
-        elif expression_fn.endswith('.csv'):
+        elif data_file_name.endswith('.csv'):
             df = pd.read_csv(f, sep=' ', usecols=usecols, index_col=0, nrows=nrows)
-        elif expression_fn.endswith('.tsv'):
+        elif data_file_name.endswith('.tsv'):
             df = pd.read_csv(f, sep='\t', usecols=usecols, index_col=0, nrows=nrows)
         else:
-            sys.exit("Format of expression filename not recognised %s" % str(expression_fn))
+            sys.exit("Format of data filename not recognised %s" % str(expression_fn))
 
     return (df)
 
-def prepare_expression(expression_filename, samples=None):
+def prepare_data(data_filename, samples=None):
     """ Prepare main coexpression network by reading the expression file.
 
     Parameters
     ----------
-        expression_filename :str
+        data_filename :str
             A table (tsv, csv, or txt) where each column is a sample
-            and each row is a gene. Values are expression.
+            and each row is a gene. Values are expression or methylation M values.
         samples: list
             list of sample names. If None all samples are read (default: None)
 
 	Returns
 	---------
-		expression_data: pd.DataFrame
-		expression_genes:set
+		omics_data: pd.DataFrame
+		omics_genes:set
 
     """
     # expression file is properly annotated with the sample name and
     # a list of sample of interest is passed
     print(samples)
-    if type(expression_filename) is str:
+    if type(data_filename) is str:
 
         if (isinstance(samples, list)):
-            expression_data = read_expression(expression_filename, usecols=samples)
+            omics_data = read_data(data_filename, usecols=samples)
         else:
-            expression_data = read_expression(expression_filename)
+            omics_data = read_data(data_filename)
 
-    elif isinstance(expression_filename, pd.DataFrame):
+    elif isinstance(data_filename, pd.DataFrame):
         if (isinstance(samples, list)):
-            expression_data = expression_filename.loc[:, samples]
+            omics_data = data_filename.loc[:, samples]
         else:
-            expression_data = expression_filename
+            omics_data = data_filename
 
     else:
-        sys.exit('Filename needs to be a table string or a pandas dataframe')
+        sys.exit('Filename needs to be a table or string')
 
     # keep names of expression genes
-    expression_genes = set(expression_data.index.tolist())
+    omics_genes = set(omics_data.index.tolist())
 
-    if len(expression_data) != len(expression_genes):
+    if len(omics_data) != len(omics_genes):
         print(
             "Duplicate symbols detected. Consider averaging before running SMAUG"
         )
 
-    check_expression_integrity(expression_data)
+    check_data_integrity(omics_data)
 
-    return (expression_data, expression_genes)
+    return (omics_data, omics_genes)
