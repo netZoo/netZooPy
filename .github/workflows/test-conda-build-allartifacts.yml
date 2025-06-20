@@ -1,5 +1,4 @@
-name: Build Conda Packages (.conda format)
-
+name: test-conda-build-all-artifacts
 on:
   push:
     branches: [devel]
