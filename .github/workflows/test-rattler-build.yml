@@ -14,15 +14,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install Rattler from GitHub release
+      - name: Install Rattler from Prefix.dev release
         run: |
-          curl -L https://github.com/mamba-org/rattler-build/releases/latest/download/rattler-build-x86_64-unknown-linux-gnu.tar.gz -o rattler-build.tar.gz
+          curl -L https://github.com/prefix-dev/rattler-build/releases/download/v0.43.0/rattler-build-x86_64-unknown-linux-musl.tar.gz -o rattler-build.tar.gz
           mkdir -p $HOME/.rattler/bin
           tar -xzf rattler-build.tar.gz -C $HOME/.rattler/bin --strip-components=1
           echo "$HOME/.rattler/bin" >> $GITHUB_PATH
           echo "export PATH=$HOME/.rattler/bin:\$PATH" >> $GITHUB_ENV
           export PATH="$HOME/.rattler/bin:$PATH"
-          which rattler-build
           rattler-build --version
 
       - name: Build with Rattler
