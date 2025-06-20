@@ -13,8 +13,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-    - name: Install Rattler and update PATH
+      - name: Install Rattler and update PATH
         run: |
           curl -fsSL https://prefix.dev/install.sh | bash
           echo "$HOME/.rattler/bin" >> $GITHUB_PATH
