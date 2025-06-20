@@ -1,5 +1,4 @@
-name: oldwconvert test conda buildname: Build netZooPy with Boa
-
+name: rattler action
 on:
   push:
     branches:
@@ -8,29 +7,9 @@ on:
 
 jobs:
   build:
+    name: Build package
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Miniconda with Mamba
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          auto-update-conda: true
-          python-version: 3.10
-          miniforge-variant: Mambaforge
-          channels: conda-forge,bioconda,defaults
-
-      - name: Install boa
-        run: |
-          mamba install -y boa anaconda-client
-
-      - name: Build Conda package with Boa
-        run: |
-          mkdir -p conda-build
-          boa build . --output-folder conda-build
-
-      - name: Show built package
-        run: |
-          ls -lh conda-build/**/netzoopy*.tar.bz2
+    - uses: actions/checkout@v4
+    - name: Build conda package
+      uses: prefix-dev/rattler-build-action@v0.2.33
