@@ -1,37 +1,36 @@
-name: oldwconvert test conda build
+name: oldwconvert test conda buildname: Build netZooPy with Boa
+
 on:
   push:
     branches:
       - master
       - devel
+
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.10']
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: "Setup Conda"
-        uses: s-weigand/setup-conda@v1
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Miniconda with Mamba
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          update-conda: false
-          python-version: ${{ matrix.python-version }}
-          conda-channels: anaconda, conda-forge, bioconda
-      - name: "Install Conda development packages"
+          auto-update-conda: true
+          python-version: 3.10
+          miniforge-variant: Mambaforge
+          channels: conda-forge,bioconda,defaults
+
+      - name: Install boa
         run: |
-          conda install conda-build=3.21.5
-          conda install conda-verify
-          conda install -c anaconda anaconda-client
-      - name: "Verify Conda Build Installation"
+          mamba install -y boa anaconda-client
+
+      - name: Build Conda package with Boa
         run: |
-          conda list | grep conda-build
-      - name: "Build and upload package"
+          mkdir -p conda-build
+          boa build . --output-folder conda-build
+
+      - name: Show built package
         run: |
-          mkdir conda-build
-          CONDA_PACKAGE_FORMAT=1 conda build . --no-build-id  --output-folder ./conda-build -c conda-forge
-          ls conda-build/**/netzoopy*
-          conda install "urllib3<2"
-          conda convert -p all "./conda-build/**/netzoopy*.bz2" --output-dir ./conda-build --dry-run
+          ls -lh conda-build/**/netzoopy*.tar.bz2
