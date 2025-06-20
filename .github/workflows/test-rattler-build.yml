@@ -1,4 +1,4 @@
-name: Build netZooPy with Rattler
+name: Build netZooPy noarch with Rattler
 
 on:
   push:
@@ -14,9 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install Rattler from Prefix.dev release
+      - name: Install Rattler
         run: |
-          curl -L https://github.com/prefix-dev/rattler-build/releases/download/v0.43.0/rattler-build-x86_64-unknown-linux-musl.tar.gz -o rattler-build.tar.gz
+          URL="https://github.com/prefix-dev/rattler-build/releases/download/v0.43.0/rattler-build-x86_64-unknown-linux-musl.tar.gz"
+          echo "Downloading Rattler from: $URL"
+          curl -L "$URL" -o rattler-build.tar.gz
           mkdir -p $HOME/.rattler/bin
           tar -xzf rattler-build.tar.gz -C $HOME/.rattler/bin --strip-components=1
           echo "$HOME/.rattler/bin" >> $GITHUB_PATH
@@ -24,11 +26,15 @@ jobs:
           export PATH="$HOME/.rattler/bin:$PATH"
           rattler-build --version
 
-      - name: Build with Rattler
+      - name: Build noarch Conda package from short path
         run: |
-          mkdir -p rattler-build
+          mkdir -p /tmp/netzoo
+          cp -r . /tmp/netzoo/
+          cd /tmp/netzoo
           rattler-build build --recipe recipe/ --output-dir rattler-build/
+          cp -r rattler-build $GITHUB_WORKSPACE/
 
-      - name: Show built package
+      - name: Show built packages
         run: |
-          ls -lh rattler-build/**/*.conda
+          ls -lh rattler-build/**/*.conda || true
+
