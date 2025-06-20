@@ -9,9 +9,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: ['3.10']
-
     steps:
       - uses: actions/checkout@v3
       - name: "Setup Conda"
