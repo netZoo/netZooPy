@@ -27,7 +27,7 @@ jobs:
       - name: Build with Rattler
         run: |
           mkdir -p rattler-build
-          rattler-build build --recipe recipe/ --output rattler-build/
+          rattler-build build --recipe recipe/ --output-dir rattler-build/
 
       - name: Show built package
         run: |
