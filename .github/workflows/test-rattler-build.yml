@@ -32,6 +32,7 @@ jobs:
           cp -r . /tmp/netzoo/
           cd /tmp/netzoo
           rattler-build build --recipe recipe/ --output-dir rattler-build/
+          find . -type f -exec sh -c 'printf "%s: %d\n" "$1" "$(echo -n "$1" | wc -c)"' _ {} \; | sort -nrk2 | head -20
           cp -r rattler-build $GITHUB_WORKSPACE/
 
       - name: Show built packages
