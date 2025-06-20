@@ -40,7 +40,8 @@ requirements:
     - pytables
     
 tests:
-  - script: test.py
+  - script:
+      - python -c "from netZooPy.panda.panda import Panda"
 
 about:
   summary: Python implementation of the NetZoo ecosystem
