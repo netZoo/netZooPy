@@ -1,4 +1,4 @@
-name: test conda new format
+name: new test conda build
 on:
   push:
     branches:

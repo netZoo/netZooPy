@@ -1,4 +1,4 @@
-name: Build Conda Packages (.conda format)
+name: all artifacts test conda build
 
 on:
   push:

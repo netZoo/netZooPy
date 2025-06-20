@@ -1,4 +1,4 @@
-name: test conda build
+name: oldwconvert test conda build
 on:
   push:
     branches:
