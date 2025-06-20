@@ -26,16 +26,16 @@ jobs:
           export PATH="$HOME/.rattler/bin:$PATH"
           rattler-build --version
 
-      - name: Build noarch Conda package from short path
+      - name: Build noarch Conda package
         run: |
-          mkdir -p /tmp/netzoo
-          cp -r . /tmp/netzoo/
-          cd /tmp/netzoo
           rattler-build build --recipe recipe/ --output-dir rattler-build/
-          find . -type f -exec sh -c 'printf "%s: %d\n" "$1" "$(echo -n "$1" | wc -c)"' _ {} \; | sort -nrk2 | head -20
-          cp -r rattler-build $GITHUB_WORKSPACE/
 
       - name: Show built packages
         run: |
           ls -lh rattler-build/**/*.conda || true
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: rattler-noarch
+          path: rattler-build/
