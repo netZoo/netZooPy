@@ -14,10 +14,7 @@ jobs:
     - name: Build conda package
       uses: prefix-dev/rattler-build-action@v0.2.33
       with:
-        recipe: recipe/
-        output-dir: rattler-build/
-        short-path: true
+        recipe-path: recipe/
     - name: Show built packages
       run: |
         ls -lh rattler-build/**/*.conda || true
-        find rattler-build/ -type f -exec sh -c 'printf "%s: %d\n" "$1" "$(echo -n "$1" | wc -c)"' _ {} \; | sort -nrk2 | head -20
