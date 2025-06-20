@@ -33,9 +33,3 @@ jobs:
       - name: Show built packages
         run: |
           ls -lh rattler-build/**/*.conda || true
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: rattler-noarch
-          path: rattler-build/
