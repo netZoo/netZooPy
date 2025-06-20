@@ -26,9 +26,9 @@ jobs:
       uses: prefix-dev/rattler-build-action@v0.2.33
       with:
         # needs to be unique for each matrix entry
+        recipe-path: recipe/
         artifact-name: package-${{ matrix.target-platform }}
         build-args: --target-platform ${{ matrix.target-platform }}${{ matrix.target-platform == 'linux-aarch64' && ' --no-test' || '' }}
-        recipe-path: recipe/
     - name: Show built packages
       run: |
         ls -lh rattler-build/**/*.conda || true
