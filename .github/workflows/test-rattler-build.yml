@@ -14,19 +14,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install Rattler
+    - name: Install Rattler
         run: |
           curl -fsSL https://prefix.dev/install.sh | bash
           echo "$HOME/.rattler/bin" >> $GITHUB_PATH
+          echo "export PATH=$HOME/.rattler/bin:\$PATH" >> $GITHUB_ENV
 
-      - name: Verify Rattler install
+    - name: Verify Rattler install
         run: rattler-build --version
 
-      - name: Build package with Rattler
+      - name: Build with Rattler
         run: |
-          mkdir -p rattler-build
-          rattler-build build -o rattler-build
-
+          rattler-build --version
+          rattler-build build --recipe recipe/ --output rattler-build/
+          
       - name: Show built package
         run: |
           ls -lh rattler-build/**/*.tar.bz2
