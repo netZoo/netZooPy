@@ -13,7 +13,3 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build conda package
       uses: prefix-dev/rattler-build-action@v0.2.33
-
-      - name: Show built package
-        run: |
-          ls -lh rattler-build/**/*.tar.bz2
