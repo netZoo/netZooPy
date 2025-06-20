@@ -19,12 +19,9 @@ jobs:
         with:
           update-conda: false
           python-version: ${{ matrix.python-version }}
-          conda-channels: anaconda, conda-forge, bioconda
+          conda-channels: anaconda,conda-forge,bioconda
       - name: "Install Conda development packages"
-        run: |
-          conda install conda-build
-          conda install conda-verify
-          conda install -c anaconda anaconda-client
+        run: conda install -c anaconda anaconda-client conda-build conda-verify
       - name: "Verify Conda Build Installation"
         run: |
           conda list | grep conda-build
