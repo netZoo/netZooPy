@@ -1,0 +1,35 @@
+name: Build netZooPy noarch with Rattler
+
+on:
+  push:
+    branches:
+      - master
+      - devel
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Rattler
+        run: |
+          URL="https://github.com/prefix-dev/rattler-build/releases/download/v0.43.0/rattler-build-x86_64-unknown-linux-musl.tar.gz"
+          echo "Downloading Rattler from: $URL"
+          curl -L "$URL" -o rattler-build.tar.gz
+          mkdir -p $HOME/.rattler/bin
+          tar -xzf rattler-build.tar.gz -C $HOME/.rattler/bin --strip-components=1
+          echo "$HOME/.rattler/bin" >> $GITHUB_PATH
+          echo "export PATH=$HOME/.rattler/bin:\$PATH" >> $GITHUB_ENV
+          export PATH="$HOME/.rattler/bin:$PATH"
+          rattler-build --version
+
+      - name: Build noarch Conda package
+        run: |
+          rattler-build build --recipe recipe/ --output-dir rattler-build/
+
+      - name: Show built packages
+        run: |
+          ls -lh rattler-build/**/*.conda || true
