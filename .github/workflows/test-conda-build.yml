@@ -1,4 +1,4 @@
-name: rattler action
+name: conda build test
 on:
   push:
     branches:
