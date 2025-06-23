@@ -14,6 +14,8 @@ jobs:
         include:
           - os: ubuntu-latest
             target-platform: linux-64
+          - os: ubuntu-latest
+            target-platform: noarch
           - os: ubuntu-24.04-arm
             target-platform: linux-aarch64
           - os: macos-13
@@ -32,3 +34,5 @@ jobs:
     - name: Show built packages
       run: |
         ls -lh rattler-build/**/*.conda || true
+
+        
