@@ -30,7 +30,7 @@ jobs:
         build-args: --target-platform ${{ matrix.target-platform }}${{ matrix.target-platform == 'linux-aarch64' && ' --no-test' || '' }}
     - name: Show built packages
       run: |
-        ls -lh rattler-build/**/*.conda || true          
+        ls -lh output/**/*.conda || true          
     - name: Upload package to Anaconda
       run: |
-        rattler-build upload anaconda -o netzoo --api-key ${{ secrets.ANACONDA_TOKEN }} **/*.conda
+        rattler-build upload anaconda -o netzoo --api-key ${{ secrets.ANACONDA_TOKEN }} output/**/*.conda
