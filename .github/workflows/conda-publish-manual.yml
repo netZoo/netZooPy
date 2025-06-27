@@ -33,5 +33,4 @@ jobs:
         ls -lh rattler-build/**/*.conda || true          
     - name: Upload package to Anaconda
       run: |
-        export ANACONDA_API_KEY=${{ secrets.ANACONDA_TOKEN }}
-        rattler-build upload anaconda -o netzoo rattler-build/**/*.conda
+        rattler-build upload anaconda -o netzoo --api-key ${{ secrets.ANACONDA_TOKEN }} rattler-build/**/*.conda
