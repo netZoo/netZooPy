@@ -59,3 +59,7 @@ debug_bonobo.py
 !recipe/
 !recipe/recipe.yaml
 !recipe/test.py
+
+pixi/*
+.pixi/*
+pixi*
