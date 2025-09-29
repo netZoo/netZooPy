@@ -6,6 +6,7 @@ from .timer import Timer
 import numpy as np
 from netZooPy.cobra import cobra
 from netZooPy.panda import calculations as calc
+from netZooPy.panda import io as io
 import os
 
 class Panda(object):
@@ -124,7 +125,8 @@ class Panda(object):
         with_header=False, 
         cobra_design_matrix = None, 
         cobra_covariate_to_keep = 0,
-        tmp_folder = './tmp/'
+        tmp_folder = './tmp/',
+        process_data_only = False
     ):
         """ Intialize instance of Panda class and load data.
         """
@@ -146,72 +148,73 @@ class Panda(object):
         print(modeProcess,motif_file,expression_file,ppi_file,save_memory,remove_missing,keep_expression_matrix)
         if hasattr(self, "export_panda_results"):
             return
-
-        # =====================================================================
-        # Network normalization
-        # =====================================================================
-
-        self.precision = precision
         
-        with Timer("Normalizing networks ..."):
-            self.correlation_matrix = self._normalize_network(self.correlation_matrix)
-            with np.errstate(invalid="ignore"):  # silly warning bothering people
-                self.motif_matrix = self._normalize_network(
-                    self.motif_matrix_unnormalized
+        if (process_data_only==False):
+            # =====================================================================
+            # Network normalization
+            # =====================================================================
+
+            self.precision = precision
+            
+            with Timer("Normalizing networks ..."):
+                self.correlation_matrix = self._normalize_network(self.correlation_matrix)
+                with np.errstate(invalid="ignore"):  # silly warning bothering people
+                    self.motif_matrix = self._normalize_network(
+                        self.motif_matrix_unnormalized
+                    )
+                self.ppi_matrix = self._normalize_network(self.ppi_matrix)
+                if self.precision == "single":
+                    self.correlation_matrix = np.float32(self.correlation_matrix)
+                    self.motif_matrix = np.float32(self.motif_matrix)
+                    self.ppi_matrix = np.float32(self.ppi_matrix)
+            # =====================================================================
+            # Clean up useless variables to release memory
+            # =====================================================================
+            self.tfs, self.genes = self.unique_tfs, self.gene_names
+
+            if (save_memory==True):
+                print("Clearing motif and ppi data, unique tfs, and gene names for speed")
+                del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
+                print("WARNING: save_memory will be uncoupled from the output behavior.\n Pass as_adjacency to save the output panda as adjacency matrix")
+            # =====================================================================
+            # Saving middle data to tmp
+            # =====================================================================
+            self.tmp_folder = tmp_folder
+            if save_tmp:
+                with Timer("Saving expression matrix and normalized networks in %s..." %str(self.tmp_folder)):
+                    os.makedirs(self.tmp_folder,exist_ok=True) 
+                    if self.expression_data is not None:
+                        np.save(self.tmp_folder + "expression.npy", self.expression_data.values)
+                        np.save(self.tmp_folder + "motif.normalized.npy", self.motif_matrix)
+                        np.save(self.tmp_folder + "ppi.normalized.npy", self.ppi_matrix)
+
+
+            # delete expression data
+            del self.expression_data
+
+            # =====================================================================
+            # Running PANDA algorithm
+            # =====================================================================
+            if self.motif_data is not None:
+                print("Running PANDA algorithm ...")
+                self.panda_network = self.panda_loop(
+                    self.correlation_matrix,
+                    self.motif_matrix,
+                    self.ppi_matrix,
+                    computing,
+                    alpha,
                 )
-            self.ppi_matrix = self._normalize_network(self.ppi_matrix)
-            if self.precision == "single":
-                self.correlation_matrix = np.float32(self.correlation_matrix)
-                self.motif_matrix = np.float32(self.motif_matrix)
-                self.ppi_matrix = np.float32(self.ppi_matrix)
-        # =====================================================================
-        # Clean up useless variables to release memory
-        # =====================================================================
-        self.tfs, self.genes = self.unique_tfs, self.gene_names
-
-        if (save_memory==True):
-            print("Clearing motif and ppi data, unique tfs, and gene names for speed")
-            del self.unique_tfs, self.gene_names, self.motif_matrix_unnormalized
-            print("WARNING: save_memory will be uncoupled from the output behavior.\n Pass as_adjacency to save the output panda as adjacency matrix")
-        # =====================================================================
-        # Saving middle data to tmp
-        # =====================================================================
-        self.tmp_folder = tmp_folder
-        if save_tmp:
-            with Timer("Saving expression matrix and normalized networks in %s..." %str(self.tmp_folder)):
-                os.makedirs(self.tmp_folder,exist_ok=True) 
-                if self.expression_data is not None:
-                    np.save(self.tmp_folder + "expression.npy", self.expression_data.values)
-                    np.save(self.tmp_folder + "motif.normalized.npy", self.motif_matrix)
-                    np.save(self.tmp_folder + "ppi.normalized.npy", self.ppi_matrix)
-
-
-        # delete expression data
-        del self.expression_data
-
-        # =====================================================================
-        # Running PANDA algorithm
-        # =====================================================================
-        if self.motif_data is not None:
-            print("Running PANDA algorithm ...")
-            self.panda_network = self.panda_loop(
-                self.correlation_matrix,
-                self.motif_matrix,
-                self.ppi_matrix,
-                computing,
-                alpha,
-            )
-            # label dataframe
-            self.panda_network = pd.DataFrame(
-                self.panda_network, index=self.tfs, columns=self.genes
-            )
-        else:
-            self.panda_network = self.correlation_matrix
-            self.__pearson_results_data_frame()
-            # label dataframe
-            self.panda_network = pd.DataFrame(
-                self.panda_network, index=self.genes, columns=self.genes
-            )
+                # label dataframe
+                self.panda_network = pd.DataFrame(
+                    self.panda_network, index=self.tfs, columns=self.genes
+                )
+            else:
+                self.panda_network = self.correlation_matrix
+                self.__pearson_results_data_frame()
+                # label dataframe
+                self.panda_network = pd.DataFrame(
+                    self.panda_network, index=self.genes, columns=self.genes
+                )
 
     def __remove_missing(self):
         """ Removes the genes and TFs that are not present in one of the priors. Works only if modeProcess='legacy'.
@@ -326,38 +329,9 @@ class Panda(object):
         # Data loading
         # =====================================================================
         ### Loading Motif
-        if type(motif_file) is str:
-            # If motif_file is a filename
-            with Timer("Loading motif data ..."):
-                self.motif_data = pd.read_csv(motif_file, sep="\t", header=None)
-                self.motif_tfs = sorted(set(self.motif_data[0]))
-                self.motif_genes = sorted(set(self.motif_data[1]))
-                # self.num_tfs = len(self.unique_tfs)
-                # print('Unique TFs:', self.num_tfs)
-        elif type(motif_file) is not str:
-            # If motif_file is an object
-            if motif_file is None:
-                # Computation without motif
-                self.motif_data = None
-                self.motif_genes = []
-                self.motif_tfs = []
-            else:
-                # If motif_file is an object, it needs to be a dataframe
-                if not isinstance(motif_file, pd.DataFrame):
-                    raise Exception(
-                        "Please provide a pandas dataframe for motif data with column names as 'source', 'target', and 'weight'."
-                    )
-                if ("source" not in motif_file.columns) or (
-                    "target" not in motif_file.columns
-                ):
-                    print('renaming motif columns to "source", "target" and "weight" ')
-                    motif_file.columns = ["source", "target", "weight"]
-                self.motif_data = pd.DataFrame(motif_file.values)
-                self.motif_tfs = sorted(set(motif_file["source"]))
-                self.motif_genes = sorted(set(motif_file["target"]))
-            # self.num_tfs = len(self.unique_tfs)
-            # print('Unique TFs:', self.num_tfs)
-
+        with Timer("Loading motif data ..."):
+            self.motif_data, self.motif_tfs, self.motif_genes = io.load_motif(motif_file)
+        
         ### Loading expression
         if type(expression_file) is str:
             # If we pass an expression file, check if we have a 'with header' flag and read it
