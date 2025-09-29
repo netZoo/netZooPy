@@ -333,49 +333,22 @@ class Panda(object):
             self.motif_data, self.motif_tfs, self.motif_genes = io.load_motif(motif_file)
         
         ### Loading expression
-        if type(expression_file) is str:
-            # If we pass an expression file, check if we have a 'with header' flag and read it
-            with Timer("Loading expression data ..."):
-                if with_header:
-                    # Read data with header
-                    self.expression_data = pd.read_csv(
-                        expression_file, sep="\t", index_col=0
-                    )
-                else:
-                    self.expression_data = pd.read_csv(
-                        expression_file, sep="\t", header=None, index_col=0
-                    )
-                # assign expression data and samples/gene names
-                self.expression_data = self.expression_data.iloc[:, (start-1):end]
-                self.expression_genes = self.expression_data.index.tolist()
-                self.expression_samples = self.expression_data.columns.astype(str)
-                # self.num_genes = len(self.gene_names)
-                # print('Expression matrix:', self.expression_data.shape)
-        elif type(expression_file) is not str:
-            # Pass expression as a dataframe 
-            if expression_file is not None:
-                if not isinstance(expression_file, pd.DataFrame):
-                    raise Exception(
-                        "Please provide a pandas dataframe for expression data."
-                    )
-                self.expression_data = expression_file.iloc[:, (start-1):end]  # pd.read_csv(expression_file, sep='\t', header=None, index_col=0)
-                self.expression_genes = self.expression_data.index.tolist()
-                self.expression_samples = self.expression_data.columns.astype(str)
-                # self.num_genes = len(self.gene_names)
-                # print('Expression matrix:', self.expression_data.shape)
-            else:
-                # If no expression is passed
-                self.gene_names = self.motif_genes
-                self.expression_genes = self.motif_genes
-                self.num_genes = len(self.gene_names)
-                self.expression_data = (
-                    None  # pd.DataFrame(np.identity(self.num_genes, dtype=int))
-                )
-                print(
-                    # TODO: Marouen check here. Here we do not pass the identity matrix
-                    "No Expression data given: correlation matrix will be an identity matrix of size",
-                    len(self.motif_genes),
-                )
+        with Timer("Loading expression data ..."):
+            self.expression_data, self.expression_genes, self.expression_samples = io.load_expression(expression_file, with_header = with_header, start = start, end = end)
+
+        if ((self.expression_data is None) & (self.expression_genes is None) & (self.expression_samples is None)):
+            # If no expression is passed
+            self.gene_names = self.motif_genes
+            self.expression_genes = self.motif_genes
+            self.num_genes = len(self.gene_names)
+            self.expression_data = (
+                None  # pd.DataFrame(np.identity(self.num_genes, dtype=int))
+            )
+            print(
+                # TODO: Marouen check here. Here we do not pass the identity matrix
+                "No Expression data given: correlation matrix will be an identity matrix of size",
+                len(self.motif_genes),
+            )
 
         if len(self.expression_genes) != len(np.unique(self.expression_genes)):
             print(
@@ -383,6 +356,7 @@ class Panda(object):
             )
 
         ### Loading the PPI
+        # #TODO: move this to io
         if type(ppi_file) is str:
             with Timer("Loading PPI data ..."):
                 self.ppi_data = pd.read_csv(ppi_file, sep="\t", header=None)
