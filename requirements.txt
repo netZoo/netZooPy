@@ -7,3 +7,4 @@ igraph
 joblib
 statsmodels
 click
+scikit-learn
