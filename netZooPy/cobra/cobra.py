@@ -66,10 +66,10 @@ def cobra(X, expression, cobra='nnls', alpha: np.float64=0.1):
 
     if cobra=='nnls':
         model = LinearRegression(positive=True).fit(X, np.diag(d) )
-        psi = model.coef_
+        psi = np.transpose(model.coef_)
     elif cobra=='nnlasso':
         model == Lasso(alpha=alpha, positive=True).fit(X, np.diag(d) )
-        psi = model.coef_
+        psi = np.transpose(model.coef_)
     elif cobra=='deprecated':
         gtq = np.matmul(g.T, Q)
         xtx_inv = np.linalg.pinv(
@@ -90,4 +90,4 @@ def cobra(X, expression, cobra='nnls', alpha: np.float64=0.1):
                     ) for k in range(n)
                 ])
 
-    return np.transpose(psi), Q, d, g
+    return psi, Q, d, g
