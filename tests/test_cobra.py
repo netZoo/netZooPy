@@ -23,7 +23,7 @@ def test_cobra():
     G_gt = pd.read_csv(G_gt_path, index_col=0)
 
     # Call COBRA
-    psi, Q, D, G = cobra.cobra(X, expression)
+    psi, Q, D, G = cobra.cobra(X, expression, cobra='deprecated')
 
     # Cast output to pandas
     psi = pd.DataFrame(psi, index=psi_gt.index, columns=psi_gt.columns)
