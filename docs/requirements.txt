@@ -4,3 +4,4 @@ recommonmark
 numpydoc
 myst-parser
 sphinx-click
+sphinx-rtd-theme

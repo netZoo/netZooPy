@@ -23,7 +23,7 @@ Commands
 
 .. click:: netZooPy.cli:cli
    :prog: netzoopy
-   :commands: panda,lioness,condor
+   :commands: panda,lioness,condor,bonobo
    :nested: full
 
 
@@ -39,3 +39,5 @@ Lioness
 ~~~~~~~~~
 
 .. autofunction:: netZooPy.lioness.run_lioness.main
+
+Common usage

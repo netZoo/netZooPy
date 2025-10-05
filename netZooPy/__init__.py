@@ -6,5 +6,6 @@ from netZooPy import puma
 from netZooPy import lioness
 from netZooPy import condor
 from netZooPy import sambar
+from netZooPy import bonobo
 
-__version__ = "0.10.0"
+__version__ = "0.10.9"

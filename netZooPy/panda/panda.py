@@ -123,7 +123,8 @@ class Panda(object):
         end=None,
         with_header=False, 
         cobra_design_matrix = None, 
-        cobra_covariate_to_keep = 0
+        cobra_covariate_to_keep = 0,
+        tmp_folder = './tmp/'
     ):
         """ Intialize instance of Panda class and load data.
         """
@@ -175,13 +176,15 @@ class Panda(object):
         # =====================================================================
         # Saving middle data to tmp
         # =====================================================================
+        self.tmp_folder = tmp_folder
         if save_tmp:
-            with Timer("Saving expression matrix and normalized networks ..."):
-                os.makedirs('./tmp',exist_ok=True) 
+            with Timer("Saving expression matrix and normalized networks in %s..." %str(self.tmp_folder)):
+                os.makedirs(self.tmp_folder,exist_ok=True) 
                 if self.expression_data is not None:
-                    np.save("/tmp/expression.npy", self.expression_data.values)
-                np.save("/tmp/motif.normalized.npy", self.motif_matrix)
-                np.save("/tmp/ppi.normalized.npy", self.ppi_matrix)
+                    np.save(self.tmp_folder + "expression.npy", self.expression_data.values)
+                    np.save(self.tmp_folder + "motif.normalized.npy", self.motif_matrix)
+                    np.save(self.tmp_folder + "ppi.normalized.npy", self.ppi_matrix)
+
 
         # delete expression data
         del self.expression_data
@@ -314,6 +317,8 @@ class Panda(object):
                 - 'intersection': intersects the input genes and TFs across priors and removes the missing TFs/genes.
             with_header: bool
                 pass True when the expression file has a header with the sample names
+            tmp_folder: str
+                Path to the folder to save temporary files
         """
 
         # if modeProcess=="legacy":
@@ -539,6 +544,11 @@ class Panda(object):
             commind1 = ~np.isnan(idx_tfs) & ~np.isnan(idx_genes)
             idx_tfs = [i for (i, v) in zip(idx_tfs, commind1) if v]
             idx_genes = [i for (i, v) in zip(idx_genes, commind1) if v]
+            if (len(idx_genes) == 0) or (len(idx_tfs) == 0):
+                raise Exception('Error when creating the motif network!'
+                             ' Typically this exception is raised if your'
+                             ' expression matrix genes and motif priors'
+                             ' not have any intersection.')
             idx = np.ravel_multi_index(
                 (idx_tfs, idx_genes), self.motif_matrix_unnormalized.shape
             )
