@@ -90,4 +90,4 @@ def cobra(X, expression, cobra='nnls', alpha: np.float64=0.1):
                     ) for k in range(n)
                 ])
 
-    return psi, Q, d, g
+    return np.transpose(psi), Q, d, g
