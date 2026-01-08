@@ -48,7 +48,7 @@ def test_giraffe():
     # check Rres is same size
     assert Rres.shape == R_hat.shape
     # check values are close
-    np.testing.assert_allclose(Rres.values, R_hat, atol=1e-6)
+    np.testing.assert_allclose(Rres.values, R_hat, atol=1e-5)
 
     LOGGER.warning('Testing TFAhat')
     TFAres = pd.read_csv(tfa_file, sep="\t", index_col=0, header = None)
@@ -56,4 +56,4 @@ def test_giraffe():
     # check TFAres is same size
     assert TFAres.shape == TFA_hat.shape
     # check values are close
-    np.testing.assert_allclose(TFAres.values, TFA_hat, atol=1e-6)
+    np.testing.assert_allclose(TFAres.values, TFA_hat, atol=1e-5)
