@@ -6,7 +6,7 @@ from .timer import Timer
 import numpy as np
 from netZooPy.cobra import cobra
 from netZooPy.panda import calculations as calc
-from netZooPy.panda import io as io
+from netZooPy.panda import io as inout
 import os
 
 class Panda(object):
@@ -330,11 +330,11 @@ class Panda(object):
         # =====================================================================
         ### Loading Motif
         with Timer("Loading motif data ..."):
-            self.motif_data, self.motif_tfs, self.motif_genes = io.load_motif(motif_file)
+            self.motif_data, self.motif_tfs, self.motif_genes = inout.load_motif(motif_file)
         
         ### Loading expression
         with Timer("Loading expression data ..."):
-            self.expression_data, self.expression_genes, self.expression_samples = io.load_expression(expression_file, with_header = with_header, start = start, end = end)
+            self.expression_data, self.expression_genes, self.expression_samples = inout.load_expression(expression_file, with_header = with_header, start = start, end = end)
 
         if ((self.expression_data is None) & (self.expression_genes is None) & (self.expression_samples is None)):
             # If no expression is passed
