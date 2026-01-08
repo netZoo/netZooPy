@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [macos-15, ubuntu-latest]
         python-version: [3.8, 3.9, '3.10']
 
     steps:
@@ -29,7 +29,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest pytest-cov codecov
           echo ${{ matrix.os }}
-          if [[ "${{ matrix.os }}" =~ ^macos- ]];then brew install hdf5 c-blosc;export HDF5_DIR=/opt/homebrew/Cellar/hdf5/;export BLOSC_DIR=/opt/homebrew/Cellar/c-blosc/;fi
+          if [[ "${{ matrix.os }}" =~ ^macos- ]];then 
+          brew install hdf5 c-blosc
+          export HDF5_DIR=$(brew --prefix hdf5)
+          export BLOSC_DIR=$(brew --prefix c-blosc)
+          fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -e .
       - name: Lint with flake8
