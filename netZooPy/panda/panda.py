@@ -6,7 +6,7 @@ from .timer import Timer
 import numpy as np
 from netZooPy.cobra import cobra
 from netZooPy.panda import calculations as calc
-
+from netZooPy.panda import io as io
 import os
 
 class Panda(object):
@@ -131,7 +131,6 @@ class Panda(object):
         """ Intialize instance of Panda class and load data.
         """
         # Read data
-        from netZooPy.panda import io as io
         self.processData(
             modeProcess,
             motif_file,
