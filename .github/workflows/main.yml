@@ -1,12 +1,12 @@
 name: netZooPy
 
 on:
-  push:
+  push: 
     branches:
       - master
       - devel
   pull_request: 
-    branches:
+    branches: 
       - master
       - devel
 
@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
-        with:
+        with: 
           python-version:  ${{ matrix.python-version }}
       - name: Install dependencies and build package
         run: |
@@ -33,6 +33,11 @@ jobs:
             brew install hdf5 c-blosc lzo
             export HDF5_DIR=$(brew --prefix hdf5)
             export BLOSC_DIR=$(brew --prefix c-blosc)
+            export LZO_DIR=$(brew --prefix lzo)
+            # Set library and include paths for macOS
+            export LDFLAGS="-L$(brew --prefix hdf5)/lib -L$(brew --prefix c-blosc)/lib -L$(brew --prefix lzo)/lib"
+            export CPPFLAGS="-I$(brew --prefix hdf5)/include -I$(brew --prefix c-blosc)/include -I$(brew --prefix lzo)/include"
+            export PKG_CONFIG_PATH="$(brew --prefix hdf5)/lib/pkgconfig:$(brew --prefix c-blosc)/lib/pkgconfig"
           fi
           if [[ "${{ matrix.os }}" =~ ^ubuntu- ]]; then
             sudo apt-get update
