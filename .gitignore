@@ -53,9 +53,13 @@ panda_remove.txt
 pan_test_panda.txt
 tests/lioness/dragon/lioness_dragon_results/
 docs/_build/
-netZooPy/panda/io.py
+#netZooPy/panda/io.py
 debug_bonobo.py
 
 !recipe/
 !recipe/recipe.yaml
 !recipe/test.py
+
+pixi/*
+.pixi/*
+pixi*
