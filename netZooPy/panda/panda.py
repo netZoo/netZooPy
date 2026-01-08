@@ -6,7 +6,7 @@ from .timer import Timer
 import numpy as np
 from netZooPy.cobra import cobra
 from netZooPy.panda import calculations as calc
-from netZooPy.panda import io as inout
+
 import os
 
 class Panda(object):
@@ -131,7 +131,7 @@ class Panda(object):
         """ Intialize instance of Panda class and load data.
         """
         # Read data
-        
+        from netZooPy.panda import io as inout
         self.processData(
             modeProcess,
             motif_file,
@@ -145,6 +145,7 @@ class Panda(object):
             cobra_design_matrix=cobra_design_matrix,
             cobra_covariate_to_keep=cobra_covariate_to_keep
         )
+
         print(modeProcess,motif_file,expression_file,ppi_file,save_memory,remove_missing,keep_expression_matrix)
         if hasattr(self, "export_panda_results"):
             return
