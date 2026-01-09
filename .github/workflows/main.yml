@@ -1,37 +1,52 @@
 name: netZooPy
 
 on:
-  push:
+  push: 
     branches:
       - master
       - devel
-  pull_request:
-    branches:
+  pull_request: 
+    branches: 
       - master
       - devel
 
-jobs:
+jobs: 
   build:
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8, 3.9, '3.10']
+      matrix: 
+        os: [macos-15, ubuntu-latest]
+        python-version: [3.9, '3.10', '3.11', '3.12']
 
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
+        with: 
+          python-version:  ${{ matrix.python-version }}
       - name: Install dependencies and build package
         run: |
           python -m pip install --upgrade pip
           pip install flake8 pytest pytest-cov codecov
+          echo ${{ matrix.os }}
+          if [[ "${{ matrix.os }}" =~ ^macos- ]]; then 
+            brew install hdf5 c-blosc lzo
+            export HDF5_DIR=$(brew --prefix hdf5)
+            export BLOSC_DIR=$(brew --prefix c-blosc)
+            export LZO_DIR=$(brew --prefix lzo)
+            # Set library and include paths for macOS
+            export LDFLAGS="-L$(brew --prefix hdf5)/lib -L$(brew --prefix c-blosc)/lib -L$(brew --prefix lzo)/lib"
+            export CPPFLAGS="-I$(brew --prefix hdf5)/include -I$(brew --prefix c-blosc)/include -I$(brew --prefix lzo)/include"
+            export PKG_CONFIG_PATH="$(brew --prefix hdf5)/lib/pkgconfig:$(brew --prefix c-blosc)/lib/pkgconfig"
+          fi
+          if [[ "${{ matrix.os }}" =~ ^ubuntu- ]]; then
+            sudo apt-get update
+            sudo apt-get install -y liblzo2-dev libhdf5-dev libblosc-dev
+          fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -e .
       - name: Lint with flake8
-        run: |
+        run:  |
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide

@@ -2,6 +2,49 @@
 Changelog
 ==========
 
+0.10.6
+-------------------------
+
+This release is adding key features to the OTTER class and command
+
+- OTTER GPU
+- OTTER on command line
+- OTTER LIONESS class
+- OTTER LIONESS command line
+
+We'll need to reconcile the the OTTER and PANDA reading functions to be consistent, 
+but for the moment we are keeping them separate.
+
+0.10.5
+-------------------------
+
+- Fixed BONOBO pvalue computation
+
+0.10.4
+-------------------------
+
+- Adding PUMA to the readme and documentation
+- Folder renamed from ligress to bonobo
+
+0.10.3
+-------------------------
+
+- Fixed LIONESS CLI that was broken after removing the save_memory flag
+- Added exception for case where the motif genes do not match the expression genes
+
+0.10.2
+-------------------------
+
+- Fixed readthedocs
+- Removed save_memory from LIONESS (CLI). The first PANDA needs to keep the PANDA value in memory
+- Added BONOBO to CLI
+
+0.10.1
+-------------------------
+
+- Added BONOBO to docs.
+- Added LIONESS examples to docs.
+- Fixed mistake in README.
 
 0.10.0
 -------------------------
