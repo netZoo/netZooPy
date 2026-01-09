@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='netZooPy',
-    version='0.10.9',
+    version='0.11.0',
     description='Python implementation of netZoo',
     url='https://github.com/netZoo/netZooPy',
     author='netZoo team',
@@ -22,7 +22,8 @@ setup(name='netZooPy',
     'joblib>=1.1.0',
     'statsmodels>=0.12.2',
     'click',
-    'tables'
+    'tables',
+    'torch'
     ],
     zip_safe=False,
     # add cli interface

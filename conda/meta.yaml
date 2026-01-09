@@ -1,6 +1,6 @@
 package:
   name: netzoopy
-  version: 0.10.9
+  version: 0.11.0
 
 source:
   path: ..
@@ -23,6 +23,7 @@ requirements:
     - click
     - pandas
     - pytables
+    - pytorch
   run:
     - numpy>=1.19.2
     - python {{ python }}
@@ -36,6 +37,7 @@ requirements:
     - click
     - pandas
     - pytables
+    - pytorch
 
 test:
   commands:
