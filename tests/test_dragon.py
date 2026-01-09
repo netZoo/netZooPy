@@ -127,3 +127,9 @@ def test_singularity_exception():
         dragon.dragon.get_shrunken_covariance_dragon(X1 = layer1, X2 = layer2, lambdas=[0,0]) # no shrinkage
     assert(str(exc.value) == "[dragon.dragon.get_shrunken_covariance_dragon] Sigma is not invertible for the input values of lambda. Make sure that you are using `estimate_penalty_parameters_dragon` to select lambda. You may have variables with very small variance or highly collinear variables in your data. Consider removing such variables.")
     return()
+
+def test_catch_kappa_error():
+    with pytest.raises(Exception) as exc:
+        dragon.dragon.estimate_kappa_dragon(n=10, p1=1000, p2=1000, lambdas=[0.1,0.1], seed=123, simultaneous = False)
+    assert(str(exc.value) == "[dragon.estimate_kappa_dragon] Unable to optimize kappa11, likely due to high p, low n. \n Consider use of dragon.estimate_p_values_mc instead if p is reasonably small (~1000).")
+    return()

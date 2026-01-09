@@ -275,7 +275,10 @@ def estimate_kappa_dragon(n, p1, p2, lambdas, seed, simultaneous = False):
             Dlogli11 = lambda x: (1./4*p1*(p1-1)
                             *(sc.digamma(x/2)-sc.digamma((x-1)/2))
                             +term_Dlogli11)
-            kappa11 = optimize.bisect(Dlogli11, 1.001, 1000*n)
+            try:
+                kappa11 = optimize.bisect(Dlogli11, 1.001, 1000*n)
+            except ValueError:
+                raise Exception("[dragon.estimate_kappa_dragon] Unable to optimize kappa11, likely due to high p, low n. \n Consider use of dragon.estimate_p_values_mc instead if p is reasonably small (~1000).")
         else:
             kappa11 = np.nan
 
@@ -284,7 +287,11 @@ def estimate_kappa_dragon(n, p1, p2, lambdas, seed, simultaneous = False):
             Dlogli22 = lambda x: (1./4*p2*(p2-1)
                             *(sc.digamma(x/2)-sc.digamma((x-1)/2))
                             +term_Dlogli22)
-            kappa22 = optimize.bisect(Dlogli22, 1.001, 1000*n)
+            try:
+                kappa22 = optimize.bisect(Dlogli22, 1.001, 1000*n)
+            except ValueError:
+                raise Exception("[dragon.estimate_kappa_dragon] Unable to optimize kappa22, likely due to high p, low n. \n Consider use of dragon.estimate_p_values_mc instead if p is reasonably small (~1000)")
+
         else:
             kappa22 = np.nan
 
@@ -293,7 +300,11 @@ def estimate_kappa_dragon(n, p1, p2, lambdas, seed, simultaneous = False):
             Dlogli12 = lambda x: (1./2*p1*p2
                             *(sc.digamma(x/2)-sc.digamma((x-1)/2))
                             +term_Dlogli12)
-            kappa12 = optimize.bisect(Dlogli12, 1.001, 1000*n)
+            try:
+                kappa12 = optimize.bisect(Dlogli12, 1.001, 1000*n)
+            except ValueError:
+                raise Exception("[dragon.estimate_kappa_dragon] Unable to optimize kappa12, likely due to high p, low n. \n Consider use of dragon.estimate_p_values_mc instead if p is reasonably small (~1000)")
+
         else:
             kappa12 = np.nan
 
@@ -427,8 +438,12 @@ def assign_p_to_r(r_target, r_null, idx1, idx2, verbose=True):
     if np.min(r_null)<0:
         return("[netZooPy.dragon.dragon.assign_p_to_r] Error: null distribution must be absoluted before using this function")
     return np.sum(r_null>np.abs(r_target))/len(r_null)
-
+    
+    
 def estimate_p_values_mc(r, n, p1, p2, lambdas, seed = 1, verbose = True):
+    if(p1 + p2 > 2000):
+        print("[dragon.estimate_p_values_mc] This function may be prohibitively slow for larger values of p1 + p2. Speed improvements are work in progress. \n Consider thresholding by magnitude instead of p-values.")
+        
     lam = lambdas
     r_null = MC_estimate(n, p1, p2,lam, seed) 
 
@@ -496,7 +511,7 @@ def estimate_p_values_mc(r, n, p1, p2, lambdas, seed = 1, verbose = True):
     # adj_pvalues_mat += adj_pvalues_mat.T
 
     return(mc_p)
-
+    
 def calculate_true_R(X1, X2, Sigma):
     x = np.arange(0., 1.01, 0.01)
     n_lams = len(x)
