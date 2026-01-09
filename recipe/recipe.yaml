@@ -25,6 +25,7 @@ requirements:
     - click
     - pandas
     - pytables
+    - pytorch
   run:
     - python
     - numpy >=1.19.2
@@ -38,6 +39,7 @@ requirements:
     - click
     - pandas
     - pytables
+    - pytorch
     
 tests:
   - script:
