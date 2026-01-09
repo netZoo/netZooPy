@@ -23,7 +23,7 @@ setup(name='netZooPy',
     'statsmodels>=0.12.2',
     'click',
     'tables',
-    'pytorch'
+    'torch'
     ],
     zip_safe=False,
     # add cli interface
