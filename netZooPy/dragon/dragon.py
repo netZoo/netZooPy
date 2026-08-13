@@ -8,6 +8,35 @@ import scipy.integrate as integrate
 import statsmodels.stats.multitest as multi
 import sys
 
+
+def _bisect_growing_upper(f, a, b_init, max_expansions=20, growth=10.0):
+    """Bisect ``f`` on ``[a, b]``, growing ``b`` geometrically until the bracket is valid.
+
+    The kappa score equation in :func:`estimate_kappa` and
+    :func:`estimate_kappa_dragon` decays like ``c/x`` for large ``x`` and
+    asymptotes to a finite negative value, so a root always exists. When ``p``
+    greatly exceeds ``n`` the root can lie above ``1000*n``, the static upper
+    bound previously used here, which makes :func:`scipy.optimize.bisect` fail
+    with ``f(a) and f(b) must have different signs``. Expanding the upper bound
+    geometrically restores a valid bracket.
+    """
+    fa = f(a)
+    if fa == 0.0:
+        return a
+    b = float(b_init)
+    fb = f(b)
+    for _ in range(max_expansions):
+        if np.sign(fa) != np.sign(fb):
+            return optimize.bisect(f, a, b)
+        b *= growth
+        fb = f(b)
+    raise ValueError(
+        "[netZooPy.dragon] could not bracket a root of the kappa score "
+        "equation after %d expansions: f(%g)=%g, f(%g)=%g"
+        % (max_expansions, a, fa, b, fb)
+    )
+
+
 def Scale(X):
     X_temp = X
     X_std = np.std(X_temp, axis=0)
@@ -208,7 +237,7 @@ def estimate_kappa(n, p, lambda0, seed):
     DDlogli = lambda k: (1./4*len(r)*(sc.polygamma(1,k/2)-sc.polygamma(1,(k-1)/2)))
     #res = optimize.bisect(Dlogli, 1.001, 1000)#bracket=[1.001, 100.*n], x0=100,
                                #method='bisect')
-    res = optimize.bisect(Dlogli, 1.001, 1000*n)#optimize.newton(Dlogli, n, DDlogli)
+    res = _bisect_growing_upper(Dlogli, 1.001, 1000*n)#optimize.newton(Dlogli, n, DDlogli)
     return(res)
 
 def estimate_p_values(r, n, lambda0, kappa='estimate', seed=1):    #here, r is the partial correlation matrix returned by get_partial_correlation
@@ -276,7 +305,7 @@ def estimate_kappa_dragon(n, p1, p2, lambdas, seed, simultaneous = False):
                             *(sc.digamma(x/2)-sc.digamma((x-1)/2))
                             +term_Dlogli11)
             try:
-                kappa11 = optimize.bisect(Dlogli11, 1.001, 1000*n)
+                kappa11 = _bisect_growing_upper(Dlogli11, 1.001, 1000*n)
             except ValueError:
                 raise Exception("[dragon.estimate_kappa_dragon] Unable to optimize kappa11, likely due to high p, low n. \n Consider use of dragon.estimate_p_values_mc instead if p is reasonably small (~1000).")
         else:
@@ -288,7 +317,7 @@ def estimate_kappa_dragon(n, p1, p2, lambdas, seed, simultaneous = False):
                             *(sc.digamma(x/2)-sc.digamma((x-1)/2))
                             +term_Dlogli22)
             try:
-                kappa22 = optimize.bisect(Dlogli22, 1.001, 1000*n)
+                kappa22 = _bisect_growing_upper(Dlogli22, 1.001, 1000*n)
             except ValueError:
                 raise Exception("[dragon.estimate_kappa_dragon] Unable to optimize kappa22, likely due to high p, low n. \n Consider use of dragon.estimate_p_values_mc instead if p is reasonably small (~1000)")
 
@@ -301,7 +330,7 @@ def estimate_kappa_dragon(n, p1, p2, lambdas, seed, simultaneous = False):
                             *(sc.digamma(x/2)-sc.digamma((x-1)/2))
                             +term_Dlogli12)
             try:
-                kappa12 = optimize.bisect(Dlogli12, 1.001, 1000*n)
+                kappa12 = _bisect_growing_upper(Dlogli12, 1.001, 1000*n)
             except ValueError:
                 raise Exception("[dragon.estimate_kappa_dragon] Unable to optimize kappa12, likely due to high p, low n. \n Consider use of dragon.estimate_p_values_mc instead if p is reasonably small (~1000)")
 
@@ -321,7 +350,7 @@ def estimate_kappa_dragon(n, p1, p2, lambdas, seed, simultaneous = False):
                         +term_Dlogli)
         DDlogli = lambda x: (1./8*(p1+p2)*(p1+p2-1)
                          *(sc.polygamma(1,x/2)-sc.polygamma(1,(x-1)/2)))
-        res = optimize.bisect(Dlogli, 1.001, 1000*n)
+        res = _bisect_growing_upper(Dlogli, 1.001, 1000*n)
         kappa11 = res
         kappa22 = res
         kappa12 = res

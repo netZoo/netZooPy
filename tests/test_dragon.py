@@ -128,8 +128,34 @@ def test_singularity_exception():
     assert(str(exc.value) == "[dragon.dragon.get_shrunken_covariance_dragon] Sigma is not invertible for the input values of lambda. Make sure that you are using `estimate_penalty_parameters_dragon` to select lambda. You may have variables with very small variance or highly collinear variables in your data. Consider removing such variables.")
     return()
 
-def test_catch_kappa_error():
-    with pytest.raises(Exception) as exc:
-        dragon.dragon.estimate_kappa_dragon(n=10, p1=1000, p2=1000, lambdas=[0.1,0.1], seed=123, simultaneous = False)
-    assert(str(exc.value) == "[dragon.estimate_kappa_dragon] Unable to optimize kappa11, likely due to high p, low n. \n Consider use of dragon.estimate_p_values_mc instead if p is reasonably small (~1000).")
+def test_kappa_dragon_high_p_low_n():
+    # Regression test: the bisect bracket [1.001, 1000*n] was previously too
+    # narrow when p >> n, causing ValueError("f(a) and f(b) must have different
+    # signs"). The growing-bracket helper finds a root, so this call now
+    # returns finite, positive kappas instead of raising.
+    kappa11, kappa22, kappa12 = dragon.dragon.estimate_kappa_dragon(
+        n=10, p1=1000, p2=1000, lambdas=[0.1, 0.1], seed=123, simultaneous=False
+    )
+    assert np.isfinite(kappa11) and kappa11 > 1.0
+    assert np.isfinite(kappa22) and kappa22 > 1.0
+    assert np.isfinite(kappa12) and kappa12 > 1.0
+    return()
+
+def test_bisect_growing_upper_user_repro():
+    # Reproduces the exact failure from the issue report (p1=21337, n=832,
+    # term_Dlogli11=-77.93). The static [1.001, 1000*n] bracket leaves both
+    # endpoints positive; the helper finds the root near p1*(p1-1)/(4*|term|).
+    import scipy.special as sc
+    from scipy import optimize
+    p1, n = 21337, 832
+    term = -77.92618920329457
+    Dlogli11 = lambda x: (1./4 * p1 * (p1 - 1)
+                          * (sc.digamma(x/2) - sc.digamma((x-1)/2))
+                          + term)
+    with pytest.raises(ValueError):
+        optimize.bisect(Dlogli11, 1.001, 1000 * n)
+    kappa = dragon.dragon._bisect_growing_upper(Dlogli11, 1.001, 1000 * n)
+    expected = p1 * (p1 - 1) / (4.0 * abs(term))
+    assert abs(kappa - expected) / expected < 1e-3
+    assert abs(Dlogli11(kappa)) < 1e-5
     return()
