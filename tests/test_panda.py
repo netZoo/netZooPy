@@ -1,16 +1,34 @@
 import pytest
-import os
 from netZooPy.panda.panda import Panda
 import pandas as pd
 import numpy as np
 import subprocess
 import netZooPy.command_line as cmd
 
+import urllib.error
+import urllib.request
+
+# Test datasets are served from the netZoo S3 bucket. A failed download raises
+# instead of silently leaving an HTTP error page on disk in place of the data.
+S3_BASE_URL = "https://netzoo-data.s3.us-east-2.amazonaws.com/netZooPy"
+
+
+def _download(relative_path):
+    """Fetch relative_path from S3_BASE_URL into the working directory."""
+    url = S3_BASE_URL + "/" + relative_path
+    filename = relative_path.rsplit("/", 1)[-1]
+    try:
+        urllib.request.urlretrieve(url, filename)
+    except urllib.error.URLError as err:
+        raise RuntimeError(
+            "Could not download test data from " + url + ": " + str(err)
+        ) from err
+    return filename
+
 
 import logging
 
 LOGGER = logging.getLogger(__name__)
-
 
 
 def runPandatest(modeProcess,ppi,motif,expression_data,lioness_file,rm_missing,output_file,gt_file):
@@ -208,12 +226,7 @@ def test_panda():
         )
         panda_obj.save_panda_results(test_panda + str(i) + ".txt")
         res = pd.read_csv(test_panda + str(i) + ".txt", sep=" ", header=None)
-        os.system(
-            "curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/"
-            + gt_test_panda
-            + str(i)
-            + ".txt"
-        )
+        _download("tutorial_datasets/" + gt_test_panda + str(i) + ".txt")
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
         pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
         # PPI
@@ -230,12 +243,7 @@ def test_panda():
         )
         panda_obj.save_panda_results(test_panda + str(i) + ".txt")
         res = pd.read_csv(test_panda + str(i) + ".txt", sep=" ", header=None)
-        os.system(
-            "curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/"
-            + gt_test_panda
-            + str(i)
-            + ".txt"
-        )
+        _download("tutorial_datasets/" + gt_test_panda + str(i) + ".txt")
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
         pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
         # Expression
@@ -252,12 +260,7 @@ def test_panda():
         )
         panda_obj.save_panda_results(test_panda + str(i) + ".txt")
         res = pd.read_csv(test_panda + str(i) + ".txt", sep=" ", header=None)
-        os.system(
-            "curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/"
-            + gt_test_panda
-            + str(i)
-            + ".txt"
-        )
+        _download("tutorial_datasets/" + gt_test_panda + str(i) + ".txt")
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
         pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
         # Expression and PPI
@@ -274,12 +277,7 @@ def test_panda():
         )
         panda_obj.save_panda_results(test_panda + str(i) + ".txt")
         res = pd.read_csv(test_panda + str(i) + ".txt", sep=" ", header=None)
-        os.system(
-            "curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/tutorial_datasets/"
-            + gt_test_panda
-            + str(i)
-            + ".txt"
-        )
+        _download("tutorial_datasets/" + gt_test_panda + str(i) + ".txt")
         gt = pd.read_csv(gt_test_panda + str(i) + ".txt", sep=" ", header=None)
         pd.testing.assert_frame_equal(res, gt, rtol=1e-12, check_exact=False)
 
