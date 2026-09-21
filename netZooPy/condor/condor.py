@@ -3,6 +3,21 @@ import pandas as pd
 from igraph import *
 from .timer import Timer
 
+
+def _leiden(graph, weights, resolution):
+    """Leiden community detection, tolerant of the igraph keyword rename from
+    ``resolution_parameter`` to ``resolution`` (the former is deprecated)."""
+    try:
+        return Graph.community_leiden(
+            graph, objective_function="modularity", resolution=resolution, weights=weights
+        )
+    except TypeError as err:
+        if "resolution" not in str(err):
+            raise
+        return Graph.community_leiden(
+            graph, objective_function="modularity", resolution_parameter=resolution, weights=weights
+        )
+
 class condor_object:
     """
     Initialization of the condor object. The function gets a network
@@ -121,8 +136,6 @@ class condor_object:
 
             self.net.columns = ["V1", "V2", "weight"]
             # Creates iGraph object from the DataFrame.
-            print('hello')
-            print(self.net)
             self.graph = Graph.DataFrame(self.net, directed=False, use_vids=False)
             # from igraph 0.10 add parameter: use_vids=False
 
@@ -177,9 +190,7 @@ class condor_object:
                 if method == "LCS":
                     vc = Graph.community_multilevel(projected_graph, weights=weights_id)
                 if method == "LDN":
-                    vc = Graph.community_leiden(
-                        projected_graph, objective_function='modularity',resolution_parameter=resolution, weights=weights_id
-                    )
+                    vc = _leiden(projected_graph, weights_id, resolution)
 
                 self.modularity = vc.modularity
                 if not self.silent: print("Initial modularity: ", self.modularity)
@@ -207,9 +218,7 @@ class condor_object:
                 if method == "LCS":
                     vc = Graph.community_multilevel(self.graph, weights=weights_id)
                 if method == "LDN":
-                    vc = Graph.community_leiden(
-                        self.graph,objective_function='modularity',resolution_parameter=resolution, weights=weights_id
-                    )
+                    vc = _leiden(self.graph, weights_id, resolution)
 
                 self.modularity = vc.modularity
                 if not self.silent: print("Initial modularity: ", self.modularity)
