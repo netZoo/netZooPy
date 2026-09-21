@@ -1,7 +1,27 @@
 import pytest
 import numpy as np
-import os
 from netZooPy import dragon
+
+import urllib.error
+import urllib.request
+
+# Test datasets are served from the netZoo S3 bucket. A failed download raises
+# instead of silently leaving an HTTP error page on disk in place of the data.
+S3_BASE_URL = "https://netzoo-data.s3.us-east-2.amazonaws.com/netZooPy"
+
+
+def _download(relative_path):
+    """Fetch relative_path from S3_BASE_URL into the working directory."""
+    url = S3_BASE_URL + "/" + relative_path
+    filename = relative_path.rsplit("/", 1)[-1]
+    try:
+        urllib.request.urlretrieve(url, filename)
+    except urllib.error.URLError as err:
+        raise RuntimeError(
+            "Could not download test data from " + url + ": " + str(err)
+        ) from err
+    return filename
+
 
 def test_dragon():
     #1. test1
@@ -12,8 +32,8 @@ def test_dragon():
     X1, X2, Theta, _ = dragon.simulate_dragon_data(eta11=0.005, eta12=0.005, eta22=0.05,
                                             p1=100, p2=500, epsilon=[0.1,0.1],
                                             n=n, seed=123)
-    os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/unittest_datasets/dragonx1.npy')
-    os.system('curl -O https://netzoo.s3.us-east-2.amazonaws.com/netZooPy/unittest_datasets/dragonx2.npy')
+    _download("unittest_datasets/dragonx1.npy")
+    _download("unittest_datasets/dragonx2.npy")
     X1=np.load('dragonx1.npy')
     X2=np.load('dragonx2.npy')
     lambdas, lambdas_landscape = dragon.estimate_penalty_parameters_dragon(X1, X2)
