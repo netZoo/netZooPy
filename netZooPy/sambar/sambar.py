@@ -8,7 +8,7 @@ from scipy.cluster.hierarchy import linkage,cut_tree
 # setuptools >= 81 removed pkg_resources.resource_filename; use stdlib.
 from importlib.resources import files
 def _resource_filename(name):
-    return str(files(__name__).joinpath(name))
+    return str(files(__package__).joinpath(name))
 """
 Description:
     Python implementation of the Subtyping Agglomerated Mutations By Annotation Relations (SAMBAR) method as implemented in R https://github.com/mararie/SAMBAR.
