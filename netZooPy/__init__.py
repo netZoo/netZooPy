@@ -7,6 +7,7 @@ from netZooPy import lioness
 from netZooPy import condor
 from netZooPy import sambar
 from netZooPy import bonobo
-from netZooPy import giraffe 
+from netZooPy import giraffe
+from netZooPy import spider 
 
 __version__ = "0.11.0"
