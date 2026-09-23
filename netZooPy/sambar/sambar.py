@@ -5,7 +5,15 @@ import os
 import networkx as nx
 from scipy.spatial.distance import pdist,cosine,squareform
 from scipy.cluster.hierarchy import linkage,cut_tree
-import pkg_resources
+try:
+    import pkg_resources
+    def _resource_filename(name):
+        return pkg_resources.resource_filename(__name__, name)
+except ImportError:
+    # pkg_resources was removed from setuptools >= 81. Fall back to importlib.
+    from importlib.resources import files
+    def _resource_filename(name):
+        return str(files(__name__).joinpath(name))
 """
 Description:
     Python implementation of the Subtyping Agglomerated Mutations By Annotation Relations (SAMBAR) method as implemented in R https://github.com/mararie/SAMBAR.
@@ -40,10 +48,10 @@ Functions:
             This package includes the functions ```sambar```,```desparsify```,```corgenelength```,```convertgmt```,```clustering``` as well as an implementation of the binomial distance (Millar dissimilarity from the package vegdist from R. To see the full description of each of this functions use ```help(pysambar.function)```.
 """
 ## Default toydata files
-esize = pkg_resources.resource_filename(__name__, 'esizef.csv')
-genes = pkg_resources.resource_filename(__name__, 'genes.txt')
-sign  = pkg_resources.resource_filename(__name__, 'h.all.v6.1.symbols.gmt')
-mut   = pkg_resources.resource_filename(__name__, 'mut.ucec.csv')
+esize = _resource_filename('esizef.csv')
+genes = _resource_filename('genes.txt')
+sign  = _resource_filename('h.all.v6.1.symbols.gmt')
+mut   = _resource_filename('mut.ucec.csv')
 
 def corgenelength(mut,cangenes,esize,normbysample=True,subcangenes=True):
     """
